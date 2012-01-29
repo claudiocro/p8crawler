@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <title>p8 photography stream</title>
+
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold&subset=latin' rel='stylesheet' type='text/css'	>
+  <link href="res/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <link href="res/style.css" rel="stylesheet" type="text/css"/>
+  <link href="res/content.css" rel="stylesheet" type="text/css"/>
+  <link href="res/colorbox.css" rel="stylesheet" type="text/css"/>
+  <!-- link href="res/jScrollPane.css" rel="stylesheet" type="text/css"/ -->
+  <link href="res/jquery.jscrollpane.css" rel="stylesheet" type="text/css"/>
+	
+  <script type="text/javascript" language="javascript" src="res/jquery-1.7.1.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery-ui.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.easing.1.3.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.busy.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.jtruncate.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.colorbox-min.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.mousewheel.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.jscrollpane.js"></script>
+  <script type="text/javascript" language="javascript" src="res/p8photosurfer.save.js"></script>
+  
+ 
+  <script type="text/javascript" language="javascript">
+  
+  	var maxCount = 100;
+  	var total = 8;
+  	var currentContent = "navigation";
+  	
+  	var pSource = $.getUrlVar('source');
+  	if(pSource != null)
+  		pSource = pSource.replace("#","");
+  	
+  	var pCat = $.getUrlVar('cat');
+  	if(pCat != null)
+  		pCat = pCat.replace("#","");
+  	
+  	$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
+  	
+  	
+  	var moveForwards = function() {
+  		if(!$(this).button( "option", "disabled" ))
+			$('#mainGallery').p8JsonGallery('moveForwards');
+	}
+	
+	var moveBackwards = function() {
+		if(!$(this).button( "option", "disabled" ))
+			$('#mainGallery').p8JsonGallery('moveBackwards');
+	}
+  	
+  	
+  	
+	$(document).ready(function() {
+		
+		$('#navigationCont .home').button().click(showMainNavigation);
+		$('#navigationCont .next').button({'disabled':true}).bind('click',moveForwards);
+		$('#navigationCont .previous').button({'disabled':true}).bind('click',moveBackwards);
+		
+		$('.prefNavBusy').hide();
+		
+		$('.likes');
+		$('.likes')
+			.css({opacity: .1})
+			.hover(
+				function() {
+					$('.likes').animate({opacity: .8});
+				},
+				function() {
+					$('.likes').animate({opacity: .05});
+				}
+			);
+		
+		
+		$('#galleryContent').busy({img:'res/images/busy.gif', hide:false});
+		
+		
+		//create feeditems
+		var createFeedContent = function(feed) {
+			return $('<div class="summary"></div>').css({opacity:0}).html('<div class="summaryCont"><span class="feedTitle">'+feed.title+'</span> &copy;<a href="'+feed.link+'" target="_blank">'+feed.authorName+'@'+feed.source+'</a></div>');
+		}
+		for ( var i=0; i<total; ++i ){
+			$("#workerCont").append($('<div></div>').p8FeedItem({contentFunc:createFeedContent}));
+		}
+		
+		
+		
+		var navigation = {
+  			items : [
+				[{image:'res/content-img/cat-1.jpg',content:$('#mainNavigationContent .cat1 .article').html()}],
+  			    [{image:'res/content-img/cat-5.jpg',content:$('#mainNavigationContent .cat2 .article').html()}],
+ 			    [{image:'res/content-img/cat-7.jpg',content:$('#mainNavigationContent .cat3 .article').html()}],
+  			    [{image:'res/content-img/cat-3.jpg',content:$('#mainNavigationContent .cat4 .article').html()}],
+ 			    [{image:'res/content-img/cat-4.jpg',content:$('#mainNavigationContent .cat5 .article').html()}],
+  			    [{image:'res/content-img/cat-2.jpg',content:$('#mainNavigationContent .cat6 .article').html()}],
+ 			    [{image:'res/content-img/cat-6.jpg',content:$('#mainNavigationContent .cat7 .article').html()}],
+  			    [{image:'res/content-img/cat-8.jpg',content:$('#mainNavigationContent .cat8 .article').html()}]
+  			]
+	  	};
+		$('#mainNavigationContent').empty();
+		
+		
+		
+		for ( var i=0; i<navigation.items.length; i++ ){
+			var navItem = $('<div></div>').p8FeedItem()
+				.p8FeedItem('load',navigation.items[i][0].image,navigation.items[i][0].content);
+			$("#mainNavigationContent").append(navItem);
+		}
+		
+		$('#galleryContent')
+			.append($('#mainNavigationContent').p8SimpleGrid({contentSelector:$('#mainNavigationContent .p8FeedItem')}))
+			.append($('<div id="mainGallery"></div>')
+				.data("galleryRequestParam", {callCount:0,cursor:null,cat:null})
+				.p8JsonGallery({
+					itemsSelector:$('#workerCont .p8FeedItem'),
+					moveForwards:function(){updateNavigation();$('#galleryContent').busy("hide");},
+					moveBackwards:function(){updateNavigation();$('#galleryContent').busy("hide");},
+					feedItemsChanged:function(){updateNavigation();$('#galleryContent').busy("hide");},
+					loading:function(loading){if(loading == true){ $('.prefNavBusy').fadeIn(200);} else{ $('.prefNavBusy').fadeOut(200);}},
+					feedLoaderFunction: function(p8Item,feed) {p8Item.p8FeedItem("load",feed.img2Link,feed);},
+					requestFunction: galleryJsonRequest
+				
+				}))
+			.append(
+				$('<div id="mainBigImage"></div>')
+					.p8ImageCont()
+					.click(showGridded)
+				);
+		
+		
+		$('#mainGallery .p8FeedItem .article')
+		.hover(function() {
+				$('.summary', this)
+					.stop()
+					.animate({opacity: .6, height:"30px"},{duration:250, easing:"easeInSine"});
+			},function() {
+				$('.summary', this)
+					.stop()
+					.animate({opacity: 0,height:"10px"},{duration:200});
+			}
+		)
+		.click(function(event) { 
+			var description = $(this).closest('.p8FeedItem').p8FeedItem('activeFeedItem');
+			if( description.imageLink != null)
+				showBigContent(description.imageLink, description);
+		});
+	
+		
+		$('#mainNavigationContent .p8FeedItem .nav-title').css({opacity: .5});
+		$('#mainNavigationContent .p8FeedItem .nav-cnt').css({opacity: 0});
+		$('#mainNavigationContent .p8FeedItem')
+		.hover(function() {
+				var item = $(this).closest('.p8FeedItem');
+				$('.nav-title', item).stop().animate({opacity: 0},{duration:50});
+				$('.nav-cnt', item).stop().animate({opacity: .8},{duration:450});
+			}, function() {
+				var item = $(this).closest('.p8FeedItem');
+				$('.nav-title', item).stop().animate({opacity: .5});
+				$('.nav-cnt', item).stop().animate({opacity: 0});
+			}
+		);
+		
+		$('#mainNavigationContent .p8FeedItem .nav-title').click(function() {
+			var item = $(this).closest('.p8FeedItem');
+			$('.nav-title', item).stop().animate({opacity: 0});
+			$('.nav-cnt', item).stop().animate({opacity: .8});
+		});
+		
+		if(/*pSource == null && */pCat == null)
+			showMainNavigation();
+		else
+			showGridded();
+			
+			
+		
+		// Log all jQuery AJAX requests to Google Analytics
+	    $(document).ajaxSend(function(event, xhr, settings){ 
+	      if (typeof _gaq !== "undefined" && _gaq !== null) {
+	        _gaq.push(['_trackPageview', settings.url]);
+	      }
+	    });
+		
+	  	//Request first feed
+	  	if(/*pSource != null || */pCat != null) {
+	  		var gSel = $('#mainGallery');
+	  		var reqParams = gSel.data('galleryRequestParam');
+	  		reqParams.cat = pCat;
+	  		
+	  		gSel.data('galleryRequestParam',reqParams);
+			gSel.p8JsonGallery('reload');
+		}
+	  
+		
+	  	//keyboard navigation
+
+	    $('body').keyup(function(event) {
+	        if (event.keyCode == 39) {
+	        	if(!$('#navigationCont .next').button( "option", "disabled" ))
+	        		moveForwards();
+	        } else if (event.keyCode == 37) {
+	        	if(!$('#navigationCont .previous').button( "option", "disabled" ))
+	        		moveBackwards();
+	        	
+	        } else if(event.keyCode == 27 && currentContent == "bigContent") {
+	        	showGridded();
+	        }
+	    });
+
+
+	  	
+	    $('body').focus();
+	    $(".scroll-cnt").jScrollPane();
+	    
+	    $('.remove-user').colorbox();
+	    /*var myScroll = new iScroll('nav3');
+	    var myScroll = new iScroll('nav8');*/
+	});
+	
+	
+	var updateNavigation = function() {
+		
+		if(currentContent != 'gallery') {
+			$('.page-count').text('');
+			$('#navigationCont .next').button('disable');
+			
+			$('#navigationCont .previous').button('disable');
+		} 
+		else {
+			
+			$('.page-count').text("page: "+($('#mainGallery').p8JsonGallery('getCurrentCount')));
+			
+			if($('#mainGallery').p8JsonGallery('canMoveForwards')) {
+				$('#navigationCont .next').button('enable');
+			} else {
+				$('#navigationCont .next').button('disable');
+			}
+			
+			if($('#mainGallery').p8JsonGallery('canMoveBackwards')) {
+				$('#navigationCont .previous').button('enable');
+			} else {
+				$('#navigationCont .previous').button('disable');
+			}
+		}
+	}
+
+	
+	var showGallery = function(type, album) {
+		if(type == 'cat') {
+			pCat = album;
+
+		  	$('#mainNavigationContent').css({'z-index':1}).animate({opacity:0},900);
+		  	$('#galleryContent').busy({img:'res/images/busy.gif', hide:false});
+		  	
+		  	
+		  	$('#navigationCont .next').button('disable');
+			$('#navigationCont .previous').button('disable');
+			
+			var gSel = $('#mainGallery');
+	  		var reqParams = gSel.data('galleryRequestParam');
+	  		reqParams.cat = pCat;
+	  		reqParams.callCount= 0;
+	  		reqParams.cursor=null;
+	  		
+	  		gSel.data('galleryRequestParam',reqParams);
+			gSel.p8JsonGallery('reload');
+			
+			showGridded();
+		}
+		
+		
+	}
+	
+	var showGridded = function() {
+		currentContent = "gallery";
+		//$('#galleryContent').busy("hide");
+		$('#mainNavigationContent').css({'z-index':1}).animate({opacity:0},900);
+		$('#mainGallery').animate({opacity:1},900);
+		$('.p8ImageCont').p8ImageCont('unload');
+		updateNavigation();
+		
+	}
+	
+	var showMainNavigation = function() {
+		
+		$('#galleryContent').busy("hide");
+		if(currentContent == "gallery")
+			$('#mainGallery').animate({opacity:0},900);
+		else if(currentContent == "bigContent")
+			$('.p8ImageCont').p8ImageCont('unload');
+		
+		
+		$('#mainGallery .p8FeedItem').p8FeedItem('clean');
+		
+		$('#mainNavigationContent').css({'z-index':100}).animate({opacity:1},900);
+		
+		currentContent = "navigation";
+
+		updateNavigation();
+	}
+	
+	var showBigContent = function(image, feed) {
+		currentContent = "bigContent";
+		
+		updateNavigation();
+		
+		$('#mainGallery').animate({opacity:.0},400);
+		$('#mainNavigationContent').css({'z-index':1}).animate({opacity:0},900);
+		
+		var imgDesc = '<span class="feedTitle">'+feed.title+'</span> &copy;<a href="'+feed.link+'" target="_blank">'+feed.authorName+'@'+feed.source+'</a>';
+		$('.p8ImageCont').p8ImageCont('load',image, imgDesc);
+	}
+	
+	
+	
+	var galleryJsonRequest = function() {
+		var self = this;
+		var reqParams = self.element.data("galleryRequestParam");
+		
+		var jp = {cat:reqParams.cat, 'page':reqParams.callCount++};
+		if(reqParams.cursor != null)
+			jp = {cat:reqParams.cat, 'cursor':cursor, 'page': reqParams.callCount++};
+						
+		jQuery.getJSON("feed", jp, function(data){
+			self._preProcessResponse();
+			
+			if(data != null || data.error == null) {
+				reqParams.cursor = data.cursor;
+								
+				var heavyImage = new Image(); 
+				for ( var i=0; i <data.response.length; i++ ){
+					//heavyImage.src = data.response[i].img1Link;
+					heavyImage.src = data.response[i].img2Link;
+				}
+								
+				if(data.response.length > 0)
+					self.allFeeds = self.allFeeds.concat(data.response);
+				else
+					self.feedStreamEnd = true;
+					
+								
+			} else {
+				reqParams.cursor = null;
+				self.isRetrivingFeed = false;
+			}
+			
+			self.element.data("galleryRequestParam", reqParams);
+			
+			self._postProcessResponse();
+		});
+	};
+	
+	
+  </script>
+  
+  <script type="text/javascript">
+  //document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+  </script>
+  
+  
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26764399-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+ </script>
+ 
+ <!-- Dieses Tag in den Head-Bereich oder direkt vor dem schließenden Body-Tag einfügen -->
+ <!-- script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script-->
+ 
+ 
+<!-- style type='text/css'>@import url('http://getbarometer.s3.amazonaws.com/assets/barometer/css/barometer.css');</style>
+<script src='http://getbarometer.s3.amazonaws.com/assets/barometer/javascripts/barometer.js' type='text/javascript'></script>
+<script type="text/javascript" charset="utf-8">
+  BAROMETER.load('Q5sbeK38yrhHD2bwzkG6c');
+</script -->
+ 
+</head>
+
+<body>
+<!-- div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script -->
+
+<div id="wrapper">
+  <h1 style="display:none">Photostream gallery for g+</h1>
+  <div id="navigationCont">
+    <div class="prevNextCont" style="position: relative;">
+      <a href="#" class="home" style="z-index:10">Home</a>&nbsp;&nbsp;&nbsp;
+      <a href="#" class="previous" style="z-index:10">Previous</a>
+  	  <a href="#" class="next" style="z-index:10">Next</a>
+  	  <span class="prefNavBusy"><img src="res/images/busy.gif" valign="top" width=22 height=22 /></span>
+  	  <span class="page-count"></span>
+    </div>
+  </div>
+  
+  
+  
+  <div id="galleryContent">
+  
+    <div id="mainNavigationContent" style="opacity: 0;">
+  	<div class="cat1"><div class="article" style="background-image:url(res/content-img/cat-1.jpg)"></div></div>
+  	<div class="cat2"><div class="article">
+  	  <h2 class="nav-title">lomography</h2>
+  	    <div class="nav-cnt" id="nav3"><div class="scroll-cnt">
+  	    <h2>lomography</h2>
+  	    <ul>
+  	      <li><a href="#" onclick="showGallery('cat', 'lomo')">recent lomography photos</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'lomo:popular')">popular lomography photos</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'lomo:selected')">selected lomography photos</a></li>
+    	</ul>
+    	</div></div>
+  	  </div></div>
+  	<div class="cat3"><div class="article">
+  	  <h2 class="nav-title">google+</h2>
+  	  <div class="nav-cnt" id="nav3"><div class="scroll-cnt">
+  	    <h2>google+</h2>
+  	    <ul>
+  	      <li><a href="#" onclick="showGallery('cat', 'photographer')">extract from g+ photographers</a></li>
+    	</ul>
+    	<h2>google+ hashtags</h2>
+  	    <ul>
+  	      <li><a href="#" onclick="showGallery('cat', '365project')">#365Project</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'mountainmonday')">#MountainMonday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'monochromemonday')">#MonochromeMonday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'treetuesday')">#TreeTuesday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'portraittuesday')">#PortraitTuesday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'mytowntuesday')">#MyTownTuesday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'womenwednesday')">#WomenWednesday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'widewednesdaypanorama')">#WideWednesdayPanorama</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'travelthursday')">#TravelThursday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'longexposurethursday')">#LongExposureThursday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'fisheyefriday')">#FisheyeFriday</a></li> 
+  	      <li><a href="#" onclick="showGallery('cat', 'fashionfriday')">#FashionFriday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'fallfriday')">#FallFriday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'skysunday')">#SkySunday</a></li>
+  	      <li><a href="#" onclick="showGallery('cat', 'sepiasunday')">#SepiaSunday</a></li>
+  	    </ul>
+  	    <br />
+  	  </div></div>
+  	  </div>
+  	</div>
+  	<div class="cat4"><div class="article" style="background-image:url(res/content-img/cat-3.jpg)"></div></div>
+  	<div class="cat5"><div class="article" style="background-image:url(res/content-img/cat-4.jpg)"></div></div>
+  	<div class="cat6"><div class="article" style="background-image:url(res/content-img/cat-2.jpg)"></div></div>
+  	<div class="cat7"><div class="article" style="background-image:url(res/content-img/cat-6.jpg)"></div></div>
+  	<div class="cat8"><div class="article">
+  	  <h2 class="nav-title">purpose</h2>
+  	  <div class="nav-cnt" id="nav8"><div class="scroll-cnt">
+  	  <h2>purpose</h2>
+  	  <p>
+  	  Photography stream came alive while it's frustrating surfing all these beautiful images in such a "image unfriendly" way in the g+ stream (The stream is not optimized for images as the g+ albums are). 
+      </p>
+      <p>
+      Photography stream aims to be a better way to look at photos taken from interesting people and posted to interesting subjects in g+. The gallery just displays the images and links to the original content ordered by published date.
+      </p>
+      <p>
+      The gallery wants to put the photography and the photographer in the center of the attention presented in a "timeline" and updated several times a day. Thanks to all the great photographers out there!
+      </p>
+      <!-- h2>Remove my photos!</h2>
+      <p>
+      Click <a class="remove-user" href="removeUser.html">here</a> to remove your photos from this site.
+      </p -->
+      <br />
+      </div></div>
+  	</div></div>
+    </div>
+  
+  </div>
+  
+  <div id="footer" style="">
+    <div class="footerCont" style="position:relative; top:5px;height: 20px">
+      <span style="">powered by <a href="https://plus.google.com/113880730306243229744/" target="_blank">Photography Stream</a></span>
+      <!-- span class="likes" style="width: 100%;  text-align: right; position:absolute; right:1px; bottom:0;">
+      	<a href="https://twitter.com/share" class="twitter-share-button" data-count="none" data-via="plus8gmbh">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+        <div class="fb-like" style="vertical-align: top;width:75px;" data-href="photo.plus8.ch" data-send="false" data-layout="button_count" data-width="75" data-show-faces="false"></div>
+        <!-- g:plusone size="medium" count="false" href="photo.plus8.ch"></g:plusone -->
+      </span-->
+    </div>
+  </div>
+  
+  
+ </div>
+ <div id="workerCont"  style="display:none;">
+ </div>
+</body>
+</html>

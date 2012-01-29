@@ -1,0 +1,24 @@
+<div class="p-cnt" style="width:350px;height:300px">
+<h1>Remove me from this list</h1>
+<div id="remove-user">
+<form>
+<span>g+ id:</span><input type="text" name="userid" style="width: 200px;"/>
+<input type="submit" value="Send" />
+<script type="text/javascript" language="javascript">
+$(document).ready(function() {
+	$('#remove-user form').submit(function() {
+		var vuserid = $('#remove-user input[name="userid"]').val();
+		alert('hop : ' + vuserid);
+		jQuery.getJSON("deleteUser", {userid:vuserid}, function(data){
+			alert('hap');
+			$('#remove-user-resp').html(data.response);
+		});
+		return false;
+	});
+});
+</script>
+</form>
+<div id="remove-user-resp">
+</div>
+</div>
+</div>

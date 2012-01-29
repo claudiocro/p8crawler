@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/hikr/feedImport</url>
+    <description>Import Hikr feed</description>
+    <schedule>every 360 minutes</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/personsActivitiesImport</url>
+    <description>google+ persons activities import</description>
+    <schedule>every 180 minutes</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=monochromemonday</url>
+    <description>google+ #monochromemonday</description>
+    <schedule>every monday 23:20</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=mountainmonday</url>
+    <description>google+ #mountainmonday</description>
+    <schedule>every monday 23:40</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=treetuesday</url>
+    <description>google+ #treetuesday</description>
+    <schedule>every tuesday 23:20</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=portraittuesday</url>
+    <description>google+ #portraittuesday</description>
+    <schedule>every tuesday 23:40</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=womenwednesday</url>
+    <description>google+ #womenwednesday</description>
+    <schedule>every wednesday 23:20</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=widewednesdaypanorama</url>
+    <description>google+ #widewednesdaypanorama</description>
+    <schedule>every wednesday 23:40</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=longexposurethursday</url>
+    <description>google+ #longexposurethursday</description>
+    <schedule>every thursday 23:20</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=travelthursday</url>
+    <description>google+ #travelthursday</description>
+    <schedule>every thursday 23:40</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+   <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=fisheyefriday</url>
+    <description>google+ #fisheyefriday</description>
+    <schedule>every friday 23:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=fashionfriday</url>
+    <description>google+ #fashionfriday</description>
+    <schedule>every friday 23:20</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=fallfriday</url>
+    <description>google+ #fallfriday</description>
+    <schedule>every friday 23:40</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/lomo/lomoImport?type=popular</url>
+    <description>lomo popular</description>
+    <schedule>every day 03:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  
+  <cron>
+    <url>/lomo/lomoImport?type=selected</url>
+    <description>lomo selected</description>
+    <schedule>every day 03:30</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  
+  <cron>
+    <url>/lomo/lomoImport?type=recent</url>
+    <description>lomo recent</description>
+    <schedule>every 300 minutes</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  
+  <cron>
+    <url>/p8admin/fetchImage</url>
+    <description>fetch images and after convert it</description>
+    <schedule>every 35 minutes</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <!-- cron>
+    <url>/p8admin/deleteOldItems?source=gplus&timeType=M&timeValue=1</url>
+    <description>delete old gplus items</description>
+    <schedule>every day 01:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/p8admin/deleteOldItems?source=hikr&timeType=M&timeValue=2</url>
+    <description>delete old hikr items</description>
+    <schedule>every day 01:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+   <cron>
+    <url>/p8admin/deleteOldItems?source=lomo&timeType=M&timeValue=1</url>
+    <description>delete old lomo items</description>
+    <schedule>every day 01:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron -->
+  
+   <!-- cron>
+    <url>/feedCacher</url>
+    <description>Soft feed cacher</description>
+    <schedule>every 60 minutes</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron -->
+</cronentries>

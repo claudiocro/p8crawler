@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queue-entries>
+	<queue>
+		<name>default</name>
+		<rate>2/s</rate>
+		<retry-parameters>
+ 			<task-retry-limit>5</task-retry-limit>
+ 		</retry-parameters>
+	</queue>
+	<queue>
+		<name>deleteItem-queue</name>
+		<rate>10/s</rate>
+		<retry-parameters>
+ 			<task-retry-limit>3</task-retry-limit>
+ 		</retry-parameters>
+	</queue>
+	
+	<queue>
+		<name>fetchImage-queue</name>
+		<rate>10/m</rate>
+		<retry-parameters>
+ 			<task-retry-limit>3</task-retry-limit>
+ 		</retry-parameters>
+	</queue>
+	
+	
+	<queue>
+		<name>feedCacher-queue</name>
+		<rate>60/m</rate>
+		<retry-parameters>
+ 			<task-retry-limit>3</task-retry-limit>
+ 		</retry-parameters>
+	</queue>
+	
+</queue-entries>

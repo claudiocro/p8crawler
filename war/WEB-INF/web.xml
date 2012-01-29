@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+	
+	<servlet>
+		<servlet-name>HikrFeedImporterServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.hikr.HikrFeedImporterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HikrFeedImporterServlet</servlet-name>
+		<url-pattern>/hikr/feedImport</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>HikrImageFetcher</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.hikr.HikrImageFetcher</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HikrImageFetcher</servlet-name>
+		<url-pattern>/hikr/imageFetcher</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>LomoImporterServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.lomo.LomoImporterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LomoImporterServlet</servlet-name>
+		<url-pattern>/lomo/lomoImport</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GPlusPersonImporterServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.gplus.GPlusPersonImporterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GPlusPersonImporterServlet</servlet-name>
+		<url-pattern>/gplus/personImport</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GPlusPersonsActivitiesImporterServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.gplus.GPlusPersonsActivitiesImporterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GPlusPersonsActivitiesImporterServlet</servlet-name>
+		<url-pattern>/gplus/personsActivitiesImport</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GPlusPersonImporterServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.gplus.GPlusPersonImporterServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GPlusPersonImporterServlet</servlet-name>
+		<url-pattern>/gplus/personImport</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GPlusHashTagActivitiesImporter</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.gplus.GPlusHashTagActivitiesImporter</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GPlusHashTagActivitiesImporter</servlet-name>
+		<url-pattern>/gplus/hashTagActivitiesImporter</url-pattern>
+	</servlet-mapping>
+	
+		
+	
+	
+	<servlet>
+		<servlet-name>ListFeedItems</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.ListFeedItems</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ListFeedItems</servlet-name>
+		<url-pattern>/p8admin/listFeedItems</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>UpdateAvailablePropertiesOnFeed</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.UpdateAvailablePropertiesOnFeed</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UpdateAvailablePropertiesOnFeed</servlet-name>
+		<url-pattern>/p8admin/updateAvailablePropertiesOnFeed</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DeleteItem</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.DeleteItemServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteItem</servlet-name>
+		<url-pattern>/p8admin/deleteItem</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DeleteOldItems</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.DeleteOldFeedItemsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteOldItems</servlet-name>
+		<url-pattern>/p8admin/deleteOldItems</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DeleteBySource</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.DeleteBySource</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteBySource</servlet-name>
+		<url-pattern>/p8admin/deleteBySource</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>CleanImg1Servlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.CleanImg1Servlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CleanImg1Servlet</servlet-name>
+		<url-pattern>/p8admin/cleanImg1</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>FetchImage</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.ImageDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FetchImage</servlet-name>
+		<url-pattern>/p8admin/fetchImage</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>DeleteUserServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.DeleteUserServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteUserServlet</servlet-name>
+		<url-pattern>/deleteUser</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>FeedCacher</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.FeedCacherServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FeedCacher</servlet-name>
+		<url-pattern>/feedCacher</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>FeedServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.FeedServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FeedServlet</servlet-name>
+		<url-pattern>/feed</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>MainServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.MainServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MainServlet</servlet-name>
+		<url-pattern>/main</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	
+	<!-- filter>
+        <filter-name>appstats</filter-name>
+        <filter-class>com.google.appengine.tools.appstats.AppstatsFilter</filter-class>
+        <init-param>
+            <param-name>logMessage</param-name>
+            <param-value>Appstats available: /appstats/details?time={ID}</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>appstats</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <servlet>
+        <servlet-name>appstats</servlet-name>
+        <servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>appstats</servlet-name>
+        <url-pattern>/appstats/*</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/appstats/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint -->
+    
+</web-app>

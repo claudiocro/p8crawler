@@ -1,0 +1,327 @@
+
+/*
+	Default
+*/
+
+
+body {
+  font-size:75%;
+  background-color: #3F3F3F;
+  font-family: 'Droid Sans', arial, serif; 
+}
+
+.ui-widget {
+	font-family: 'Droid Sans', arial, serif;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+	font-family: 'Droid Sans', arial, serif;
+}
+
+.cnt {
+  bottom:0;
+  left:0;
+  overflow:visible;
+  position:absolute;
+  right:0;
+  top:0;
+}
+
+.p8-cont {
+  bottom:0px;
+  top:0;
+  left:10px;
+  height:auto;
+  position:absolute;
+}
+
+.p8-page-cont {
+  margin: 0 auto 20px;
+  width:1004px;	
+  
+}
+
+.p8-header-cont {
+  height:30px;
+}
+
+.p8-main-cont {
+  top: 50px;
+  border-width: 5px;  
+}
+
+.p8-action-cont {
+  padding:5px;	
+}
+
+
+.p8-ui-header-padding {
+  padding: 2px;
+}
+
+.p8-ui-panel-padding {
+  padding: 10px;
+}
+
+.p8-ui-noborder {
+	border-width: 0px;	
+}
+
+.p8-scroll {
+  overflow:auto;
+  /*height:auto;*/
+}
+
+.p8-typeSelect {
+	display: inline-block;
+}
+
+.p8-multiEditor {
+	margin: 10px 0;	
+}
+
+.p8-multiEditor .title {
+	font-size: 1.0em;
+	font-weight: bold;
+	margin-bottom:3px;
+	margin-left:106px;
+}
+
+
+
+
+
+.p8-multiViewer {
+	margin-bottom: 15px;
+}
+
+
+.p8-multiViewer dl {
+	margin:0;
+	padding:0;
+}
+
+
+#p8-infoTip-overlay {
+	position:absolute;
+	top:0;
+	left:0;
+	margin:0;
+	padding:0;	
+}
+
+
+/*
+	MultiEditor Form
+*/
+
+.form-row {
+	margin-bottom:0px;
+}
+
+
+.form-row .left{
+	float:left;
+}
+
+.form-row input {
+	height: 21px;
+	border:1px solid #CCCCCC;
+	vertical-align: top;
+	width:191px;
+	border-color: #DDDDDD;
+	background-color: transparent;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.form-row input.error {
+	border-color: #ce6f6f;
+}
+
+
+.form-row .ui-button {
+	height: 21px;
+	width: 21px;
+	display: none;
+}
+
+.form-row .ui-button-text-only .ui-button-text {
+	padding:0.1em 0.1em;
+}
+.form-row .ui-button-text-only .ui-button-text {
+	line-height:normal;
+}
+
+.form-row-inner {
+ 	margin:0;
+ 	float: left;
+    border: 1px solid black;
+    border-top: 0px solid transparent;
+    border-bottom: 0px solid transparent;
+    padding: 0;
+
+}
+
+.p8TwoCol-row-first {
+	padding-top: 2px;
+	border-top: 1px solid #3F3F3F;
+}
+
+.p8TwoCol-row-last {
+	padding-bottom: 2px;
+}
+
+.p8-multiEditor .form-row .first .form-row-inner {
+	padding-top: 2px;
+	border-top: 1px solid #3F3F3F;
+ 	-moz-border-radius-topleft: 3px;
+ 	-moz-border-radius-topright: 3px;
+ 	border-top-left-radius: 3px;
+ 	border-top-right-radius: 3px;
+}
+
+.p8-multiEditor .form-row .last .form-row-inner {
+	padding-bottom: 2px;
+	border-bottom: 1px solid #3F3F3F;
+	-moz-border-radius-bottomright: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border-bottom-left-radius: 3px;
+ 	border-bottom-right-radius: 3px;
+}
+
+.p8-simpleSearchPanel-top {
+	margin-bottom: 10px;
+}
+
+.p8-simpleSearchPanel-field {
+	margin: 0;
+}
+
+.p8-simpleSearchPanel-button {
+	margin-top: 10px;
+	text-align:right;
+}
+
+.p8-simpleSearchPanel-button button {
+	margin-left: 5px;
+}
+
+
+.init-new .form-row-inner {
+	border-top: 1px solid #3F3F3F;
+}
+
+.init-new span {
+	line-height: 29px;
+	padding-left: 2px;
+}
+
+/*
+.p8-multiEditor .first .form-row-inner {
+	border-top: 1px solid transparent;
+}
+
+.p8-multiEditor .form-row-inner {
+	border-top: 1px solid black;
+}
+*/
+
+.form-row-inner-wrap {
+ 	clear: both;
+    margin: 0;
+    /*height: 100%;*/
+    overflow: hidden;
+}
+
+
+.form-row .action-panel {
+	float: left;
+	width: 54px;
+	line-height: 29px;	
+	text-align: right;
+	margin-left:45px;
+	margin-right:2px;
+}
+
+.form-row .col-1 {
+	margin-left: 5px;
+}
+
+.form-row .p8-typeSelect input {
+	width: 167px;
+}
+
+
+.form-row input {
+	background-color: #FFFFFF;
+}
+
+.form-row .ui-button {
+	display: inline-block;
+	margin-top:2px;
+	vertical-align: middle;
+}
+
+
+
+
+
+
+.hint_text {
+	color: #DDDDDD;
+}
+
+.error-tip {
+	width: 160px; 
+}
+.error-tip .content { 
+	width: 150px; 
+	padding: 5px; 
+	border: 2px solid #ce6f6f; 
+	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px; 
+	background: #000000; 
+	color: #FFFFFF; 
+	margin-top: -2px;
+}
+.error-tip .top {
+	height: 14px; 
+	text-align:center;
+	margin-left:5px;
+	margin-right:5px;
+}
+
+
+.jScrollPaneContainer {
+  bottom:0;
+  left:0;
+  position:absolute;
+  right:0;
+  top:0;
+}
+
+
+.ui-widget-content {
+	border-width: 5px;
+}
+
+
+.ui-autocomplete {
+	height: 100px;
+	overflow: auto;
+	border-width: 1px;
+	border-top-width: 0px;
+	-moz-border-radius: 0;
+	border-radius: 0;
+}
+
+.ui-button-text-only .ui-button-text {
+	padding: 1px 6px;	
+}
+
+
+.ui-dialog .ui-dialog-buttonpane button {
+	margin: 2px;
+	padding: 0;
+}
