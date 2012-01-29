@@ -109,18 +109,13 @@
   text-align: right;
 }
 
-#mainBigImage .bigimage-content .bigimage-inner-desc a{
+#mainBigImage .bigimage-content .bigimage-inner-desc a {
   color: black;
 }
 
 
 #navigationCont .prevNextCont {
-  position: relative;
   padding-top: 20px;
-}
-
-#navigationCont .prevNextCont a {
-  z-index: 10;
 }
 
 #navigationCont .prefNavBusy {

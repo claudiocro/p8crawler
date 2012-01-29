@@ -223,8 +223,10 @@
 			$('.page-count').text('');
 			if(currentContent == 'bigContent')
 				$('#navigationCont .singleNav').show();
+			else{
+				$('#navigationCont .singleNav').hide();
+			}
 			
-			$('#navigationCont .singleNav').hide();
 			$('#navigationCont .galleryNav').hide();
 			
 		} 
@@ -380,7 +382,7 @@
 <div id="wrapper">
   <h1 style="display:none">Photostream gallery for g+</h1>
   <div id="navigationCont">
-    <div class="prevNextCont">
+    <div class="prevNextCont" style="position:relative;">
       <a href="#" class="home" >Home</a>&nbsp;&nbsp;&nbsp;
       <span class="galleryNav">
         <a href="#" class="previous">Previous</a>&nbsp;|&nbsp;
