@@ -43,7 +43,9 @@
 		var oldBusy = $.fn.busy;
 		$(window).busy('defaults',{img: 'res/images/busy.gif'});
 		
+		
 		$('#navigationCont .home').button().click(showMainNavigation);
+		$('#navigationCont .show-gridded').button().click(showGridded);
 		$('#navigationCont .next').button();
 		$('#navigationCont .previous').button();
 		
@@ -89,12 +91,14 @@
 		}
 		
 		
-		
-		$('#galleryContent').append($('<div id="mainGallery"></div>'));
-		
 		//create feeditems
 		var createFeedContent = function(feed) {
-			return $('<div class="summary"></div>').css({opacity:0}).html('<div class="summaryCont"><span class="feedTitle">'+feed.title+'</span> &copy;<a href="'+feed.link+'" target="_blank">'+feed.authorName+'@'+feed.source+'</a></div>');
+			return $('<div class="summary"></div>')
+				.css({opacity:0})
+				.html('<div class="summaryCont">'+
+					  '<span class="feedTitle">'+feed.title+'</span> &copy;'+
+					  '<a href="'+feed.link+'" target="_blank">'+feed.authorName+'@'+feed.source+'</a>'
+					+'</div>');
 		}
 		for ( var i=0; i<8; ++i ){
 			$("#mainGallery").append($('<div></div>').p8FeedItem({contentFunc:createFeedContent}));
@@ -103,10 +107,24 @@
 		$("#mainGallery")
 			.data("galleryRequestParam", {callCount:0,cursor:null,cat:null})
 			.p8GalleryCreator({
-				nextSelector:		$('.prevNextCont .next'),
-				previousSelector:	$('.prevNextCont .previous'),
+				singleNextSelector: $('.singleNav .next'),
+				singlePreviousSelector: $('.singleNav .previous'),
+				singleClickSelector: '.article',
+				singleCompareFunction: function(clickEl, el){ 	
+					var description = $(clickEl).closest('.p8FeedItem').p8FeedItem('activeFeedItem');
+					return description.img2Link == el.img2Link;
+				},
+				singleClickSelectorFunction: function(feed) { 
+					if( feed.imageLink != null)
+						showBigContent(feed.imageLink, feed);
+					
+				},
+					
+				nextSelector:		$('.galleryNav .next'),
+				previousSelector:	$('.galleryNav .previous'),
 				feedItemsChangedFunction:function(){$('#galleryContent').busy("hide");},
 				feedLoaderFunction: function(p8Item,feed) {p8Item.p8FeedItem("load",feed.img2Link,feed);},
+				singleNavigationShowHideFunction: function(e, s) {if(s){$(e).animate({opacity: 1},200);} else {$(e).animate({opacity: .2},200);}},
 				navigationShowHideFunction: function(e, s) {if(s){$(e).animate({opacity: 1},200);} else {$(e).animate({opacity: .2},200);}},
 				moveForwards:		updateNavigation,
 				moveBackwards:		updateNavigation,
@@ -129,12 +147,7 @@
 			},function() {
 				$('.summary', this).stop().animate({opacity: 0,height:"10px"},{duration:200});
 			}
-		)
-		.click(function(event) { 
-			var description = $(this).closest('.p8FeedItem').p8FeedItem('activeFeedItem');
-			if( description.imageLink != null)
-				showBigContent(description.imageLink, description);
-		});
+		);
 	
 		
 		$('#mainNavigationContent .p8FeedItem .nav-title')
@@ -208,13 +221,17 @@
 	var updateNavigation = function() {
 		if(currentContent != 'gallery') {
 			$('.page-count').text('');
-			$('#navigationCont .next').hide();
-			$('#navigationCont .previous').hide();
+			if(currentContent == 'bigContent')
+				$('#navigationCont .singleNav').show();
+			
+			$('#navigationCont .singleNav').hide();
+			$('#navigationCont .galleryNav').hide();
+			
 		} 
 		else {
-			$('.page-count').text("page: "+($('#mainGallery').p8JsonGallery('getCurrentCount')));			
-			$('#navigationCont .next').show();
-			$('#navigationCont .previous').show();
+			$('.page-count').text("page: "+($('#mainGallery').p8JsonGallery('getCurrentCount')));
+			$('#navigationCont .singleNav').hide();
+			$('#navigationCont .galleryNav').show();
 		}
 	}
 
@@ -363,10 +380,17 @@
 <div id="wrapper">
   <h1 style="display:none">Photostream gallery for g+</h1>
   <div id="navigationCont">
-    <div class="prevNextCont" style="position: relative;">
-      <a href="#" class="home" style="z-index:10">Home</a>&nbsp;&nbsp;&nbsp;
-      <a href="#" class="previous" style="z-index:10">Previous</a>
-  	  <a href="#" class="next" style="z-index:10">Next</a>
+    <div class="prevNextCont">
+      <a href="#" class="home" >Home</a>&nbsp;&nbsp;&nbsp;
+      <span class="galleryNav">
+        <a href="#" class="previous">Previous</a>&nbsp;|&nbsp;
+  	    <a href="#" class="next">Next</a>
+  	  </span>
+  	  <span class="singleNav">
+  	    <a href="#" class="show-gridded">Gallery</a>&nbsp;|&nbsp;
+  	    <a href="#" class="previous">Previous</a>&nbsp;|&nbsp;
+  	    <a href="#" class="next">Next</a>
+  	  </span>
   	  <span class="prefNavBusy"><img src="res/images/busy.gif" valign="top" width=22 height=22 /></span>
   	  <span class="page-count"></span>
     </div>
@@ -375,7 +399,7 @@
   
   
   <div id="galleryContent">
-  
+  	<div id="mainGallery"></div>
     <div id="mainNavigationContent" style="opacity: 0;">
   	<div class="cat cat1" style="background-image:url(res/content-img/cat-1.jpg)"><div></div></div>
   	<div class="cat cat2" style="background-image:url(res/content-img/cat-5.jpg)"><div>

@@ -115,7 +115,12 @@
 
 
 #navigationCont .prevNextCont {
+  position: relative;
   padding-top: 20px;
+}
+
+#navigationCont .prevNextCont a {
+  z-index: 10;
 }
 
 #navigationCont .prefNavBusy {

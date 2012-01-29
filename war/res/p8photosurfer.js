@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.7.1
+ *  p8 photosurfer  0.8.0
  * 
  * Depends on:
  * 
@@ -282,6 +282,7 @@ $(".feedTitle", article).jTruncate({
 			var self = this;
 			var elem = this.element;
 
+			this.ticket = 0;
 			this.isBigContent = false;
 
 			elem.addClass("p8ImageCont");
@@ -296,6 +297,7 @@ $(".feedTitle", article).jTruncate({
 				opacity : 0
 			})));
 
+//TODO: belongs not here?			
 			elem
 			// .css({height:"10px"})
 			.hover(function() {
@@ -320,15 +322,12 @@ $(".feedTitle", article).jTruncate({
 			var self = this;
 			var elem = this.element;
 			var bigImageCnt = $('.bigimage-content', elem);
-			var bigimageDesc = $('.bigimage-desc', elem);
-			var bigimageInnerDesc = $('.bigimage-inner-desc', elem);
-			self.isBigContent = true;
-
+			
 			bigImageCnt.busy({
 				img : 'res/images/busy.gif',
 				hide : false
 			});
-			bigimageInnerDesc.empty();
+			
 
 			var imageToWaitFor = new Image();
 			imageToWaitFor.onerror = function() {
@@ -336,57 +335,78 @@ $(".feedTitle", article).jTruncate({
 				self.unload();
 			};
 			
+			var curTicket = ++this.ticket;
 			imageToWaitFor.onload = function() {
+				if(curTicket == self.ticket)
 				var imgElem = $('img', elem);
 
 				bigImageCnt.busy("hide");
-				imgElem.attr('src', image);
 				setTimeout(function() {
-					if (!self.isBigContent)
+					if (self.isBigContent) {
 						bigImageCnt.animate({
 							opacity : 0
-						}, 200);
-
-					var width = imageToWaitFor.naturalWidth;
-					var height = imageToWaitFor.naturalHeight;
-
-					if (width == null || height == null) {
-						width = imageToWaitFor.width;
-						height = imageToWaitFor.height;
+						}, 200, function() {
+							self._load(imageToWaitFor, imgElem, image, description);		
+						});
+					} else {
+						self._load(imageToWaitFor, imgElem, image, description);
 					}
-
-					var scaled = $.scaleSize(self.options.maxWidth, self.options.maxHeight, width, height);
-					imgElem.attr("width", parseInt(scaled[0])).attr("height", parseInt(scaled[1])).css({
-						"margin-top" : parseInt((self.options.maxHeight - scaled[1]) / 2)
-					});
-
-					bigImageCnt.animate({
-						opacity : 1
-					}, 1000).css({
-						"z-index" : self.options.activeZIndex
-					});
-
-					bigimageDesc.css({
-						bottom : parseInt((self.options.maxHeight - scaled[1]) / 2) + 'px',
-						right : parseInt((self.options.maxWidth - scaled[0]) / 2) + 'px',
-						width : scaled[0]
-					});
-
-					bigimageInnerDesc.append(description);
-
 				}, 250);
 			};
 			imageToWaitFor.src = image;
 		},
+		
 		unload : function() {
 			var self = this;
 			var elem = this.element;
-
+			
+			self.ticket++;
+			self.isBigContent = false;
 			$('.bigimage-content', elem).stop().animate({
 				opacity : 0
 			}, 600).css({
 				"z-index" : self.options.defaultZIndex
 			}).busy('hide');
+		},
+		
+		_load : function(imageToWaitFor, imgElem, image, description) {
+			var self = this;
+			var elem = this.element;
+			var bigImageCnt = $('.bigimage-content', elem);
+			var bigimageDesc = $('.bigimage-desc', elem);
+			var bigimageInnerDesc = $('.bigimage-inner-desc', elem);
+			
+			bigimageInnerDesc.empty();
+			imgElem.attr('src', image);
+			
+			var width = imageToWaitFor.naturalWidth;
+			var height = imageToWaitFor.naturalHeight;
+
+			if (width == null || height == null) {
+				width = imageToWaitFor.width;
+				height = imageToWaitFor.height;
+			}
+
+			var scaled = $.scaleSize(self.options.maxWidth, self.options.maxHeight, width, height);
+			imgElem.attr("width", parseInt(scaled[0])).attr("height", parseInt(scaled[1])).css({
+				"margin-top" : parseInt((self.options.maxHeight - scaled[1]) / 2)
+			});
+
+			bigimageDesc.css({
+				bottom : parseInt((self.options.maxHeight - scaled[1]) / 2) + 'px',
+				right : parseInt((self.options.maxWidth - scaled[0]) / 2) + 'px',
+				width : scaled[0]
+			});
+			bigimageInnerDesc.append(description);
+			
+			bigImageCnt.animate({
+				opacity : 1
+			}, 1000).css({
+				"z-index" : self.options.activeZIndex
+			});
+
+			
+			self.isBigContent = true;
 		}
 	});
 
@@ -438,7 +458,7 @@ $(".feedTitle", article).jTruncate({
 
 		moveForwards : function(force) {
 			if (this.canMoveForwards() == false && force != true)
-				return;
+				return false;
 
 			var self = this;
 
@@ -466,6 +486,9 @@ $(".feedTitle", article).jTruncate({
 				self.currentCount++;
 				
 				self._trigger('moveForwards');
+				return true;
+			} else {
+				return false;
 			}
 		},
 
@@ -475,7 +498,7 @@ $(".feedTitle", article).jTruncate({
 
 		moveBackwards : function() {
 			if (this.canMoveBackwards() == false)
-				return;
+				return false;
 
 			var self = this;
 			self.forceMoveForeward = false;
@@ -486,6 +509,30 @@ $(".feedTitle", article).jTruncate({
 			self.currentCount++;
 
 			self._trigger('moveBackwards');
+			return true;
+		},
+		
+		moveToSingleIndex : function(imageIndex) {
+			if(imageIndex < this.allFeeds.length) {
+				return this.moveToPage(Math.floor((imageIndex/this.total)+1));
+			}
+			return false;
+		},
+		
+		moveToPage : function(page) {
+			if(this.currentCount != page) {
+				var oldCurrentCount = this.currentCount;
+				this.currentCount = page-1;
+				if(this.moveForwards()) {
+					return true;
+				} else {
+					this.currentCount = oldCurrentCount;
+					return false;
+				}
+			}
+			else {
+				return true;
+			}
 		},
 
 		_loadNextItems: function() {
@@ -602,7 +649,7 @@ $(".feedTitle", article).jTruncate({
 		element.empty().append($(data).clone().show());
 	};
 	
-	var navigationShowHideFunction = function(element, show) {
+	var navigationShowHideFunction = function(element, show, type) {
 		if(show == true) {
 			$(element).show(200);
 		} else {
@@ -610,28 +657,57 @@ $(".feedTitle", article).jTruncate({
 		}
 	};
 	
+	
 	$.fn.p8GalleryCreator = function(poptions) {
 		var options = jQuery.extend ({
-				datas:						null,
-				reload:						false,
-				nextSelector:				null,
-				previousSelector:			null,
-				requestFunction:			null,
-				feedLoaderFunction:			feedLoaderFunction,
-				navigationShowHideFunction:	navigationShowHideFunction,
-				loadingFunction:			null,
-				feedItemsChangedFunction:	null,
-				reloadFunction:				null,
-				moveForwards:				null,
-				moveBackwards:				null
+				datas:								null,
+				reload:								false,
+				nextSelector:						null,
+				previousSelector:					null,
+				requestFunction:					null,
+				singleNextSelector:					null,
+				singlePreviousSelector:				null,
+				singleCompareFunction:				null,
+				singleClickSelector:				null,
+				singleClickSelectorFunction:		null,
+				singleNavigationShowHideFunction:	navigationShowHideFunction,
+				feedLoaderFunction:					feedLoaderFunction,
+				navigationShowHideFunction:			navigationShowHideFunction,
+				loadingFunction:					null,
+				feedItemsChangedFunction:			null,
+				reloadFunction:						null,
+				moveForwards:						null,
+				moveBackwards:						null
 			},poptions);
+		
+		var index = -1;
+		var updateSingleNavigation = function() {
+				var length = $(this).p8JsonGallery('getAllFeeds').length;
+				if(options.singleNextSelector != null) {
+					if(index != -1 && index+1 < length) {
+						options.singleNavigationShowHideFunction(options.singleNextSelector, true, 'fwd');
+					} else {
+						options.singleNavigationShowHideFunction(options.singleNextSelector, false, 'fwd');
+					}
+				}
+				
+				if(options.singlePreviousSelector != null) {
+					if(length == 0 || index <=0) {
+						options.singleNavigationShowHideFunction(options.singlePreviousSelector, false, 'back');
+					} else {
+						options.singleNavigationShowHideFunction(options.singlePreviousSelector, true, 'back');
+					}
+				}
+		};
+		
+		
 		
 		var updateNavigation = function() {
 			if(options.nextSelector != null)
-				options.navigationShowHideFunction(options.nextSelector, $(this).p8JsonGallery('canMoveForwards'));
+				options.navigationShowHideFunction(options.nextSelector, $(this).p8JsonGallery('canMoveForwards'), 'fwd');
 			
 			if(options.previousSelector != null)
-				options.navigationShowHideFunction(options.previousSelector, $(this).p8JsonGallery('canMoveBackwards'));
+				options.navigationShowHideFunction(options.previousSelector, $(this).p8JsonGallery('canMoveBackwards'), 'back');
 		};
 		
 		if(options.datas instanceof jQuery) {
@@ -659,6 +735,7 @@ $(".feedTitle", article).jTruncate({
 						$(self).p8JsonGallery('moveForwards');
 				});
 			}
+			
 			if(options.previousSelector != null) {
 				options.navigationShowHideFunction(options.previousSelector, false);
 				options.previousSelector.bind('click', function() {
@@ -667,19 +744,84 @@ $(".feedTitle", article).jTruncate({
 				});
 			}
 			
+			if(options.singleClickSelectorFunction != null) {
+				if(options.singleNextSelector != null) {
+					options.singleNextSelector.click(function() {
+						index++;
+						var canMove = $(self).p8JsonGallery('moveToSingleIndex', index);
+						if(canMove) {
+							options.singleClickSelectorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[index]);
+						} else {
+							index--;
+						} 
+						updateSingleNavigation.call(self);
+					});
+				}
+				
+				if(options.singlePreviousSelector != null) {
+					options.singlePreviousSelector.click(function() {
+						index--;
+						var canMove = $(self).p8JsonGallery('moveToSingleIndex', index);
+						if(index >=0 && canMove) {
+							options.singleClickSelectorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[index]);
+						}
+						else {
+							index--;
+						}
+						updateSingleNavigation.call(self);
+					});
+				}
+				
+				
+			}
+			
+			if(options.singleClickSelector != null) {
+				$(options.singleClickSelector, self).click(function() {
+					if(options.singleClickSelectorFunction != null && options.singleCompareFunction != null) {
+						
+						var allFeeds = $(self).p8JsonGallery('getAllFeeds');
+						
+						for(var i=0;i<allFeeds.length; i++) {
+							if(options.singleCompareFunction(this, allFeeds[i])) {
+							//if(src == $(allFeeds[i]).attr("src")) {
+								index = i;
+								options.singleClickSelectorFunction.call(self, allFeeds[index]);
+								break;
+							}
+								
+						}
+					}
+					updateSingleNavigation.call(self);
+				});
+			}
+			
 			
 			$(this).p8JsonGallery({
-				moveForwards:function(){if(options.moveForwards != null){options.moveForwards.call(this);} updateNavigation.call(this);},
-				moveBackwards:function(){if(options.moveForwards != null){options.moveBackwards.call(this);}updateNavigation.call(this);},
 				feedLoaderFunction: options.feedLoaderFunction,
 				requestFunction: options.requestFunction,
 				loading: options.loadingFunction,
-				reload: function(){if(options.reloadFunction != null){options.reloadFunction.call(this);} updateNavigation.call(this);},
-				feedItemsChanged:function(){updateNavigation.call(this);if(options.feedItemsChangedFunction != null){options.feedItemsChangedFunction.call(this);}}
+				moveForwards:function(){
+					if(options.moveForwards != null){options.moveForwards.call(this);} 
+					updateNavigation.call(this);},
+				moveBackwards:function(){
+					if(options.moveForwards != null){options.moveBackwards.call(this);}
+					updateNavigation.call(this);},
+				reload: function(){
+					if(options.reloadFunction != null){options.reloadFunction.call(this);} 
+					updateNavigation.call(this);
+					updateSingleNavigation.call(this);},
+				feedItemsChanged:function(){
+					updateNavigation.call(this);
+					updateSingleNavigation.call(this);
+					if(options.feedItemsChangedFunction != null){options.feedItemsChangedFunction.call(this);}}
 			});
 		
 			if(options.reload)
 				$(this).p8JsonGallery('reload');
+			else {
+				updateNavigation.call(this);
+				updateSingleNavigation.call(this);
+			}
 			
 			return $(this);
 		});
