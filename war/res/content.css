@@ -115,6 +115,7 @@
 
 
 #navigationCont .prevNextCont {
+  position: relative;
   padding-top: 20px;
 }
 
