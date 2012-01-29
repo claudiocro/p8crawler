@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-1.5.1-beta.jar" sourcepath="lib-src/google-api-client-1.5.1-beta-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-1.5.3-beta.jar" sourcepath="lib-src/google-http-client-1.5.3-beta-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/xmlParserAPIs-2.6.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/xpp3-1.1.4c.jar" sourcepath="lib-src/xpp3-1.1.4c-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-extensions-1.5.3-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-1.7.1.jar" sourcepath="lib-src/gson-1.7.1-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-services-plus-v1-1.2.5-beta.jar" sourcepath="lib-src/google-api-services-plus-v1-1.2.5-beta-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-labs-1.6.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-jsr107cache-1.6.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/datanucleus-appengine-1.0.10.final.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/datanucleus-core-1.1.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/datanucleus-jpa-1.1.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google_sql.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.6.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr107cache-1.1.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+	<referencedentry kind="lib" path="war/WEB-INF/lib/guava-r09.jar" sourcepath="lib-src/guava-r09-sources.jar"/>
+</classpath>
