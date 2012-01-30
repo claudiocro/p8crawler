@@ -8,7 +8,7 @@
   <link href='http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold&subset=latin' rel='stylesheet' type='text/css'	>
   <link href="res/jquery-ui.css" rel="stylesheet" type="text/css"/>
   <link href="res/style.css" rel="stylesheet" type="text/css"/>
-  <link href="res/content.css" rel="stylesheet" type="text/css"/>
+  <link href="res/content1.css" rel="stylesheet" type="text/css"/>
   <link href="res/colorbox.css" rel="stylesheet" type="text/css"/>
   <!-- link href="res/jScrollPane.css" rel="stylesheet" type="text/css"/ -->
   <link href="res/jquery.jscrollpane.css" rel="stylesheet" type="text/css"/>
@@ -49,7 +49,7 @@
 		$('#navigationCont .next').button();
 		$('#navigationCont .previous').button();
 		
-		$('.prefNavBusy').hide();
+		$('.prefNavBusy').css('opacity',0);
 		
 		$('.likes');
 		$('.likes')
@@ -64,7 +64,7 @@
 			);
 		
 		
-		$('#galleryContent').busy({hide:false});
+		//$('#galleryContent').busy({hide:false});
 		
 		$('#mainNavigationContent div').p8CreateAutoLoadFeedItem({
 			showBusy: true
@@ -128,6 +128,7 @@
 				navigationShowHideFunction: function(e, s) {if(s){$(e).animate({opacity: 1},200);} else {$(e).animate({opacity: .2},200);}},
 				moveForwards:		updateNavigation,
 				moveBackwards:		updateNavigation,
+				loadingFunction:	function(evt, p){$('.prefNavBusy').fadeTo(200, (p.loading) ? 1 : 0 );},
 				//requestFunction: requestFunctiona
 				requestFunction: galleryJsonRequest
 			}).p8SimpleGrid();
