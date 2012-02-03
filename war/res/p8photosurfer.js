@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.8.0
+ *  p8 photosurfer  0.8.4
  * 
  * Depends on:
  * 
@@ -276,7 +276,8 @@ $(".feedTitle", article).jTruncate({
 			defaultZIndex : 1,
 			activeZIndex : 20,
 			maxWidth : 1245,
-			maxHeight : 615
+			maxHeight : 615,
+			hideOnLoad : true
 		},
 		_create : function() {
 			var self = this;
@@ -298,24 +299,24 @@ $(".feedTitle", article).jTruncate({
 			})));
 
 //TODO: belongs not here?			
-			elem
-			// .css({height:"10px"})
-			.hover(function() {
-				$('.bigimage-desc', this).stop().animate({
-					opacity : .5,
-					height : "30px"
-				}, {
-					duration : 250,
-					easing : "easeInSine"
-				});
-			}, function() {
-				$('.bigimage-desc', this).stop().animate({
-					opacity : 0,
-					height : "15px"
-				}, {
-					duration : 200
-				});
-			});
+elem
+// .css({height:"10px"})
+.hover(function() {
+	$('.bigimage-desc', this).stop().animate({
+		opacity : .5,
+		height : "30px"
+	}, {
+		duration : 250,
+		easing : "easeInSine"
+	});
+}, function() {
+	$('.bigimage-desc', this).stop().animate({
+		opacity : 0,
+		height : "15px"
+	}, {
+		duration : 200
+	});
+});
 
 		},
 		load : function(image, description) {
@@ -328,30 +329,40 @@ $(".feedTitle", article).jTruncate({
 				hide : false
 			});
 			
+			if (self.isBigContent && self.options.hideOnLoad == true) {
+				bigImageCnt.stop().animate({
+					opacity : 0
+				}, 200);
+			}
+			
 
 			var imageToWaitFor = new Image();
 			imageToWaitFor.onerror = function() {
-				imageToWaitFor.onerror = "";
-				self.unload();
+				if(curTicket == self.ticket) {
+					imageToWaitFor.onerror = "";
+					bigImageCnt.busy("hide");
+					self.unload();
+				}
 			};
 			
 			var curTicket = ++this.ticket;
 			imageToWaitFor.onload = function() {
-				if(curTicket == self.ticket)
-				var imgElem = $('img', elem);
-
-				bigImageCnt.busy("hide");
-				setTimeout(function() {
-					if (self.isBigContent) {
-						bigImageCnt.animate({
-							opacity : 0
-						}, 200, function() {
-							self._load(imageToWaitFor, imgElem, image, description);		
-						});
-					} else {
-						self._load(imageToWaitFor, imgElem, image, description);
-					}
-				}, 250);
+				if(curTicket == self.ticket) {
+					var imgElem = $('img', elem);
+	
+					bigImageCnt.busy("hide");
+					setTimeout(function() {
+						if (self.isBigContent && self.options.hideOnLoad == false) {
+							bigImageCnt.stop().animate({
+								opacity : 0
+							}, 200, function() {
+								self._load(imageToWaitFor, imgElem, image, description);		
+							});
+						} else {
+							self._load(imageToWaitFor, imgElem, image, description);
+						}
+					}, 250);
+				}
 			};
 			imageToWaitFor.src = image;
 		},
@@ -399,7 +410,7 @@ $(".feedTitle", article).jTruncate({
 			});
 			bigimageInnerDesc.append(description);
 			
-			bigImageCnt.animate({
+			bigImageCnt.stop().animate({
 				opacity : 1
 			}, 1000).css({
 				"z-index" : self.options.activeZIndex
