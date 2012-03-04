@@ -1,4 +1,4 @@
-package ch.plus8.hikr.gappserver;
+package ch.plus8.hikr.gappserver.googlefeed;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

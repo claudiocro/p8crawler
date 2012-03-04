@@ -219,7 +219,8 @@ public class FeedServlet extends HttpServlet {
 				
 					
 				
-				FeedItem feedItem = new FeedItem((Date)entity.getProperty("publishedDate"),
+				FeedItem feedItem = new FeedItem(
+						(Date)entity.getProperty("publishedDate"),
 						Util.translateSource(entity.getProperty("source").toString()), 
 						entity.getProperty("author").toString(),
 						(entity.getProperty("authorName") != null) ? entity.getProperty("authorName").toString() : entity.getProperty("author").toString(),
@@ -228,8 +229,8 @@ public class FeedServlet extends HttpServlet {
 						(entity.getProperty("title") != null)?entity.getProperty("title").toString():"",
 						entity.getProperty("feedLink").toString(),
 						entity.getProperty("imageLink").toString(),
-						null,//(entity.getProperty("img1") != null) ? imagesService.getServingUrl((BlobKey)entity.getProperty("img1")) : null,
-						null);//(entity.getProperty("img2") != null) ? imagesService.getServingUrl((BlobKey)entity.getProperty("img2")) : null);
+						Integer.valueOf(entity.getProperty("imageLinkA").toString()),
+						(Date)entity.getProperty("storeDate"));
 	
 				if(entity.getProperty("img2Link") != null) {
 					feedItem.img2Link = (String)entity.getProperty("img2Link");

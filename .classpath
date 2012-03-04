@@ -20,6 +20,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google_sql.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.6.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr107cache-1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_23"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 	<referencedentry kind="lib" path="war/WEB-INF/lib/guava-r09.jar" sourcepath="lib-src/guava-r09-sources.jar"/>
 </classpath>

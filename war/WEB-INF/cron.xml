@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-  <cron>
+  <!--  cron>
     <url>/hikr/feedImport</url>
     <description>Import Hikr feed</description>
     <schedule>every 360 minutes</schedule>
@@ -121,7 +121,18 @@
     <description>fetch images and after convert it</description>
     <schedule>every 35 minutes</schedule>
     <timezone>Europe/Zurich</timezone>
-  </cron>
+  </cron -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   <!-- cron>
     <url>/p8admin/deleteOldItems?source=gplus&timeType=M&timeValue=1</url>

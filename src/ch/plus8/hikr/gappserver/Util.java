@@ -1,7 +1,10 @@
 package ch.plus8.hikr.gappserver;
 
-public class Util
-{
+import java.util.logging.Logger;
+
+public class Util {
+	private static final Logger logger = Logger.getLogger(Util.class.getName());
+	
   public static final String GOOGLE_API_KEY = "AIzaSyD6FWIhhEskZwN2E_uTsrxZT-vs67px8-Y";
   public static final String[] sources = { "gplus", "hikr" };
   public static final String[] categories = { "photographer", "lomo", "lomo:popular", "lomo:selected", "monochromemonday", "mountainmonday" };
@@ -42,4 +45,9 @@ public class Util
     }
     return source;
   }
+  
+  
+  
+  
+  
 }

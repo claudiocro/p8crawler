@@ -339,6 +339,10 @@
 	};
 	
 	
+	var login = function() {
+		$.colorbox({href:"login.jsp",iframe:true,width:800,height:600});
+	}
+	
   </script>
   
   <script type="text/javascript">
@@ -445,7 +449,11 @@
   	  </div></div>
   	  </div>
   	</div>
-  	<div class="cat cat4" style="background-image:url(res/content-img/cat-3.jpg)"><div></div></div>
+  	<div class="cat cat4" style="background-image:url(res/content-img/cat-3.jpg)"><div>
+  	  <ul>
+  	    <li><a href="#" onclick="login()">Login</a></li>
+  	  </ul>
+  	</div></div>
   	<div class="cat cat5" style="background-image:url(res/content-img/cat-4.jpg)"><div></div></div>
   	<div class="cat cat6" style="background-image:url(res/content-img/cat-2.jpg)"><div></div></div>
   	<div class="cat cat7" style="background-image:url(res/content-img/cat-6.jpg)"><div></div></div>

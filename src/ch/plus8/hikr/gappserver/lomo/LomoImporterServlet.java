@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.gappserver.gplus.GPlusUtil;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Asset;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Photo;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
@@ -119,32 +121,17 @@ public class LomoImporterServlet extends HttpServlet {
 								Entity entity;
 								try {
 									entity = dataStore.get(key);
-									
-									Object cats = entity.getProperty("categories");
-									String sup = supcategory(type);
-									if(sup != null) {
-										if(Scheduler.updateFeedCategories(cats,entity,sup)) {
-											dataStore.put(entity);
-										}
-									}
-									
+									String supCategory = supcategory(type);
+									if(supCategory != null) {
+										feedRepository.addToCategories(key, entity, supCategory);
+									}									
 								}catch (EntityNotFoundException e) {
-									entity = new Entity(key);
-									GAEFeedRepository.initEntity(entity);
-								
-									boolean store = LomoUtil.fillEntity(entity,lomo,photo,asset);
-									
-									
-									
-									entity.setProperty("categories", categories(type));
-									
-									if(photo.camera != null && !Util.isBlank(photo.camera.name))
-										entity.setProperty("camera", photo.camera.name);
+									FeedItemBasic item = new FeedItemBasic();
+									if(LomoUtil.fillEntity(item,lomo,photo,asset)) {	
+//										if(photo.camera != null && !Util.isBlank(photo.camera.name))
+//											entity.setProperty("camera", photo.camera.name);
 										
-									if(store) {
-										dataStore.put(entity);
-									}else {
-										logger.warning("Skip feedItem:" + photo.url);
+										feedRepository.storeFeed(item, categories(type));
 									}
 								}
 								

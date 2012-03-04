@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ch.plus8.hikr.gappserver.GoogleReaderFeed;
 import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 import ch.plus8.hikr.repository.FeedRepository;
 

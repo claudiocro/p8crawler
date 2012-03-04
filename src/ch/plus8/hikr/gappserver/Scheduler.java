@@ -145,41 +145,5 @@ public class Scheduler
     }
   }
 
-  public static boolean updateFeedCategories(Object cats, Entity entity, String hashTag)
-  {
-    if (cats != null) {
-      if ((cats instanceof String)) {
-        List ncats = new ArrayList();
-        ncats.add(cats);
-        if (!cats.equals(hashTag)) {
-          ncats.add(hashTag);
-        }
-        entity.setProperty("categories", ncats);
-        return true;
-      }if ((cats instanceof Collection)) {
-        boolean add = true;
-        for (Iterator localIterator = ((Collection)cats).iterator(); localIterator.hasNext(); ) { Object o = localIterator.next();
-          if (o.equals(hashTag)) {
-            add = false;
-            break;
-          }
-        }
-        if (add) {
-          ((Collection)cats).add(hashTag);
-          entity.setProperty("categories", cats);
-          return true;
-        }
-        return false;
-      }
-    }
-    else
-    {
-      List ncats = new ArrayList();
-      ncats.add(hashTag);
-      entity.setProperty("categories", ncats);
-      return true;
-    }
-
-    return false;
-  }
+  
 }

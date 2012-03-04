@@ -3,13 +3,13 @@ package ch.plus8.hikr.gappserver.gplus;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
+import ch.plus8.hikr.gappserver.FeedItem;
+import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Util;
 
 import com.google.api.services.plus.model.Activity;
 import com.google.api.services.plus.model.ActivityFeed;
 import com.google.api.services.plus.model.ActivityObjectAttachments;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Text;
 
 public class GPlusUtil {
 
@@ -17,28 +17,29 @@ public class GPlusUtil {
 	
 	public static final String PERSON_KIND = "gplus:person";
 	
-	public static boolean fillEntity(Entity entity, ActivityFeed feed, Activity act, ActivityObjectAttachments att) {
+	public static boolean fillEntity(FeedItemBasic entity, ActivityFeed feed, Activity act, ActivityObjectAttachments att) {
 		return fillEntity(entity, feed, act, att, 800, 1000);
 	}
 	
-	public static boolean fillEntity(Entity entity, ActivityFeed feed, Activity act, ActivityObjectAttachments att, int maxImgSize, int maxImgSize1) {
+	public static boolean fillEntity(FeedItemBasic entity, ActivityFeed feed, Activity act, ActivityObjectAttachments att, int maxImgSize, int maxImgSize1) {
+		
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(act.getPublished().getValue());
 		cal.add(Calendar.MINUTE, act.getPublished().getTimeZoneShift());
-		entity.setProperty("publishedDate", cal.getTime());
-		entity.setProperty("source", "gplus");
-		entity.setProperty("link", att.getUrl());
-		entity.setUnindexedProperty("title", att.getDisplayName()!= null ? Util.truncate(att.getDisplayName(), 499) : null);
-		entity.setUnindexedProperty("feedLink", new Text(act.getUrl()));
+		entity.publishedDate = cal.getTime();
+		entity.source = "gplus";
+		entity.link = att.getUrl();
+		entity.title =  att.getDisplayName()!= null ? Util.truncate(att.getDisplayName(), 499) : null;
+		entity.feedLink = act.getUrl();
 		
 		if(act.getPlusObject() != null && act.getPlusObject().getActor() != null) {
-			entity.setUnindexedProperty("author", act.getPlusObject().getActor().getId());
-			entity.setUnindexedProperty("authorName", act.getPlusObject().getActor().getDisplayName());
-			entity.setUnindexedProperty("authorLink", act.getPlusObject().getActor().getUrl());
+			entity.author = act.getPlusObject().getActor().getId();
+			entity.authorName = act.getPlusObject().getActor().getDisplayName();
+			entity.authorLink = act.getPlusObject().getActor().getUrl();
 		} else {
-			entity.setUnindexedProperty("author", act.getActor().getId());
-			entity.setUnindexedProperty("authorName", act.getActor().getDisplayName());
-			entity.setUnindexedProperty("authorLink", act.getActor().getUrl());
+			entity.author = act.getActor().getId();
+			entity.authorName = act.getActor().getDisplayName();
+			entity.authorLink = act.getActor().getUrl();
 		}
 		
 		
@@ -49,8 +50,8 @@ public class GPlusUtil {
 				
 				(att.getImage().getHeight() != null && att.getImage().getHeight()>=maxImgSize1 || 
 				att.getImage().getWidth() != null && att.getImage().getWidth() >=maxImgSize1)) {
-			entity.setProperty("imageLink", att.getImage().getUrl());
-			entity.setProperty("imageLinkA", 1);
+			entity.imageLink = att.getImage().getUrl();
+			entity.imageLinkA = 1;
 		}
 		
 		if(att.getFullImage() != null && 
@@ -59,8 +60,8 @@ public class GPlusUtil {
 				
 				(att.getFullImage().getHeight() != null && att.getFullImage().getHeight()>=maxImgSize1 || 
 				att.getFullImage().getWidth() != null && att.getFullImage().getWidth() >=maxImgSize1)) {
-			entity.setProperty("imageLink", att.getFullImage().getUrl());
-			entity.setProperty("imageLinkA", 1);
+			entity.imageLink = att.getFullImage().getUrl();
+			entity.imageLinkA = 1;
 		} else {
 			store = false;
 			

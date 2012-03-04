@@ -32,6 +32,7 @@ public class ListFeedItems extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)  
           throws ServletException, IOException {  
   
+    	
     	String source = req.getParameter("source");
     	ImagesService imagesService = ImagesServiceFactory.getImagesService();
     	

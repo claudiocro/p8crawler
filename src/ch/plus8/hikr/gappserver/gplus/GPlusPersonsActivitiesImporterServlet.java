@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
@@ -36,7 +39,16 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
 	private static final Logger logger = Logger.getLogger(GPlusPersonsActivitiesImporterServlet.class.getName());
 
 	private static final int MAX_COUNT = 10;
+
+	private GAEFeedRepository feedRepository;
 	
+	
+	@Override
+    public void init(ServletConfig config) throws ServletException {
+		GAEFeedRepository feedRepository = new GAEFeedRepository();
+		feedRepository.init();
+		this.feedRepository = feedRepository;
+    }
 	
 	
 	@Override
@@ -62,15 +74,15 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
 			
 		PreparedQuery prepare = dataStore.prepare(query);
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
-		for(Entity pentity : resultList) {
+		for(Entity personEntity : resultList) {
 			Plus plus = new Plus(new UrlFetchTransport(), new GsonFactory());
 			plus.setKey(Util.GOOGLE_API_KEY);
 			//Person person = plus.people.get("110416871235589164413").execute();
-			ActivityFeed feed = plus.activities.list((String)pentity.getProperty("id"), "public").execute();
+			ActivityFeed feed = plus.activities.list((String)personEntity.getProperty("id"), "public").execute();
 			
 			
 			if(feed.getItems() == null) {
-				logger.warning("no feed for: " + pentity.getProperty("id"));
+				logger.warning("no feed for: " + personEntity.getProperty("id"));
 				return;
 			}
 			
@@ -90,29 +102,15 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
 					Entity entity = null;
 					try {
 						entity = dataStore.get(key);
-						logger.log(Level.FINE, "Only update categories: "+att.getUrl());
-						
-						Object cats = entity.getProperty("categories");
-						List pCats = (List)pentity.getProperty("categories");
-						for(Object pCat : pCats) {
-							Scheduler.updateFeedCategories(cats,entity,(String)pCat);
-						}
-						dataStore.put(entity);
+						feedRepository.updateCategories(key, entity, (List<String>)personEntity.getProperty("categories"));
 					} catch (EntityNotFoundException e) {
 						try {
-							entity = new Entity(key);
-							GAEFeedRepository.initEntity(entity);
-						
-							entity.setProperty("categories",pentity.getProperty("categories"));
-							
-							boolean store = GPlusUtil.fillEntity(entity,feed,act,att);
-							if(store) {
-								dataStore.put(entity);
-							}else {
-								logger.warning("Skip feedItem:" + feed.getSelfLink());
+							FeedItemBasic item = new FeedItemBasic();
+							if(GPlusUtil.fillEntity(item,feed,act,att)) {
+								feedRepository.storeFeed(item, (List<String>)personEntity.getProperty("categories"));
 							}
 						}catch(Exception e1) {
-							logger.log(Level.SEVERE, "could not store gplus feed: " + pentity.getProperty("id") + " / "+att.getDisplayName(),e1);
+							logger.log(Level.SEVERE, "could not store gplus feed: " + personEntity.getProperty("id") + " / "+att.getDisplayName(),e1);
 						}
 					}
 				}

@@ -12,8 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ch.plus8.hikr.gappserver.GoogleReaderFeed;
+import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
+import ch.plus8.hikr.gappserver.googlefeed.GoogleFeedUtil;
+import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed;
+import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed.Entries;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 import ch.plus8.hikr.repository.FeedRepository;
 
@@ -54,10 +57,18 @@ public class HikrFeedImporterServlet extends HttpServlet {
 			if(feed.responseData == null || feed.responseData.feed == null || feed.responseData.feed.entries == null) 
 				logger.log(Level.WARNING, "No data is imported because feed is empty: " + HIKR_FOTO_FEED);
 			else {
-				List categories = new ArrayList();
+				List<String> categories = new ArrayList<String>();
 				categories.add("mountain");
 				categories.add("nature");
-				feedRepository.storeFeed("hikr", feed, categories);
+				
+				for(Entries entry : feed.entries()) {
+					FeedItemBasic item = new FeedItemBasic();
+					
+					if(GoogleFeedUtil.fillEntity(item, entry, feed.feedLink(), "hikr")) {
+						feedRepository.storeFeed(item, categories);
+					}
+				}
+				
 			}
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Error request hikr feed: " + HIKR_FOTO_FEED,e);

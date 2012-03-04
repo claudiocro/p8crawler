@@ -1,14 +1,14 @@
 package ch.plus8.hikr.gappserver.repository;
 
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.plus8.hikr.gappserver.GoogleReaderFeed;
-import ch.plus8.hikr.gappserver.GoogleReaderFeed.Entries;
+import ch.plus8.hikr.gappserver.FeedItemBasic;
+import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.repository.FeedRepository;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
 
 public class GAEFeedRepository implements FeedRepository {
 
@@ -29,54 +30,119 @@ public class GAEFeedRepository implements FeedRepository {
 		dataStore = DatastoreServiceFactory.getDatastoreService();
 	}
 
-	
-	@Override
-	public void storeFeed(String source, GoogleReaderFeed feed, Collection categories) {
-		if(feed.responseData == null || feed.responseData.feed == null || feed.responseData.feed.entries == null) {
-			logger.log(Level.WARNING, "No data is imported because feed is empty");
-			return;
-		}
-		
-		Set<Entity> newEntities = new HashSet<Entity>();
-		for(Entries entry : feed.entries()) {
-			try {
-				Key key = createKey(entry.link);
-				Entity entity;
-				try {
-					entity = dataStore.get(key);
-					logger.log(Level.FINE, "Skip store new feed because it already exists: "+entry.link);
-				} catch (EntityNotFoundException e) {
-					entity = new Entity(key);
-					initEntity(entity);
-					entity.setProperty("publishedDate", GoogleReaderFeed.dateFormat.parse(entry.publishedDate));
-					entity.setProperty("source", source);
-					entity.setProperty("link", entry.link);
-					entity.setUnindexedProperty("title", entry.title);
-					entity.setUnindexedProperty("feedLink", feed.feedLink());
-					entity.setUnindexedProperty("author", entry.author);
-					entity.setProperty("categories", categories);
-					newEntities.add(entity);
-				}
-			} catch (ParseException e) {
-				logger.log(Level.SEVERE, "Feed not saved. Could not parse publishedDate: " + entry.publishedDate +" / " + feed.feedLink());
-			}
-		}
-		
-		dataStore.put(newEntities);
-		logger.info("Imported " + newEntities.size() + " from: " + feed.responseData.feed.link);
-	}
-	
 	public static final Key createKey(String link) {
 		return KeyFactory.createKey(FEED_ITEM_KIND, link);
 	}
 	
-	public static final void initEntity(Entity entity) {
-		entity.setUnindexedProperty("imageLink", null);
-		entity.setProperty("imageLinkA", 0);
+	protected final void initEntity(Entity entity) {
 		entity.setUnindexedProperty("img1", null);
 		entity.setProperty("img1A", 0);
 		entity.setUnindexedProperty("img2", null);
 		entity.setProperty("img2A", 0);
 	}
+	
+	@Override
+	public void storeFeed(FeedItemBasic entry, Collection<String> categories) {
+		
+		Key key = createKey(entry.link);
+		Entity entity;
+		try {
+			entity = dataStore.get(key);
+			logger.log(Level.FINE, "Skip store new feed because it already exists: "+entry.link);
+		} catch (EntityNotFoundException e) {
+			entity = new Entity(key);
+			initEntity(entity);
+			entity.setProperty("link", entry.link);
+			entity.setProperty("publishedDate", entry.publishedDate);
+			entity.setProperty("source", entry.source);
+			entity.setUnindexedProperty("author", entry.author);
+			entity.setUnindexedProperty("title", entry.title);
+			entity.setUnindexedProperty("feedLink", new Text(entry.feedLink));
+			
+			entity.setUnindexedProperty("imageLink", entry.imageLink);
+			entity.setProperty("imageLinkA", entry.imageLinkA);
+			
+			entity.setUnindexedProperty("authorName", entry.authorName);
+			entity.setUnindexedProperty("authorLink", entry.authorLink);
+			
+			entity.setProperty("storeDate", new Date());
+			
+			entity.setProperty("categories", categories);
+			
+			dataStore.put(entity);
+			logger.log(Level.FINE, "Stored new feed : "+entry.link);
+		}
+		
+//		logger.info("Imported " + newEntities.size() + " from: " + feed.responseData.feed.link);
+	}
+	
+	@Override
+	public void updateCategories(Key key, Entity entity, List<String> supCategories) {
+		if(supCategories == null)
+			return;
+		
+		Object cats = entity.getProperty("categories");
+		boolean update = false;
+		for(String supCat : supCategories) {
+			if(updateFeedCategories(cats,entity,(String)supCat))
+				update = true;
+		}
+		
+		if(update) {
+			dataStore.put(entity);
+			logger.log(Level.FINE, "Only update categories: "+key.getName());
+		}
+	}
+	
+	@Override
+	public void addToCategories(Key key, Entity entity, String supCategory) {
+		Object cats = entity.getProperty("categories");
+		if(updateFeedCategories(cats,entity, supCategory)) {
+			dataStore.put(entity);
+			logger.log(Level.FINE, "Only update categories: "+key.getName());
+		}
+	}
+	
+	
+	protected final boolean updateFeedCategories(Object cats, Entity entity, String hashTag)
+	  {
+	    if (cats != null) {
+	      if ((cats instanceof String)) {
+	        List ncats = new ArrayList();
+	        ncats.add(cats);
+	        if (!cats.equals(hashTag)) {
+	          ncats.add(hashTag);
+	        }
+	        entity.setProperty("categories", ncats);
+	        return true;
+	      }
+	      
+	      if ((cats instanceof Collection)) {
+	        boolean add = true;
+	        for (Object o : (Collection)cats) { //TODO: optimize
+	          if (o.equals(hashTag)) {
+	            add = false;
+	            break;
+	          }
+	        }
+	        if (add) {
+	          ((Collection)cats).add(hashTag);
+	          entity.setProperty("categories", cats);
+	          return true;
+	        }
+	        return false;
+	      }
+	    }
+	    
+	    
+	    else {
+	      List ncats = new ArrayList();
+	      ncats.add(hashTag);
+	      entity.setProperty("categories", ncats);
+	      return true;
+	    }
+
+	    return false;
+	  }
 
 }

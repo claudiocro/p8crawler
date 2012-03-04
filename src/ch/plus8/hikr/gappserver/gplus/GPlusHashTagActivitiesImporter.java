@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ch.plus8.hikr.gappserver.FeedItem;
+import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
@@ -31,7 +35,15 @@ import com.google.appengine.api.datastore.Key;
 public class GPlusHashTagActivitiesImporter extends HttpServlet {
 
 	private static final Logger logger = Logger.getLogger(GPlusHashTagActivitiesImporter.class.getName());
+	
+	private GAEFeedRepository feedRepository;
 
+	@Override
+    public void init(ServletConfig config) throws ServletException {
+		GAEFeedRepository feedRepository = new GAEFeedRepository();
+		feedRepository.init();
+		this.feedRepository = feedRepository;
+    }
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -87,36 +99,19 @@ public class GPlusHashTagActivitiesImporter extends HttpServlet {
 				Key key = GAEFeedRepository.createKey(att.getUrl());
 				Entity entity = null;
 				try {
-					
-					
 					entity = dataStore.get(key);
-					
-					Object cats = entity.getProperty("categories");
-					
-					if(Scheduler.updateFeedCategories(cats,entity,hashTag)) {
-						dataStore.put(entity);
-						logger.log(Level.INFO, "Update because of categories change: "+att.getUrl());
-					} else
-						logger.log(Level.INFO, "Skip store new activity because it already exists: "+att.getUrl());
+					feedRepository.addToCategories(key, entity, hashTag);
 				} catch (EntityNotFoundException e) {
 					try {
-						entity = new Entity(key);
-						GAEFeedRepository.initEntity(entity);
-					
-						List cats = new ArrayList();
+						FeedItemBasic item = new FeedItemBasic();
+						List<String> cats = new ArrayList<String>();
 						cats.add(hashTag);
 						
-						entity.setProperty("categories",cats);
-						
-						boolean store = GPlusUtil.fillEntity(entity,feed,act,att,750,750);
-						if(store) {
-							dataStore.put(entity);
-							logger.log(Level.INFO, "Skip store new activity because it already exists: "+att.getUrl());
-						}else {
-							logger.warning("Skip feedItem:" + feed.getSelfLink());
+						if(GPlusUtil.fillEntity(item,feed,act,att,750,750)) {
+							feedRepository.storeFeed(item, cats);
 						}
 					}catch(Exception e1) {
-						logger.log(Level.SEVERE, "could not store gplus feed: "+hashTag+" / "+att.getDisplayName(),e1);
+						logger.log(Level.SEVERE, "could not store gplus feed: "+hashTag+" / "+att.getDisplayName()+" - "+att.getUrl() + " / " + feed.getSelfLink(),e1);
 					}
 				}
 				
