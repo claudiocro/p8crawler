@@ -115,8 +115,8 @@ public class FeedServlet extends HttpServlet {
 			query.addFilter("source", FilterOperator.EQUAL, source);
 		
 		
-		query.addFilter("img2A", FilterOperator.EQUAL, 1);
-		query.addSort("publishedDate", SortDirection.DESCENDING);
+		query.addFilter("status", FilterOperator.EQUAL, Util.ITEM_STATUS_READY);
+		query.addSort("storeDate", SortDirection.DESCENDING);
 		
 		if(req.getParameter("cursor") != null) {
 			try {

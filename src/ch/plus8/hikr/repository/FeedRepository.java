@@ -14,7 +14,11 @@ public interface FeedRepository {
 	
 	void storeFeed(FeedItemBasic entry, Collection<String> categories);
 
+	void storeFeed(FeedItemBasic entry, Collection<String> categories, Integer statusOverwrite);
+	
 	void updateCategories(Key key, Entity entity, List<String> supCategories);
 
 	void addToCategories(Key key, Entity entity, String supCategory);
+
+
 }

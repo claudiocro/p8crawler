@@ -9,8 +9,12 @@ import java.util.logging.Logger;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
+import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.repository.FeedRepository;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -24,10 +28,15 @@ public class GAEFeedRepository implements FeedRepository {
 	private static final Logger logger = Logger.getLogger(GAEFeedRepository.class.getName());
 	
 	public final static String FEED_ITEM_KIND = "FeedItem";
+	
+	//public final static Integer STATUS_DELETED = new Integer(-999);
+	
 	private DatastoreService dataStore;
+	private BlobstoreService blobstoreService;
 	
 	public void init() {
 		dataStore = DatastoreServiceFactory.getDatastoreService();
+		blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 	}
 
 	public static final Key createKey(String link) {
@@ -43,6 +52,11 @@ public class GAEFeedRepository implements FeedRepository {
 	
 	@Override
 	public void storeFeed(FeedItemBasic entry, Collection<String> categories) {
+		storeFeed(entry, categories, null);
+	}
+	
+	@Override
+	public void storeFeed(FeedItemBasic entry, Collection<String> categories, Integer statusOverwrite) {
 		
 		Key key = createKey(entry.link);
 		Entity entity;
@@ -60,7 +74,16 @@ public class GAEFeedRepository implements FeedRepository {
 			entity.setUnindexedProperty("feedLink", new Text(entry.feedLink));
 			
 			entity.setUnindexedProperty("imageLink", entry.imageLink);
-			entity.setProperty("imageLinkA", entry.imageLinkA);
+			if(entry.imageLink != null) {
+				entity.setProperty("imageLinkA", 1);
+				entity.setProperty("status", Util.ITEM_STATUS_IMAGE_LINK_PROCESS);
+			} else {
+				entity.setProperty("imageLinkA", 0);
+				entity.setProperty("status", Util.ITEM_STATUS_NEW);
+			}
+			
+			if(statusOverwrite != null)
+				entity.setProperty("status", statusOverwrite);
 			
 			entity.setUnindexedProperty("authorName", entry.authorName);
 			entity.setUnindexedProperty("authorLink", entry.authorLink);
@@ -76,9 +99,17 @@ public class GAEFeedRepository implements FeedRepository {
 //		logger.info("Imported " + newEntities.size() + " from: " + feed.responseData.feed.link);
 	}
 	
+	public void updateImageLinkAndProcess(Entity entity, String imageLink, boolean save) {
+		entity.setProperty("imageLink", imageLink);
+		entity.setProperty("imageLinkA", 1);
+		entity.setProperty("status", Util.ITEM_STATUS_IMAGE_LINK_PROCESS);
+		if(save)
+			dataStore.put(entity);
+	}
+	
 	@Override
 	public void updateCategories(Key key, Entity entity, List<String> supCategories) {
-		if(supCategories == null)
+		if(supCategories == null || Util.ITEM_STATUS_DELETED.equals(entity.getProperty("imageLinkA")))
 			return;
 		
 		Object cats = entity.getProperty("categories");
@@ -101,6 +132,70 @@ public class GAEFeedRepository implements FeedRepository {
 			dataStore.put(entity);
 			logger.log(Level.FINE, "Only update categories: "+key.getName());
 		}
+	}
+	
+	public void increaseStatus(Entity entity, boolean save) {
+		entity.setProperty("status", ((Number)entity.getProperty("status")).intValue()+1);
+		if(save)
+			dataStore.put(entity);
+	}
+	
+	public void setStatus(Entity entity, int status, boolean save) {
+		entity.setProperty("status", status);
+		if(save)
+			dataStore.put(entity);
+	}
+	
+	
+	
+	public boolean deleteByKey(String name, boolean delete) {
+		 try {
+        	Key key = KeyFactory.createKey(GAEFeedRepository.FEED_ITEM_KIND, name);
+        	Entity entity = dataStore.get(key);
+        	BlobKey img1Key = (BlobKey)entity.getProperty("img1");
+        	if(img1Key != null)
+        		blobstoreService.delete(img1Key);
+        	
+        	BlobKey img2Key = (BlobKey)entity.getProperty("img2");
+        	if(img2Key != null)
+        		blobstoreService.delete(img2Key);
+        	
+        	if(delete) {
+        		dataStore.delete(key);
+        		logger.fine("Deleted: " + name);
+        		return true;
+        	}
+        	else if(!Util.ITEM_STATUS_DELETED.equals(entity.getProperty("imageLinkA"))) {
+        		entity.setProperty("link", null);
+        		entity.setProperty("publishedDate", null);
+        		entity.setUnindexedProperty("author", null);
+    			entity.setUnindexedProperty("title", null);
+    			entity.setUnindexedProperty("feedLink", null);
+    			
+    			entity.setUnindexedProperty("imageLink", null);
+    			entity.setProperty("imageLinkA", Util.ITEM_STATUS_DELETED);
+    			
+    			entity.setUnindexedProperty("authorName", null);
+    			entity.setUnindexedProperty("authorLink", null);
+    			entity.setProperty("categories", null);
+    			
+    			entity.setUnindexedProperty("img1", null);
+    			entity.setProperty("img1A", Util.ITEM_STATUS_DELETED);
+    			entity.setUnindexedProperty("img2", null);
+    			entity.setProperty("img2A", Util.ITEM_STATUS_DELETED);
+    			
+    			logger.fine("Marked as deleted: " + name);
+    			return true;
+        	} else {
+        		logger.fine("Item alreasy in delete status: " + name);
+        		return false;
+        	}
+        }catch(Exception e) {
+        	logger.log(Level.SEVERE, "Error deleting: " + name);
+        	return false;
+        }
+        
+       
 	}
 	
 	
@@ -144,5 +239,11 @@ public class GAEFeedRepository implements FeedRepository {
 
 	    return false;
 	  }
+
+	
+
+	
+
+	
 
 }

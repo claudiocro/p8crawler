@@ -37,7 +37,6 @@ public class LomoUtil {
 		boolean store = true;
 		if((asset.height >=370 && asset.width >=370)) {
 			entity.imageLink = asset.url;
-			entity.imageLinkA = 1;
 		} else {
 			store = false;
 			logger.warning("Skip image because it's to small:" + asset.url + " / " + asset.width + ":"+asset.height);

@@ -21,7 +21,7 @@ public class ImageUtil
 {
   private static final Logger logger = Logger.getLogger(ImageUtil.class.getName());
 
-  public static void transformImageFromImg1ToImg2(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
+  public static boolean transformToImg2(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
     logger.log(Level.FINE, "Create images for format img1: " + entity.getProperty("link"));
 
     if (entity.getProperty("img2") != null) {
@@ -74,6 +74,9 @@ public class ImageUtil
       entity.setProperty("img2A", Integer.valueOf(1));
       entity.setUnindexedProperty("img2", resizedBlobKey);
       entity.setUnindexedProperty("img2Link", imagesService.getServingUrl(resizedBlobKey));
+      return true;
     }
+    
+    return false;
   }
 }

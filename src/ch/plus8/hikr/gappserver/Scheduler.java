@@ -18,14 +18,14 @@ public class Scheduler
 {
   private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
 
-  public static final void scheduleHikrImageFetcher() {
-    scheduleHikrImageFetcher(null);
+  public static final void scheduleImageFetcher() {
+    scheduleImageFetcher(null);
   }
 
-  public static final void scheduleHikrImageFetcher(String cursor) {
-    logger.info("Schedule: /hikr/imageFetcher :" + cursor);
+  public static final void scheduleImageFetcher(String cursor) {
+    logger.info("Schedule: /p8admin/imageEvaluator :" + cursor);
     Queue queue = QueueFactory.getDefaultQueue();
-    TaskOptions param = TaskOptions.Builder.withUrl("/hikr/imageFetcher");
+    TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/imageEvaluator");
     if (cursor != null) {
       param.param("cursor", cursor);
     }
@@ -81,23 +81,27 @@ public class Scheduler
     queue.add(param);
   }
 
-  public static final void scheduleDeleteItem(String key)
+  public static final void scheduleDeleteItem(String key, boolean forceDelete)
   {
     logger.info("Schedule: /p8admin/fetchImage: " + key);
     TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/deleteItem");
     param.param("key", key);
+    if(forceDelete)
+    	param.param("delete", "1");
 
     Queue queue = QueueFactory.getQueue("deleteItem-queue");
     queue.add(param);
   }
 
-  public static void scheduleDeleteOldFeedItems(String cursor, String source, String timeType, String timeValue)
+  public static void scheduleDeleteOldFeedItems(String cursor, String source, String timeType, String timeValue, boolean forceDelete)
   {
     logger.info("Schedule: /p8admin/deleteOldItems: " + source);
     TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/deleteOldItems");
     param.param("source", source);
     param.param("timeType", timeType);
     param.param("timeValue", timeValue);
+    if(forceDelete)
+    	param.param("delete", "1");
 
     if (cursor != null) {
       param.param("cursor", cursor);

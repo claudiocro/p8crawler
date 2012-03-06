@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
+import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.googlefeed.GoogleFeedUtil;
 import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed;
 import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed.Entries;
@@ -65,7 +66,7 @@ public class HikrFeedImporterServlet extends HttpServlet {
 					FeedItemBasic item = new FeedItemBasic();
 					
 					if(GoogleFeedUtil.fillEntity(item, entry, feed.feedLink(), "hikr")) {
-						feedRepository.storeFeed(item, categories);
+						feedRepository.storeFeed(item, categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL);
 					}
 				}
 				
@@ -74,7 +75,7 @@ public class HikrFeedImporterServlet extends HttpServlet {
 			logger.log(Level.SEVERE, "Error request hikr feed: " + HIKR_FOTO_FEED,e);
 		}
 		
-		Scheduler.scheduleHikrImageFetcher();
+		Scheduler.scheduleImageFetcher();
 	}
 
 	@Override

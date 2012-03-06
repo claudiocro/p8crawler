@@ -13,14 +13,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>HikrFeedImporterServlet</servlet-name>
 		<url-pattern>/hikr/feedImport</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>HikrImageFetcher</servlet-name>
-		<servlet-class>ch.plus8.hikr.gappserver.hikr.HikrImageFetcher</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>HikrImageFetcher</servlet-name>
-		<url-pattern>/hikr/imageFetcher</url-pattern>
-	</servlet-mapping>
 	
 	
 	<servlet>
@@ -70,6 +62,25 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 		
 	
+	<servlet>
+		<servlet-name>DeleteBlobstore</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.DeleteBlobstore</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteBlobstore</servlet-name>
+		<url-pattern>/p8admin/deleteBlobstore</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	<servlet>
+		<servlet-name>ImageEvaluator</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.ImageEvaluator</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ImageEvaluator</servlet-name>
+		<url-pattern>/p8admin/imageEvaluator</url-pattern>
+	</servlet-mapping>
 	
 	<servlet>
 		<servlet-name>ListFeedItems</servlet-name>

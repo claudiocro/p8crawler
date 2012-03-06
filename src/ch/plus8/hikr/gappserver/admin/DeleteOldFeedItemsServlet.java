@@ -76,14 +76,14 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
 
     for (Entity entity : resultList) {
       try {
-        Scheduler.scheduleDeleteItem(entity.getKey().getName());
+        Scheduler.scheduleDeleteItem(entity.getKey().getName(), true);
       } catch (Exception e) {
         logger.log(Level.SEVERE, "Error when delete: " + entity.getKey(), e);
       }
     }
 
     if (!resultList.isEmpty())
-      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, timeType, timeValue);
+      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, timeType, timeValue, true);
   }
 
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
