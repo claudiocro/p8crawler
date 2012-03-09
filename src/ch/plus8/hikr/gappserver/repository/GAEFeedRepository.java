@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
-import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.repository.FeedRepository;
 
@@ -52,20 +53,38 @@ public class GAEFeedRepository implements FeedRepository {
 	
 	@Override
 	public void storeFeed(FeedItemBasic entry, Collection<String> categories) {
-		storeFeed(entry, categories, null);
+		storeFeed(entry, categories, null, null);
 	}
 	
 	@Override
 	public void storeFeed(FeedItemBasic entry, Collection<String> categories, Integer statusOverwrite) {
+		storeFeed(entry, categories, statusOverwrite, null);
+	}
+	
+	@Override
+	public void storeFeed(FeedItemBasic entry, Collection<String> categories, Map<String, Object> additionalProperties) {
+		storeFeed(entry, categories, null, additionalProperties);
+	}
+	
+	@Override
+	public void storeFeed(FeedItemBasic entry, Collection<String> categories, Integer statusOverwrite, Map<String, Object> additionalProperties) {
+		storeFeed(entry, null, categories, null, additionalProperties);
+	}
+	
+	@Override
+	public void storeFeed(FeedItemBasic entry,String id, Collection<String> categories, Integer statusOverwrite, Map<String, Object> additionalProperties) {
+		if(id == null)
+			id = entry.link;
 		
-		Key key = createKey(entry.link);
+		Key key = createKey(id);
 		Entity entity;
 		try {
 			entity = dataStore.get(key);
-			logger.log(Level.FINE, "Skip store new feed because it already exists: "+entry.link);
+			logger.log(Level.FINE, "Skip store new feed because it already exists: "+id);
 		} catch (EntityNotFoundException e) {
 			entity = new Entity(key);
 			initEntity(entity);
+			
 			entity.setProperty("link", entry.link);
 			entity.setProperty("publishedDate", entry.publishedDate);
 			entity.setProperty("source", entry.source);
@@ -91,6 +110,12 @@ public class GAEFeedRepository implements FeedRepository {
 			entity.setProperty("storeDate", new Date());
 			
 			entity.setProperty("categories", categories);
+			
+			if(additionalProperties != null) {
+				for(Entry<String, Object> en : additionalProperties.entrySet()) {
+					entity.setUnindexedProperty(en.getKey(), en.getValue());
+				}
+			}
 			
 			dataStore.put(entity);
 			logger.log(Level.FINE, "Stored new feed : "+entry.link);
@@ -171,6 +196,7 @@ public class GAEFeedRepository implements FeedRepository {
         		entity.setUnindexedProperty("author", null);
     			entity.setUnindexedProperty("title", null);
     			entity.setUnindexedProperty("feedLink", null);
+    			entity.setProperty("status", Util.ITEM_STATUS_DELETED);
     			
     			entity.setUnindexedProperty("imageLink", null);
     			entity.setProperty("imageLinkA", Util.ITEM_STATUS_DELETED);
@@ -185,6 +211,7 @@ public class GAEFeedRepository implements FeedRepository {
     			entity.setProperty("img2A", Util.ITEM_STATUS_DELETED);
     			
     			logger.fine("Marked as deleted: " + name);
+    			dataStore.put(entity);
     			return true;
         	} else {
         		logger.fine("Item alreasy in delete status: " + name);
@@ -240,10 +267,5 @@ public class GAEFeedRepository implements FeedRepository {
 	    return false;
 	  }
 
-	
-
-	
-
-	
 
 }

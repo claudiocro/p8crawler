@@ -21,6 +21,65 @@ public class ImageUtil
 {
   private static final Logger logger = Logger.getLogger(ImageUtil.class.getName());
 
+  public static boolean transformToImageLink(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
+	    logger.log(Level.FINE, "Create images for format img1: " + entity.getProperty("link"));
+
+	    if (entity.getProperty("img1") != null) {
+	      try {
+	        blobstoreService.delete(new BlobKey[] { (BlobKey)entity.getProperty("img1") });
+	        entity.setProperty("img1", null);
+	        entity.setProperty("img1A", Integer.valueOf(0));
+	      } catch (Exception e) {
+	        logger.log(Level.SEVERE, "Could not delete img2 for: " + entity.getKey(), e);
+	      }
+
+	    }
+
+	    int height = 1600;
+	    int width = 1600;
+	    double orgH = orgImage.getHeight();
+	    double orgW = orgImage.getWidth();
+
+	    if (orgH >= orgW) {
+	      double calc = orgH / orgW;
+	      BigDecimal bd = new BigDecimal(width * calc);
+	      bd = bd.setScale(0, 0);
+	      width = bd.intValue();
+	    } else {
+	      double calc = orgW / orgH;
+	      BigDecimal bd = new BigDecimal(height * calc);
+	      bd = bd.setScale(0, 0);
+	      height = bd.intValue();
+	    }
+
+	    Transform resize = ImagesServiceFactory.makeResize(height, width);
+	    Image newImage1 = imagesService.applyTransform(
+	      resize, 
+	      orgImage, 
+	      ImagesService.OutputEncoding.JPEG);
+
+	    AppEngineFile resizedFile = fileService.createNewBlobFile("image/jpeg", entity.getProperty("link") + "-img1");
+	    FileWriteChannel resizedFileWriteChannel1 = fileService.openWriteChannel(resizedFile, true);
+	    resizedFileWriteChannel1.write(ByteBuffer.wrap(newImage1.getImageData()));
+	    resizedFileWriteChannel1.closeFinally();
+
+	    BlobKey resizedBlobKey = fileService.getBlobKey(resizedFile);
+	    for (int ri = 0; (resizedBlobKey == null) && (ri < 7); ri++) {
+	      logger.warning("Waiting img1 to be resized: " + entity.getProperty("link"));
+	      Thread.sleep(1000L);
+	      resizedBlobKey = fileService.getBlobKey(resizedFile);
+	    }
+	    if (resizedBlobKey != null) {
+	      entity.setProperty("img1A", Integer.valueOf(1));
+	      entity.setUnindexedProperty("img1", resizedBlobKey);
+	      entity.setUnindexedProperty("imageLink", imagesService.getServingUrl(resizedBlobKey));
+	      entity.setProperty("imageLinkA", Integer.valueOf(1));
+	      return true;
+	    }
+	    
+	    return false;
+	  }
+  
   public static boolean transformToImg2(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
     logger.log(Level.FINE, "Create images for format img1: " + entity.getProperty("link"));
 

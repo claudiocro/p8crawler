@@ -1,7 +1,7 @@
 package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
-import java.net.URL;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,12 +9,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import oauth.signpost.OAuthConsumer;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.gappserver.dropbox.DropboxAPI;
+import ch.plus8.hikr.gappserver.dropbox.DropboxSyncher;
+import ch.plus8.hikr.gappserver.dropbox.DropboxUtil;
 import ch.plus8.hikr.gappserver.hikr.HikrImageFetcher;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
+import ch.plus8.hikr.gappserver.signpost.AppEngineOAuthConsumer;
 
-import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Cursor;
@@ -22,11 +26,15 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultList;
-import com.google.appengine.api.urlfetch.HTTPResponse;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 
@@ -47,6 +55,8 @@ public class ImageEvaluator extends HttpServlet {
 		URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
 		DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
 		BlobstoreService blobStoreService = BlobstoreServiceFactory.getBlobstoreService();
+		FileService fileService = FileServiceFactory.getFileService();
+		ImagesService imagesService = ImagesServiceFactory.getImagesService();
 		
 		GAEFeedRepository feedRepository = new GAEFeedRepository();
 		feedRepository.init();
@@ -69,6 +79,9 @@ public class ImageEvaluator extends HttpServlet {
 		}
 		fetchOptions.limit(MAX_COUNT);
 			
+		
+		HashMap<String, DropboxAPI> dropboxApiCache = new HashMap<String, DropboxAPI>();
+		
 		PreparedQuery prepare = dataStore.prepare(query);
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		logger.info("Images to extract: " + resultList.size());
@@ -76,13 +89,6 @@ public class ImageEvaluator extends HttpServlet {
 			logger.log(Level.INFO, "Find image for: " + entity.getProperty("link"));
 			try {
 				
-				if(entity.getProperty("img1") != null) {
-					try {
-						blobStoreService.delete((BlobKey)entity.getProperty("img1"));
-					} catch(Exception e) {
-						logger.log(Level.SEVERE, "Could not delete img1 for: " + entity.getKey(),e);
-					}
-				}
 				
 				if("hikr".equals(entity.getProperty("source"))) {
 					String imageLink = HikrImageFetcher.evalImageFrom(urlFetchService, entity.getProperty("link").toString());
@@ -92,6 +98,24 @@ public class ImageEvaluator extends HttpServlet {
 					else {
 						feedRepository.increaseStatus(entity, true);
 					}
+				} else if("dropbox".equals(entity.getProperty("source"))) {
+					String dropboxUid = entity.getProperty("author").toString();
+					DropboxAPI dropboxAPI = dropboxApiCache.get(dropboxUid);
+					if(dropboxAPI == null) {
+						dropboxAPI = DropboxUtil.createDropboxApi(dropboxUid);
+						dropboxApiCache.put(dropboxUid, dropboxAPI);
+					}
+					String link = entity.getProperty("link").toString();
+					logger.info("link:"+link + " / " + link.toLowerCase().startsWith("/public/"));
+					if(link.toLowerCase().startsWith("/public/")) {
+						feedRepository.updateImageLinkAndProcess(entity, dropboxAPI.media(link).url, true);
+					}
+					else if(DropboxUtil.createImg1(entity, dropboxAPI, urlFetchService, fileService, blobStoreService, imagesService)) {
+						feedRepository.setStatus(entity, Util.ITEM_STATUS_IMAGE_LINK_PROCESS, true);
+					} else {
+						feedRepository.increaseStatus(entity, true);
+					}
+					
 				} else {
 					logger.severe("NO IMAGE PROCESSOR FOUND: "+entity.getProperty("source"));
 					feedRepository.setStatus(entity, Util.ITEM_STATUS_IMAGE_LINK_NO_EVAL_PROC, true);
@@ -106,10 +130,10 @@ public class ImageEvaluator extends HttpServlet {
 		}
 		
 		if(!resultList.isEmpty()) {
-			Scheduler.scheduleImageFetcher(resultList.getCursor().toWebSafeString());
+			Scheduler.scheduleImageEvaluator(resultList.getCursor().toWebSafeString());
 		}
 		else  {
-			//Util.scheduleImageFetcer();
+			Scheduler.scheduleImageFetcher();
 		}
 		
 		resp.getWriter().write("DONE");

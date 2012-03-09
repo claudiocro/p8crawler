@@ -1,36 +1,23 @@
 package ch.plus8.hikr.gappserver.gplus;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ch.plus8.hikr.gappserver.Util;
-import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed;
-import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
-import ch.plus8.hikr.repository.FeedRepository;
 
 import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
-import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.json.JsonHttpParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.plus.Plus;
-import com.google.api.services.plus.Plus.People.Get;
 import com.google.api.services.plus.model.Person;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 @SuppressWarnings("serial")

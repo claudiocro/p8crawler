@@ -1,28 +1,28 @@
 package ch.plus8.hikr.gappserver.admin;
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
+
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.FetchOptions.Builder;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class DeleteOldFeedItemsServlet extends HttpServlet
 {
@@ -32,10 +32,12 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     throws ServletException, IOException
   {
     String source = req.getParameter("source");
+    String cat = req.getParameter("cat");
     String timeType = req.getParameter("timeType");
     String timeValue = req.getParameter("timeValue");
+    boolean delete = "1".equals(req.getParameter("delete"));
 
-    if ((source == null) || (timeType == null) || ((!"M".equals(timeType)) && (!"D".equals(timeType))) || (timeValue == null) || (!Util.isInt(timeValue))) {
+    if ((source == null && cat == null) || (timeType == null) || ((!"M".equals(timeType)) && (!"D".equals(timeType))) || (timeValue == null) || (!Util.isInt(timeValue))) {
       logger.log(Level.SEVERE, "invalidParams");
       resp.getWriter().write("invalidParams");
       throw new IllegalArgumentException("invalidParams");
@@ -46,17 +48,22 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     Query query = new Query("FeedItem");
     Calendar cal = Calendar.getInstance();
     cal.setTime(new Date());
-    if ("M".equals(timeType))
+    if ("M".equals(timeType)) {
       cal.add(2, Integer.valueOf(timeValue).intValue() * -1);
-    else if ("D".equals(timeType)) {
+    } else if ("D".equals(timeType)) {
       cal.add(6, Integer.valueOf(timeValue).intValue() * -1);
     }
     cal.set(11, 0);
     cal.set(14, 0);
     cal.set(13, 0);
     cal.set(12, 0);
-    query.addFilter("publishedDate", Query.FilterOperator.LESS_THAN, cal.getTime());
-    query.addFilter("source", Query.FilterOperator.EQUAL, source);
+    query.addFilter("storeDate", Query.FilterOperator.LESS_THAN, cal.getTime());
+    
+    if(source != null)
+    	query.addFilter("source", Query.FilterOperator.EQUAL, source);
+    else if(cat != null)
+    	query.addFilter("categories", Query.FilterOperator.EQUAL, cat);
+    
 
     FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
     if (req.getParameter("cursor") != null) {
@@ -76,14 +83,20 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
 
     for (Entity entity : resultList) {
       try {
-        Scheduler.scheduleDeleteItem(entity.getKey().getName(), true);
+    	if(delete)
+    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete);
+    	else if(!delete && !Util.ITEM_STATUS_DELETED.equals(entity.getProperty("status")))
+    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete);
+    	else {
+    		logger.info("Skip mark deleted: "+entity.getKey().getName());
+    	}
       } catch (Exception e) {
         logger.log(Level.SEVERE, "Error when delete: " + entity.getKey(), e);
       }
     }
 
     if (!resultList.isEmpty())
-      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, timeType, timeValue, true);
+      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, cat, timeType, timeValue, delete);
   }
 
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)

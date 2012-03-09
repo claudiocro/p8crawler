@@ -1,19 +1,19 @@
 package ch.plus8.hikr.gappserver;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 public class Util {
 	private static final Logger logger = Logger.getLogger(Util.class.getName());
 
-	
 	public static final Integer ITEM_STATUS_NEW = 0;
 	public static final Integer ITEM_STATUS_IMAGE_LINK_EVAL = 100;
 	public static final Integer ITEM_STATUS_IMAGE_LINK_NO_EVAL_PROC = 110;
 	public static final Integer ITEM_STATUS_IMAGE_LINK_PROCESS = 150;
 	public static final Integer ITEM_STATUS_READY = 200;
 	public static final Integer ITEM_STATUS_DELETED = -999;
-	
-	
+
 	public static final String GOOGLE_API_KEY = "AIzaSyD6FWIhhEskZwN2E_uTsrxZT-vs67px8-Y";
 	public static final String[] sources = { "gplus", "hikr" };
 	public static final String[] categories = { "photographer", "lomo", "lomo:popular", "lomo:selected", "monochromemonday", "mountainmonday" };
@@ -51,6 +51,123 @@ public class Util {
 			return "google+";
 		}
 		return source;
+	}
+	
+	
+	public static String encodePath(String path) {
+		if ((path == null) || (path.length() == 0)) {
+			return path;
+		}
+		StringBuffer buf = encodePath(null, path);
+		return ((buf == null) ? path : buf.toString());
+	}
+
+	public static StringBuffer encodePath(StringBuffer buf, String path) {
+		if (buf == null) {
+			for (int i = 0; i < path.length(); ++i) {
+				char c = path.charAt(i);
+				switch (c) {
+				case ' ':
+				case '"':
+				case '#':
+				case '%':
+				case '\'':
+				case ';':
+				case '<':
+				case '>':
+				case '?':
+					buf = new StringBuffer(path.length() << 1);
+					break;
+				case '!':
+				case '$':
+				case '&':
+				case '(':
+				case ')':
+				case '*':
+				case '+':
+				case ',':
+				case '-':
+				case '.':
+				case '/':
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+				case ':':
+				case '=':
+				}
+			}
+			if (buf == null) {
+				return null;
+			}
+		}
+		synchronized (buf) {
+			for (int i = 0; i < path.length(); ++i) {
+				char c = path.charAt(i);
+				switch (c) {
+				case '%':
+					buf.append("%25");
+					break;
+				case '?':
+					buf.append("%3F");
+					break;
+				case ';':
+					buf.append("%3B");
+					break;
+				case '#':
+					buf.append("%23");
+					break;
+				case '"':
+					buf.append("%22");
+					break;
+				case '\'':
+					buf.append("%27");
+					break;
+				case '<':
+					buf.append("%3C");
+					break;
+				case '>':
+					buf.append("%3E");
+					break;
+				case ' ':
+					buf.append("%20");
+					break;
+				case '!':
+				case '$':
+				case '&':
+				case '(':
+				case ')':
+				case '*':
+				case '+':
+				case ',':
+				case '-':
+				case '.':
+				case '/':
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+				case ':':
+				case '=':
+				default:
+					buf.append(c);
+				}
+			}
+
+		}
+		return buf;
 	}
 
 }

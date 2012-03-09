@@ -75,7 +75,7 @@ public class HikrFeedImporterServlet extends HttpServlet {
 			logger.log(Level.SEVERE, "Error request hikr feed: " + HIKR_FOTO_FEED,e);
 		}
 		
-		Scheduler.scheduleImageFetcher();
+		Scheduler.scheduleImageEvaluator();
 	}
 
 	@Override

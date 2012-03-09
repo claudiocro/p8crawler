@@ -98,7 +98,7 @@ public class ImageDownloadServlet extends HttpServlet {
 		}
 
 		if (!resultList.isEmpty()) {
-			Scheduler.scheduleImageFetcer(resultList.getCursor().toWebSafeString());
+			Scheduler.scheduleImageFetcher(resultList.getCursor().toWebSafeString());
 		}
 
 		resp.getWriter().write("DONE");
