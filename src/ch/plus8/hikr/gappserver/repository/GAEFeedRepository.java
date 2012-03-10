@@ -68,7 +68,7 @@ public class GAEFeedRepository implements FeedRepository {
 	
 	@Override
 	public void storeFeed(FeedItemBasic entry, Collection<String> categories, Integer statusOverwrite, Map<String, Object> additionalProperties) {
-		storeFeed(entry, null, categories, null, additionalProperties);
+		storeFeed(entry, null, categories, statusOverwrite, additionalProperties);
 	}
 	
 	@Override

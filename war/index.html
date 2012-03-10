@@ -33,7 +33,7 @@
   	
   	var pCat = $.getUrlVar('cat');
   	if(pCat != null)
-  		pCat = pCat.replace("#","");
+  		pCat = decodeURI(pCat.replace("#",""));
   	
   	
   	
@@ -123,8 +123,8 @@
 				nextSelector:		$('.galleryNav .next'),
 				previousSelector:	$('.galleryNav .previous'),
 				feedItemsChangedFunction:function(){$('#galleryContent').busy("hide");},
-				feedLoaderFunction: function(p8Item,feed) {p8Item.p8FeedItem("load",feed.img2Link,feed);},
-				singleNavigationShowHideFunction: function(e, s) {if(s){$(e).animate({opacity: 1},200);} else {$(e).animate({opacity: .2},200);}},
+				feedLoaderFunction: function(p8Item,feed) {if(feed!=null){p8Item.p8FeedItem("load",feed.img2Link,feed);}else{p8Item.p8FeedItem("clean");}},
+				singleNavigationShowHideFunction: function(e, s, t) {if(s){$(e).animate({opacity: 1},200);} else {$(e).animate({opacity: .2},200);}},
 				navigationShowHideFunction: function(e, s) {if(s){$(e).animate({opacity: 1},200);} else {$(e).animate({opacity: .2},200);}},
 				moveForwards:		updateNavigation,
 				moveBackwards:		updateNavigation,

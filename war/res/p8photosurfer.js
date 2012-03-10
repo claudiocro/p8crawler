@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.8.4
+ *  p8 photosurfer  0.9.0
  * 
  * Depends on:
  * 
@@ -349,19 +349,28 @@ elem
 			imageToWaitFor.onload = function() {
 				if(curTicket == self.ticket) {
 					var imgElem = $('img', elem);
-	
+					
 					bigImageCnt.busy("hide");
+					
+					
 					setTimeout(function() {
-						if (self.isBigContent && self.options.hideOnLoad == false) {
-							bigImageCnt.stop().animate({
-								opacity : 0
-							}, 200, function() {
-								self._load(imageToWaitFor, imgElem, image, description);		
-							});
-						} else {
-							self._load(imageToWaitFor, imgElem, image, description);
+						if(curTicket == self.ticket) {
+							if (self.isBigContent && self.options.hideOnLoad == false) {
+								bigImageCnt.stop().animate({
+									opacity : 0
+								}, 200, function() {
+									
+									imgElem.remove();
+									bigImageCnt.append($('<img />').attr('src', image));
+									self._load(imageToWaitFor, $('img', elem), image, description);		
+								});
+							} else {
+								imgElem.remove();
+								bigImageCnt.append($('<img />').attr('src', image));
+								self._load(imageToWaitFor, $('img', elem), image, description);
+							}
 						}
-					}, 250);
+					}, 350);
 				}
 			};
 			imageToWaitFor.src = image;
@@ -388,7 +397,7 @@ elem
 			var bigimageInnerDesc = $('.bigimage-inner-desc', elem);
 			
 			bigimageInnerDesc.empty();
-			imgElem.attr('src', image);
+			//imgElem.attr('src', image);
 			
 			var width = imageToWaitFor.naturalWidth;
 			var height = imageToWaitFor.naturalHeight;
@@ -409,8 +418,8 @@ elem
 				width : scaled[0]
 			});
 			bigimageInnerDesc.append(description);
-			
-			bigImageCnt.stop().animate({
+
+			bigImageCnt.stop().css("opacity",0).animate({
 				opacity : 1
 			}, 1000).css({
 				"z-index" : self.options.activeZIndex
@@ -464,7 +473,7 @@ elem
 		},
 
 		canMoveForwards : function() {
-			return (this.currentCount <= this.options.maxCount && (this.total * (this.currentCount + 1)) <= this.allFeeds.length);
+			return (this.currentCount <= this.options.maxCount && this.allFeeds.length>0 && (this.total * (this.currentCount)) <= this.allFeeds.length);
 		},
 
 		moveForwards : function(force) {
@@ -524,7 +533,7 @@ elem
 		},
 		
 		moveToSingleIndex : function(imageIndex) {
-			if(imageIndex < this.allFeeds.length) {
+			if(imageIndex>=0 && imageIndex < this.allFeeds.length) {
 				return this.moveToPage(Math.floor((imageIndex/this.total)+1));
 			}
 			return false;
@@ -549,9 +558,16 @@ elem
 		_loadNextItems: function() {
 			var self = this;
 			var p8Items = $('.p8JsonGallery-item', this.element);
-			for ( var i = this.total * this.currentCount, len = this.allFeeds.length; i < this.total * (this.currentCount + 1) && i < len && i > -1; ++i) {
+			var cnt = 0; 
+			for ( var i = this.total * this.currentCount, len = this.allFeeds.length; i < this.total * (this.currentCount+1) && i < len && i > -1; ++i) {
 				self.options.feedLoaderFunction.call(self, $(p8Items.get(i - this.total * this.currentCount)), this.allFeeds[i]);
+				cnt++;
 			}
+			for(;cnt < this.total; cnt++){
+				self.options.feedLoaderFunction.call(self, $(p8Items.get(cnt)), null);
+			}
+			
+			
 		},
 		
 		_preProcessResponse : function() {
@@ -657,7 +673,10 @@ elem
 (function($) {
 	
 	var feedLoaderFunction = function(element,data) {
-		element.empty().append($(data).clone().show());
+		if(data!= null)
+			element.empty().append($(data).clone().show());
+		else
+			element.empty();
 	};
 	
 	var navigationShowHideFunction = function(element, show, type) {
@@ -771,15 +790,17 @@ elem
 				
 				if(options.singlePreviousSelector != null) {
 					options.singlePreviousSelector.click(function() {
-						index--;
-						var canMove = $(self).p8JsonGallery('moveToSingleIndex', index);
-						if(index >=0 && canMove) {
-							options.singleClickSelectorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[index]);
-						}
-						else {
+						if(index!=0){
 							index--;
+							var canMove = $(self).p8JsonGallery('moveToSingleIndex', index);
+							if(index >=0 && canMove) {
+								options.singleClickSelectorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[index]);
+							}
+							else {
+								index--;
+							}
+							updateSingleNavigation.call(self);
 						}
-						updateSingleNavigation.call(self);
 					});
 				}
 				

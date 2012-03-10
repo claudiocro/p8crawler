@@ -94,10 +94,16 @@ public class DropboxUtil {
 		try {
 			Entity dropboxUserEntity = datastoreService.get(KeyFactory.createKey(DropboxSyncher.DROPBOXUSER_KIND, dropboxUid));
 			consumer.setTokenWithSecret((String)dropboxUserEntity.getProperty("token"), (String)dropboxUserEntity.getProperty("tokenSecret"));
+			
+			
+			
 			return new DropboxAPI(consumer);
 		} catch (EntityNotFoundException e) {
 			logger.severe("Dropbox user: " + dropboxUid + " not found.");
 		}
+		
+		/*consumer.setTokenWithSecret("fc4vpaho6wuo1wj","lm19zvmjxloibzl");
+		return new DropboxAPI(consumer);*/
 		return null;
 	}
 	
