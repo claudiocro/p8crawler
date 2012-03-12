@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
-import ch.plus8.hikr.gappserver.Util;
-import ch.plus8.hikr.gappserver.gplus.GPlusUtil;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Asset;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Photo;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;

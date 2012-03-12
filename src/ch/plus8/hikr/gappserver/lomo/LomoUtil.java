@@ -9,9 +9,6 @@ import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Asset;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Photo;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Text;
-
 public class LomoUtil {
 	
 	private static final Logger logger = Logger.getLogger(LomoUtil.class.getName());

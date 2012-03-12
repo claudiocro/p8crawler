@@ -27,11 +27,8 @@ import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxAccount;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxContent;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
-import ch.plus8.hikr.gappserver.gplus.GPlusPersonImporterServlet;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.api.client.http.json.JsonHttpParser;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;

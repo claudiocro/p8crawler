@@ -3,7 +3,6 @@ package ch.plus8.hikr.gappserver.gplus;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
-import ch.plus8.hikr.gappserver.FeedItem;
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Util;
 

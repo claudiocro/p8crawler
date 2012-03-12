@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.logging.Logger;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
-import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed.Entries;
 
 public class GoogleFeedUtil {

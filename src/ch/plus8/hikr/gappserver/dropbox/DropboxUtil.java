@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import oauth.signpost.OAuthConsumer;
-
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.ImageUtil;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxAccount;
