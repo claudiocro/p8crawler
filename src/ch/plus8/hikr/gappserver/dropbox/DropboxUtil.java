@@ -39,10 +39,27 @@ public class DropboxUtil {
 
 	private static final Logger logger = Logger.getLogger(HikrImageFetcher.class.getName());
 	
+	public static void main(String args[]) {
+		String[] f = fileName("/sfaf/asdfa /sadfsdfa/dfa dsfasdfasdf-sdfasdf.jpg");
+		System.out.println(f);
+	}
 	
-	public static boolean fillEntity(FeedItemBasic entity, Map<String, Object> additional, DropboxAccount account, DropboxEntity dentity, DropboxContent cnt) throws ParseException {
-		if (cnt.is_dir)
+	public static String[] fileName(String path) {
+		Pattern p = Pattern.compile("^(.*)/(.*)\\.(.*)$");
+		Matcher m = p.matcher(path);
+		
+		if(m.find()) {
+			return new String[]{m.group(1),m.group(2),m.group(3)};
+		}
+		return null;
+	}
+	
+	public static boolean fillEntity(FeedItemBasic entity, Map<String, Object> additional, DropboxAccount account, DropboxEntity dentity, DropboxContent cnt, String authorName) throws ParseException {
+		if(cnt.is_dir)
 			return false;
+		else if(!"image/jpeg".equals(cnt.mime_type))
+			return false;
+		
 		//Calendar cal = Calendar.getInstance();
 		//cal.setTime(lomo.dateFormat.parse(photo.createdAt));
 		//entity.publishedDate = cal.getTime();
@@ -52,7 +69,11 @@ public class DropboxUtil {
 		entity.feedLink = dentity.path;
 
 		entity.author = String.valueOf(account.uid);
-		entity.authorName = account.displayName;
+		if(authorName == null)
+			entity.authorName = account.displayName;
+		else
+			entity.authorName = authorName;
+		
 		entity.authorLink = account.referralLink;
 
 		additional.put("dropboxRev", cnt.rev);

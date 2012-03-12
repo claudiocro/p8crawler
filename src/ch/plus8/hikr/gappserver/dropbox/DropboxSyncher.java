@@ -57,8 +57,7 @@ public class DropboxSyncher extends HttpServlet {
 	final static String PARAM_CREATE_TOKEN = "createToken";
 	final static String PARAM_CREATE_ALBUM = "createAlbum";
 	final static String PARAM_IMPORT_IMAGE = "importImage";
-	
-	private final JsonHttpParser parser = JsonHttpParser.builder(new GsonFactory()).setContentType("text/javascript").build();
+	final static String PARAM_ADD_USER = "addUser";
 	
 	private GAEFeedRepository feedRepository;
 	
@@ -74,7 +73,15 @@ public class DropboxSyncher extends HttpServlet {
 		try {
 			OAuthProvider provider = new DefaultOAuthProvider("https://api.dropbox.com/1/oauth/request_token", "https://api.dropbox.com/1/oauth/access_token", "https://www.dropbox.com/1/oauth/authorize");
 			
-			if ("1".equals(req.getParameter(PARAM_CREATE_TOKEN))) {
+			if ("1".equals(req.getParameter(PARAM_ADD_USER))) {
+				DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+				Entity dropboxUserEntity = new Entity(KeyFactory.createKey(DROPBOXUSER_KIND, req.getParameter("uid")));
+				dropboxUserEntity.setProperty("dropbboxUid", req.getParameter("uid"));
+				dropboxUserEntity.setProperty("token", req.getParameter("token"));
+				dropboxUserEntity.setProperty("tokenSecret", req.getParameter("tokenSecret"));
+				datastoreService.put(dropboxUserEntity);
+				
+			} if ("1".equals(req.getParameter(PARAM_CREATE_TOKEN))) {
 				OAuthConsumer consumer = new DefaultOAuthConsumer(APP_KEY, APP_SECRET);
 				
 				String oauthsequence = UUID.randomUUID().toString();
@@ -117,14 +124,17 @@ public class DropboxSyncher extends HttpServlet {
 					Set<String> presentKeys = new HashSet<String>();
 					if(metadata.contents != null) {
 						List<String> categories = new ArrayList<String>();
-						categories.add("dropbox-"+dropboxUid+"-"+path);
+						String dropboxCat = "dropbox-"+dropboxUid+"-"+path; 
+						categories.add(dropboxCat);
 						
 						for(DropboxContent cnt : metadata.contents) {
 							FeedItemBasic item = new FeedItemBasic();
 							Map<String, Object> additional = new HashMap<String, Object>();
-							if(DropboxUtil.fillEntity(item, additional, accountInfo, metadata, cnt)) {
-								feedRepository.storeFeed(item, dropboxUid+cnt.path, categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional);
-								presentKeys.add(cnt.path+"::"+cnt.rev);
+							
+							if(DropboxUtil.fillEntity(item, additional, accountInfo, metadata, cnt, req.getParameter("authorName"))) {
+								String id = dropboxUid+cnt.path+"::"+cnt.rev;
+								feedRepository.storeFeed(item, id, categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional);
+								presentKeys.add(id);
 							}
 						}
 						
@@ -141,11 +151,11 @@ public class DropboxSyncher extends HttpServlet {
 						
 						
 						Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-						query.addFilter("categories",FilterOperator.EQUAL, "dropbox-"+dropboxUid+"-"+path);
+						query.addFilter("categories",FilterOperator.EQUAL, dropboxCat);
 						PreparedQuery prepare = datastoreService.prepare(query);
 						QueryResultIterable<Entity> results = prepare.asQueryResultIterable();
 						for(Entity oldEntity : results) {
-							if(!presentKeys.contains(oldEntity.getProperty("link")+"::"+oldEntity.getProperty("dropboxRev"))) {
+							if(!presentKeys.contains(oldEntity.getProperty("author").toString()+oldEntity.getProperty("link")+"::"+oldEntity.getProperty("dropboxRev"))) {
 								Scheduler.scheduleDeleteItem(oldEntity.getKey().getName(), true);
 							}
 						}

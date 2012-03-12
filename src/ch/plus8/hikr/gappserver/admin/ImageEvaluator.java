@@ -108,6 +108,7 @@ public class ImageEvaluator extends HttpServlet {
 					String link = entity.getProperty("link").toString();
 					logger.info("link:"+link + " / " + link.toLowerCase().startsWith("/public/"));
 					if(link.toLowerCase().startsWith("/public/")) {
+						entity.setProperty("dropboxThumb", 1);
 						feedRepository.updateImageLinkAndProcess(entity, dropboxAPI.media(link).url, true);
 					}
 					else if(DropboxUtil.createImg1(entity, dropboxAPI, urlFetchService, fileService, blobStoreService, imagesService)) {

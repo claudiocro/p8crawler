@@ -2,6 +2,7 @@ package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import ch.plus8.hikr.gappserver.ImageUtil;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.gappserver.dropbox.DropboxAPI;
+import ch.plus8.hikr.gappserver.dropbox.DropboxUtil;
+import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
+import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
 import ch.plus8.hikr.gappserver.hikr.HikrImageFetcher;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
@@ -69,6 +74,8 @@ public class ImageDownloadServlet extends HttpServlet {
 		}
 		fetchOptions.limit(5);
 
+		HashMap<String, DropboxAPI> dropboxApiCache = new HashMap<String, DropboxAPI>();
+		
 		PreparedQuery prepare = dataStore.prepare(query);
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for (Entity entity : resultList) {
@@ -78,8 +85,26 @@ public class ImageDownloadServlet extends HttpServlet {
 
 				HTTPResponse bigImageResp = urlFetchService.fetch(new URL(bigImageUrl));
 				Image orgImageB = ImagesServiceFactory.makeImage(bigImageResp.getContent());
-
-				if (ImageUtil.transformToImg2(fileService, imagesService, blobstoreService, entity, orgImageB)) {
+				if(new Long(1).equals(entity.getProperty("dropboxThumb"))) {
+					String dropboxUid = entity.getProperty("author").toString();
+					DropboxAPI dropboxAPI = dropboxApiCache.get(dropboxUid);
+					if(dropboxAPI == null) {
+						dropboxAPI = DropboxUtil.createDropboxApi(dropboxUid);
+						dropboxApiCache.put(dropboxUid, dropboxAPI);
+					}
+					String[] fileInfo = DropboxUtil.fileName(entity.getProperty("link").toString());
+					String thumbName = fileInfo[1]+"-img2."+fileInfo[2];
+					Image thumb = ImageUtil.thumb(thumbName, 350, 350, imagesService, orgImageB);
+					
+					DropboxEntity thumbDropboxEntity = dropboxAPI.uploadImage(fileInfo[0], "/thumbs/"+thumbName, thumb);
+					DropboxLink media = dropboxAPI.media(thumbDropboxEntity.path);
+					
+			        entity.setProperty("img2A", Integer.valueOf(1));
+			        entity.setUnindexedProperty("img2Link", media.url);
+			        
+					feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
+					dataStore.put(entity);
+				} else if (ImageUtil.transformToImg2(fileService, imagesService, blobstoreService, entity, orgImageB)) {
 					feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
 				} else {
 					throw new IllegalStateException("Could not transform img2.");

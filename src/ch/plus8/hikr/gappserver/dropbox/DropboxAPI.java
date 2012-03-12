@@ -9,17 +9,20 @@ import oauth.signpost.OAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxAccount;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
 
 import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpMethod;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.json.JsonHttpParser;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.appengine.api.images.Image;
 
 public class DropboxAPI {
 	
@@ -92,6 +95,23 @@ public class DropboxAPI {
 		return metadata;
 	}
 	
+	public DropboxEntity uploadImage(String string, String thumbName, Image thumb) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
+		String url = "https://api-content.dropbox.com/1/files_put/dropbox"+encodePath(string+thumbName);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept("*/*");
+
+		ByteArrayContent imageContent = new ByteArrayContent("application/octet-stream", thumb.getImageData());
+		HttpRequest request = transport.createRequestFactory().buildPutRequest(new GenericUrl(url), imageContent);
+		request.setMethod(HttpMethod.PUT);
+		request.addParser(parser);
+		request.setHeaders(headers);
+		
+		consumer.sign(request);
+		DropboxEntity savedMetadata = request.execute().parseAs(DropboxEntity.class);
+		
+		return savedMetadata;
+	}
+	
 	
 	private String encodePath(String path) throws UnsupportedEncodingException {
 	 path = URLEncoder.encode(path, "UTF-8");
@@ -100,4 +120,5 @@ public class DropboxAPI {
      
      return path;
 	}
+
 }
