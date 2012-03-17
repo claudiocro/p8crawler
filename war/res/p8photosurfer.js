@@ -490,7 +490,7 @@ elem
 			*/
 
 			// preload feed if necessary
-			if (self.feedStreamEnd != true && self.allFeeds.length - (self.total * 5) < self.currentCount * self.total && !self.isRetrivingFeed) {
+			if (self.feedStreamEnd != true && self.allFeeds.length - (self.total * 6) < self.currentCount * self.total && !self.isRetrivingFeed) {
 				self.isRetrivingFeed = true;
 
 				self.ajaxTickedId++;

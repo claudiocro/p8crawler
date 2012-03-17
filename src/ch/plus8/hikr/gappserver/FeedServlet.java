@@ -214,9 +214,6 @@ public class FeedServlet extends HttpServlet {
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for(Entity entity : resultList) {
 			try {
-				
-					
-				
 				FeedItem feedItem = new FeedItem(
 						(Date)entity.getProperty("publishedDate"),
 						Util.translateSource(entity.getProperty("source").toString()), 
@@ -227,7 +224,7 @@ public class FeedServlet extends HttpServlet {
 						(entity.getProperty("title") != null)?entity.getProperty("title").toString():"",
 						entity.getProperty("feedLink").toString(),
 						entity.getProperty("imageLink").toString(),
-						Integer.valueOf(entity.getProperty("imageLinkA").toString()),
+						Long.valueOf(entity.getProperty("img1A").toString()),
 						(Date)entity.getProperty("storeDate"));
 	
 				if(entity.getProperty("img2Link") != null) {

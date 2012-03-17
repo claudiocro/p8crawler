@@ -41,30 +41,6 @@ public class LomoImporterServlet extends HttpServlet {
 	
 	private GAEFeedRepository feedRepository;
 	
-	/*@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		logger.info("Request feed for import: " + LOMO_FOTO_FEED);
-		try {
-			UrlFetchTransport transport = new UrlFetchTransport();
-			HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(HIKR_FOTO_FEED));
-
-			request.addParser(parser);
-			GoogleReaderFeed feed = request.execute().parseAs(GoogleReaderFeed.class);
-			if(feed.responseData == null || feed.responseData.feed == null || feed.responseData.feed.entries == null) 
-				logger.log(Level.WARNING, "No data is imported because feed is empty: " + HIKR_FOTO_FEED);
-			else {
-				List categories = new ArrayList();
-				categories.add("mountain");
-				categories.add("nature");
-				feedRepository.storeFeed("hikr", feed, categories);
-			}
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error request hikr feed: " + HIKR_FOTO_FEED,e);
-		}
-		
-		Util.scheduleHikrImageFetcher();
-	}*/
-	
 	@Override
     public void init(ServletConfig config) throws ServletException {
 		GAEFeedRepository feedRepository = new GAEFeedRepository();

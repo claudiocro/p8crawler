@@ -3,18 +3,35 @@ package ch.plus8.hikr.gappserver.hikr;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServlet;
+import ch.plus8.hikr.gappserver.ImageEvaluator;
+import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.repository.FeedRepository;
 
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
+import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 
-@SuppressWarnings("serial")
-public class HikrImageFetcher extends HttpServlet {
+public class HikrImageEvaluator extends ImageEvaluator {
 
-	private static final Logger logger = Logger.getLogger(HikrImageFetcher.class.getName());
+	private URLFetchService urlFetchService;
+
+	public HikrImageEvaluator() {
+		urlFetchService = URLFetchServiceFactory.getURLFetchService();
+	}
 	
+	@Override
+	public boolean evaluate(FeedRepository feedRepository, Entity entity) throws Exception {
+		String imageLink = evalImageFrom(urlFetchService, entity.getProperty("link").toString());
+		if(imageLink != null) {
+			feedRepository.updateImageLinkAndProcess(entity, imageLink, Util.DATASTORE_UNKNOWN, null, true);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 	public static String evalImageFrom(URLFetchService urlFetchService, String link) throws MalformedURLException, IOException {
 		HTTPResponse hikrPhotoResp = urlFetchService.fetch(new URL(link));
@@ -31,4 +48,5 @@ public class HikrImageFetcher extends HttpServlet {
 		}
 		return null;
 	}
+
 }

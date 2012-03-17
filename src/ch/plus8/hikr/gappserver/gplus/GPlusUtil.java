@@ -50,6 +50,7 @@ public class GPlusUtil {
 				(att.getImage().getHeight() != null && att.getImage().getHeight()>=maxImgSize1 || 
 				att.getImage().getWidth() != null && att.getImage().getWidth() >=maxImgSize1)) {
 			entity.imageLink = att.getImage().getUrl();
+			entity.img1A = Util.DATASTORE_UNKNOWN;
 		}
 		
 		if(att.getFullImage() != null && 
@@ -59,6 +60,7 @@ public class GPlusUtil {
 				(att.getFullImage().getHeight() != null && att.getFullImage().getHeight()>=maxImgSize1 || 
 				att.getFullImage().getWidth() != null && att.getFullImage().getWidth() >=maxImgSize1)) {
 			entity.imageLink = att.getFullImage().getUrl();
+			entity.img1A = Util.DATASTORE_UNKNOWN;
 		} else {
 			store = false;
 			

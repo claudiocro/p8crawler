@@ -16,8 +16,8 @@ public class FeedItem extends FeedItemBasic {
 	public FeedItem(){};
 	
 	public FeedItem(Date publishedDate, String source, String author, String authorName, String authorLink, String link, String title, 
-			String feedLink, String imageLink, int imageLinkA, Date storeDate) {
-		super(publishedDate, source, author, authorName, authorLink, link, title, feedLink,imageLink, imageLinkA);
+			String feedLink, String imageLink, Long img1A, Date storeDate) {
+		super(publishedDate, source, author, authorName, authorLink, link, title, feedLink,imageLink, img1A);
 	
 		this.storeDate = storeDate;
 	}

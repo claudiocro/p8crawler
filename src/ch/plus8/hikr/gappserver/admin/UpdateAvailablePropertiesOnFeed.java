@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ch.plus8.hikr.gappserver.hikr.HikrImageFetcher;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
 import com.google.appengine.api.datastore.Cursor;
@@ -28,7 +27,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @SuppressWarnings("serial")
 public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 
-	private static final Logger logger = Logger.getLogger(HikrImageFetcher.class.getName());
+	private static final Logger logger = Logger.getLogger(UpdateAvailablePropertiesOnFeed.class.getName());
 	private DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
 	
 	@Override
@@ -56,11 +55,11 @@ public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 			boolean update = false;
 			
 			if(entity.getProperty("imageLink") != null) {
-				entity.setProperty("imageLinkA", 1);
+				entity.setProperty("img1A", 1);
 				update = true;
 			}
 			else {
-				entity.setProperty("imageLinkA", 0);
+				entity.setProperty("img1A", 0);
 				update = true;
 			}
 			

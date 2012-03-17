@@ -27,7 +27,7 @@ public class ImageUtil {
 			try {
 				blobstoreService.delete(new BlobKey[] { (BlobKey) entity.getProperty("img1") });
 				entity.setProperty("img1", null);
-				entity.setProperty("img1A", Integer.valueOf(0));
+				entity.setProperty("img1A", Util.ZERO);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Could not delete img2 for: " + entity.getKey(), e);
 			}
@@ -49,31 +49,18 @@ public class ImageUtil {
 			resizedBlobKey = fileService.getBlobKey(resizedFile);
 		}
 		if (resizedBlobKey != null) {
-			entity.setProperty("img1A", Integer.valueOf(1));
+			entity.setProperty("img1A", Util.DATASTORE_APPENGINE);
 			entity.setUnindexedProperty("img1", resizedBlobKey);
 			entity.setUnindexedProperty("imageLink", imagesService.getServingUrl(resizedBlobKey));
-			entity.setProperty("imageLinkA", Integer.valueOf(1));
 			return true;
 		}
 
 		return false;
 	}
 
-	public static boolean transformToImg2(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
+	public static BlobKey transformToImg2(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
 		logger.log(Level.FINE, "Create images for format img1: " + entity.getProperty("link"));
-
-		if (entity.getProperty("img2") != null) {
-			try {
-				blobstoreService.delete(new BlobKey[] { (BlobKey) entity.getProperty("img2") });
-				entity.setProperty("img2", null);
-				entity.setProperty("img2A", Integer.valueOf(0));
-				entity.setUnindexedProperty("img2Link", null);
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Could not delete img2 for: " + entity.getKey(), e);
-			}
-
-		}
-
+		
 		String thumbName = entity.getProperty("imageLink") + "-img2";
 		Image newImage1 = thumb(thumbName, 350, 350, imagesService, orgImage);
 
@@ -88,14 +75,8 @@ public class ImageUtil {
 			Thread.sleep(1000L);
 			resizedBlobKey = fileService.getBlobKey(resizedFile);
 		}
-		if (resizedBlobKey != null) {
-			entity.setProperty("img2A", Integer.valueOf(1));
-			entity.setUnindexedProperty("img2", resizedBlobKey);
-			entity.setUnindexedProperty("img2Link", imagesService.getServingUrl(resizedBlobKey));
-			return true;
-		}
-
-		return false;
+		
+		return resizedBlobKey;
 	}
 
 	public static Image thumb(String name, int height, int width, ImagesService imagesService, Image orgImage) throws IOException, InterruptedException {

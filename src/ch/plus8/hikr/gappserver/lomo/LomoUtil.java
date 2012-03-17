@@ -29,11 +29,10 @@ public class LomoUtil {
 		entity.authorName= photo.user.username;
 		entity.authorLink = photo.user.url;
 		
-		
-		
 		boolean store = true;
 		if((asset.height >=370 && asset.width >=370)) {
 			entity.imageLink = asset.url;
+			entity.img1A = Util.DATASTORE_UNKNOWN;
 		} else {
 			store = false;
 			logger.warning("Skip image because it's to small:" + asset.url + " / " + asset.width + ":"+asset.height);

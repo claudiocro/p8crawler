@@ -19,6 +19,8 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpMethod;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.json.JsonHttpParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.appengine.api.images.Image;
@@ -26,6 +28,8 @@ import com.google.appengine.api.images.Image;
 public class DropboxAPI {
 	
 	private static final Logger logger = Logger.getLogger(DropboxAPI.class.getName());
+
+	public static final int STATUS_404 = 404;
 	
 	private JsonHttpParser parser;
 	private final OAuthConsumer consumer;
@@ -94,8 +98,8 @@ public class DropboxAPI {
 		return metadata;
 	}
 	
-	public DropboxEntity uploadImage(String string, String thumbName, Image thumb) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
-		String url = "https://api-content.dropbox.com/1/files_put/dropbox"+encodePath(string+thumbName);
+	public DropboxEntity uploadImage(String path, String thumbName, Image thumb) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
+		String url = "https://api-content.dropbox.com/1/files_put/dropbox"+encodePath(path+thumbName);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept("*/*");
 
@@ -111,6 +115,29 @@ public class DropboxAPI {
 		return savedMetadata;
 	}
 	
+	public DropboxEntity delete(String path) throws DropboxException, IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
+		String url = "https://api.dropbox.com/1/fileops/delete";
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept("*/*");
+
+		GenericUrl genericUrl = new GenericUrl(url);
+		genericUrl.set("root", "dropbox");
+		genericUrl.set("path", path);
+		
+		HttpRequest request = transport.createRequestFactory().buildPostRequest(genericUrl, null);
+		request.addParser(parser);
+		request.setHeaders(headers);
+		
+		consumer.sign(request);
+		try {
+			DropboxEntity metadata = request.execute().parseAs(DropboxEntity.class);
+			return metadata;
+		} catch(HttpResponseException e) {
+			throw new DropboxException(e);
+		}
+	
+	}
+	
 	
 	private String encodePath(String path) throws UnsupportedEncodingException {
 	 path = URLEncoder.encode(path, "UTF-8");
@@ -119,5 +146,4 @@ public class DropboxAPI {
      
      return path;
 	}
-
 }

@@ -5,17 +5,34 @@ import java.util.logging.Logger;
 public class Util {
 	private static final Logger logger = Logger.getLogger(Util.class.getName());
 
-	public static final Integer ITEM_STATUS_NEW = 0;
-	public static final Integer ITEM_STATUS_IMAGE_LINK_EVAL = 100;
-	public static final Integer ITEM_STATUS_IMAGE_LINK_NO_EVAL_PROC = 110;
-	public static final Integer ITEM_STATUS_IMAGE_LINK_PROCESS = 150;
-	public static final Integer ITEM_STATUS_READY = 200;
-	public static final Integer ITEM_STATUS_DELETED = -999;
+	public static final Long ZERO = 0L;
+	
+	public static final Long ITEM_STATUS_NEW = 0L;
+	public static final Long ITEM_STATUS_IMAGE_LINK_EVAL = 100L;
+	public static final Long ITEM_STATUS_IMAGE_LINK_NO_EVAL_PROC = 110L;
+	public static final Long ITEM_STATUS_IMAGE_LINK_PROCESS = 150L;
+	public static final Long ITEM_STATUS_READY = 200L;
+	public static final Long ITEM_STATUS_DELETED = -999L;
+	
+	
+	public static final Long DATASTORE_APPENGINE = 1L;
+	public static final Long DATASTORE_DROPBOX = 2L;
+	public static final Long DATASTORE_GCS = 3L;
+	public static final Long DATASTORE_UNKNOWN = 4L;
+	
 
 	public static final String GOOGLE_API_KEY = "AIzaSyD6FWIhhEskZwN2E_uTsrxZT-vs67px8-Y";
-	public static final String[] sources = { "gplus", "hikr" };
+	
+	
+	public static final String[] sources = { "gplus", "hikr", "dropbox" };
 	public static final String[] categories = { "photographer", "lomo", "lomo:popular", "lomo:selected", "monochromemonday", "mountainmonday" };
-
+	public static final Long[] datastores = { 
+		DATASTORE_APPENGINE, //appengine
+		DATASTORE_DROPBOX, //dropbox
+		DATASTORE_GCS  //google cloud storage
+	};
+	
+	
 	public static boolean isInt(String integer) {
 		try {
 			Integer.valueOf(integer);

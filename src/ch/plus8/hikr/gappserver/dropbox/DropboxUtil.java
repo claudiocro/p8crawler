@@ -17,7 +17,6 @@ import ch.plus8.hikr.gappserver.ImageUtil;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxAccount;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxContent;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
-import ch.plus8.hikr.gappserver.hikr.HikrImageFetcher;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 import ch.plus8.hikr.gappserver.signpost.AppEngineOAuthConsumer;
 
@@ -36,12 +35,7 @@ import com.google.appengine.api.urlfetch.URLFetchService;
 
 public class DropboxUtil {
 
-	private static final Logger logger = Logger.getLogger(HikrImageFetcher.class.getName());
-	
-	public static void main(String args[]) {
-		String[] f = fileName("/sfaf/asdfa /sadfsdfa/dfa dsfasdfasdf-sdfasdf.jpg");
-		System.out.println(f);
-	}
+	private static final Logger logger = Logger.getLogger(DropboxUtil.class.getName());
 	
 	public static String[] fileName(String path) {
 		Pattern p = Pattern.compile("^(.*)/(.*)\\.(.*)$");

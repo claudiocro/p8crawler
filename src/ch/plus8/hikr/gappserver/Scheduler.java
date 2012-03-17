@@ -124,7 +124,7 @@ public class Scheduler
       queue.add(options);
     }
   }
-
+  
   public static void cleanCache(String param, String paramV)
   {
     MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService("feedItems");

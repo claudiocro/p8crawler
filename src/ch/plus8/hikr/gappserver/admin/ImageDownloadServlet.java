@@ -10,16 +10,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ch.plus8.hikr.gappserver.Datastore;
+import ch.plus8.hikr.gappserver.DatastoreFactory;
 import ch.plus8.hikr.gappserver.ImageUtil;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.dropbox.DropboxAPI;
+import ch.plus8.hikr.gappserver.dropbox.DropboxImageEvaluator;
 import ch.plus8.hikr.gappserver.dropbox.DropboxUtil;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
-import ch.plus8.hikr.gappserver.hikr.HikrImageFetcher;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Cursor;
@@ -40,7 +43,10 @@ import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 
 public class ImageDownloadServlet extends HttpServlet {
-	private static final Logger logger = Logger.getLogger(HikrImageFetcher.class.getName());
+	
+	private static final long serialVersionUID = 1L;
+	
+	private static final Logger logger = Logger.getLogger(ImageDownloadServlet.class.getName());
 	private static final int MAX_COUNT = 5;
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -52,7 +58,7 @@ public class ImageDownloadServlet extends HttpServlet {
 
 		GAEFeedRepository feedRepository = new GAEFeedRepository();
 		feedRepository.init();
-		
+
 		logger.info("ImageDownloadServlet called");
 
 		Query query = new Query("FeedItem");
@@ -73,9 +79,7 @@ public class ImageDownloadServlet extends HttpServlet {
 			}
 		}
 		fetchOptions.limit(5);
-
-		HashMap<String, DropboxAPI> dropboxApiCache = new HashMap<String, DropboxAPI>();
-		
+			
 		PreparedQuery prepare = dataStore.prepare(query);
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for (Entity entity : resultList) {
@@ -85,30 +89,58 @@ public class ImageDownloadServlet extends HttpServlet {
 
 				HTTPResponse bigImageResp = urlFetchService.fetch(new URL(bigImageUrl));
 				Image orgImageB = ImagesServiceFactory.makeImage(bigImageResp.getContent());
-				if(new Long(1).equals(entity.getProperty("dropboxThumb"))) {
+				
+				Datastore datastore = DatastoreFactory.createDatastore(new Long((Long)entity.getProperty("img2A")*-1), entity);
+				if(datastore == null) {
+					throw new IllegalArgumentException("No processor for image upload found:" +entity.getProperty("img2A"));
+				}
+				
+				if(datastore.createImage2(entity, orgImageB)) {
+					feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
+				} else {
+					feedRepository.increaseStatus(entity, true);
+				}
+				
+/*				if (new Long(Util.DATASTORE_DROPBOX*-1).equals(entity.getProperty("img2A"))) {
 					String dropboxUid = entity.getProperty("author").toString();
 					DropboxAPI dropboxAPI = dropboxApiCache.get(dropboxUid);
-					if(dropboxAPI == null) {
+					if (dropboxAPI == null) {
 						dropboxAPI = DropboxUtil.createDropboxApi(dropboxUid);
 						dropboxApiCache.put(dropboxUid, dropboxAPI);
 					}
 					String[] fileInfo = DropboxUtil.fileName(entity.getProperty("link").toString());
-					String thumbName = fileInfo[1]+"-img2."+fileInfo[2];
+					String thumbName = fileInfo[1] + "-img2." + fileInfo[2];
 					Image thumb = ImageUtil.thumb(thumbName, 350, 350, imagesService, orgImageB);
-					
-					DropboxEntity thumbDropboxEntity = dropboxAPI.uploadImage(fileInfo[0], "/thumbs/"+thumbName, thumb);
+
+					DropboxEntity thumbDropboxEntity = dropboxAPI.uploadImage(fileInfo[0], "/thumbs/" + thumbName, thumb);
 					DropboxLink media = dropboxAPI.media(thumbDropboxEntity.path);
+
+					entity.setProperty("img2A", Util.DATASTORE_DROPBOX);
+					entity.setUnindexedProperty("img2", thumbDropboxEntity.path);
+					entity.setUnindexedProperty("img2Link", media.url);
+
+					entity.setUnindexedProperty("dropboxThumb", null);
+					feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
+				} else if(new Long(Util.DATASTORE_APPENGINE*-1).equals(entity.getProperty("img2A"))){
+
+					Datastore ds= DatastoreFactory.createDatastore((Long)entity.getProperty("img2A"), entity);
+					if(ds != null)
+						ds.deleteImage2(entity);
 					
-			        entity.setProperty("img2A", Integer.valueOf(1));
-			        entity.setUnindexedProperty("img2Link", media.url);
-			        
-					feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
-					dataStore.put(entity);
-				} else if (ImageUtil.transformToImg2(fileService, imagesService, blobstoreService, entity, orgImageB)) {
-					feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
+					BlobKey resizedBlobKey = ImageUtil.transformToImg2(fileService, imagesService, blobstoreService, entity, orgImageB);
+					if (resizedBlobKey != null) {
+						entity.setProperty("img2A", Util.DATASTORE_APPENGINE);
+						entity.setUnindexedProperty("img2", resizedBlobKey);
+						entity.setUnindexedProperty("img2Link", imagesService.getServingUrl(resizedBlobKey));
+						feedRepository.setStatus(entity, Util.ITEM_STATUS_READY, true);
+					} else {
+						throw new IllegalStateException("Could not transform img2.");
+					}
+
 				} else {
-					throw new IllegalStateException("Could not transform img2.");
+					throw new IllegalArgumentException("No processor for image download found:" +entity.getProperty("img2A"));
 				}
+*/
 			} catch (Exception e) {
 				resp.getWriter().write("Could not process image download: " + entity.getProperty("imageLink").toString() + " from: " + entity.getProperty("link").toString());
 				logger.log(Level.SEVERE, "Could not process image download: " + entity.getProperty("imageLink").toString() + " from: " + entity.getProperty("link").toString(), e);

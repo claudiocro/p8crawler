@@ -12,7 +12,7 @@ public class FeedItemBasic {
 	public String feedLink;
 	
 	public String imageLink = null;
-	//public int imageLinkA = 0; 
+	public Long img1A = Util.ZERO; 
 	
 	public String authorName;
 	public String authorLink;
@@ -22,7 +22,7 @@ public class FeedItemBasic {
 	public FeedItemBasic(){}
 	
 	public FeedItemBasic(Date publishedDate, String source, String author, String authorName, 
-			String authorLink, String link, String title, String feedLink,String imageLink, int imageLinkA) {
+			String authorLink, String link, String title, String feedLink,String imageLink, Long img1A) {
 		
 		this.link = link;
 		this.publishedDate = publishedDate;
@@ -32,7 +32,7 @@ public class FeedItemBasic {
 		this.feedLink = feedLink;
 		
 		this.imageLink = imageLink;
-		//this.imageLinkA = imageLinkA;
+		this.img1A = img1A;
 
 		this.authorName = authorName;
 		this.authorLink = authorLink;
