@@ -25,6 +25,7 @@ public class HikrImageEvaluator extends ImageEvaluator {
 	public boolean evaluate(FeedRepository feedRepository, Entity entity) throws Exception {
 		String imageLink = evalImageFrom(urlFetchService, entity.getProperty("link").toString());
 		if(imageLink != null) {
+			entity.setProperty("img2A", Util.DATASTORE_APPENGINE*-1);
 			feedRepository.updateImageLinkAndProcess(entity, imageLink, Util.DATASTORE_UNKNOWN, null, true);
 			return true;
 		}

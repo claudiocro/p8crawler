@@ -70,7 +70,7 @@ public class DropboxDatastore extends Datastore {
 	    			dropboxAPI.delete(imgKey);
 	    			return true;
 				} catch (DropboxException de) {
-					if(de.getStatusCode() == DropboxAPI.STATUS_404)
+					if(de.getStatusCode() == DropboxAPI.STATUS_404) //not found
 						return true;
 					else 
 						throw new IllegalArgumentException("Could not delete image from dropbox: "+imgKey,de);

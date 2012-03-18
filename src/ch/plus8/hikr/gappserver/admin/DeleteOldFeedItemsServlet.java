@@ -35,6 +35,10 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     String timeType = req.getParameter("timeType");
     String timeValue = req.getParameter("timeValue");
     boolean delete = "1".equals(req.getParameter("delete"));
+    
+    boolean deleteImage = (req.getParameter("deleteImage") != null && "1".equals(req.getParameter("deleteImage")));
+    boolean deleteImg2 = (req.getParameter("deleteImg2") != null && "1".equals(req.getParameter("deleteImg2")));
+    
 
     if ((source == null && cat == null) || (timeType == null) || ((!"M".equals(timeType)) && (!"D".equals(timeType))) || (timeValue == null) || (!Util.isInt(timeValue))) {
       logger.log(Level.SEVERE, "invalidParams");
@@ -83,9 +87,9 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     for (Entity entity : resultList) {
       try {
     	if(delete)
-    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete);
+    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete, deleteImage, deleteImg2);
     	else if(!delete && !Util.ITEM_STATUS_DELETED.equals(entity.getProperty("status")))
-    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete);
+    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete, deleteImage, deleteImg2);
     	else {
     		logger.info("Skip mark deleted: "+entity.getKey().getName());
     	}

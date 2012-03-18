@@ -153,7 +153,7 @@ public class DropboxSyncher extends HttpServlet {
 						QueryResultIterable<Entity> results = prepare.asQueryResultIterable();
 						for(Entity oldEntity : results) {
 							if(!presentKeys.contains(oldEntity.getProperty("author").toString()+oldEntity.getProperty("link")+"::"+oldEntity.getProperty("dropboxRev"))) {
-								Scheduler.scheduleDeleteItem(oldEntity.getKey().getName(), true);
+								Scheduler.scheduleDeleteItem(oldEntity.getKey().getName(), true, true, true);
 							}
 						}
 						

@@ -1,10 +1,7 @@
 package ch.plus8.hikr.gappserver;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import ch.plus8.hikr.gappserver.admin.ImageDownloadServlet;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
@@ -32,14 +29,7 @@ public class AppengineDatastore extends Datastore {
 	
 	@Override
 	protected boolean deleteImageItem(Entity entity) {
-		if(Util.DATASTORE_APPENGINE.equals(entity.getProperty("img1A"))) {
-			BlobKey img1Key = (BlobKey)entity.getProperty("img1");
-	    	if(img1Key != null) {
-	    		blobstoreService.delete(img1Key);
-	    	}
-	    	return true;
-		}
-		throw new IllegalArgumentException("Datastore type is wrong:"+entity.getProperty("img1A"));
+		return delete(entity,"img1A", "img1");
 	}
 	
 	
@@ -47,15 +37,7 @@ public class AppengineDatastore extends Datastore {
 
 	@Override
 	protected boolean deleteImg2(Entity entity) {
-		if(Util.DATASTORE_APPENGINE.equals(entity.getProperty("img2A"))) {
-			BlobKey img2Key = (BlobKey)entity.getProperty("img2");
-	    	if(img2Key != null) {
-	    		blobstoreService.delete(img2Key);
-	    	}
-	    	return true;
-		}
-		throw new IllegalArgumentException("Datastore type is wrong:"+entity.getProperty("img2"));
-		
+		return delete(entity,"img2A", "img2");
 	}
 
 	

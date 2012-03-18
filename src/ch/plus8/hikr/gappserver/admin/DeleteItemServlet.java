@@ -16,7 +16,12 @@ public class DeleteItemServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {  
     	GAEFeedRepository feedRepository = new GAEFeedRepository();
 		feedRepository.init();
-		feedRepository.deleteByKey(req.getParameter("key"), "1".equals(req.getParameter("delete")), true, true);
+		
+		boolean delete = (req.getParameter("delete") != null && "1".equals(req.getParameter("delete")));
+		boolean deleteImage = (req.getParameter("deleteImage") != null && "1".equals(req.getParameter("deleteImage")));
+	    boolean deleteImg2 = (req.getParameter("deleteImg2") != null && "1".equals(req.getParameter("deleteImg2")));
+	    
+		feedRepository.deleteByKey(req.getParameter("key"), delete, deleteImage, deleteImg2);
     }  
     
     @Override

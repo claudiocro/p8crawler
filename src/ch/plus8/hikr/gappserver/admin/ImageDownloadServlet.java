@@ -52,10 +52,7 @@ public class ImageDownloadServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
 		DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
-		FileService fileService = FileServiceFactory.getFileService();
-		ImagesService imagesService = ImagesServiceFactory.getImagesService();
-		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-
+	
 		GAEFeedRepository feedRepository = new GAEFeedRepository();
 		feedRepository.init();
 
@@ -91,6 +88,11 @@ public class ImageDownloadServlet extends HttpServlet {
 				Image orgImageB = ImagesServiceFactory.makeImage(bigImageResp.getContent());
 				
 				Datastore datastore = DatastoreFactory.createDatastore(new Long((Long)entity.getProperty("img2A")*-1), entity);
+				if(datastore == null) {
+					logger.log(Level.FINE, "Use appengine as default datastore for img2");
+					datastore = DatastoreFactory.createDatastore(new Long(Util.DATASTORE_APPENGINE), entity);
+				}
+				
 				if(datastore == null) {
 					throw new IllegalArgumentException("No processor for image upload found:" +entity.getProperty("img2A"));
 				}

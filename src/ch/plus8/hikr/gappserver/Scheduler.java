@@ -76,13 +76,19 @@ public class Scheduler
     queue.add(param);
   }
 
-  public static final void scheduleDeleteItem(String key, boolean forceDelete)
+  public static final void scheduleDeleteItem(String key, boolean forceDelete, boolean deleteImage, boolean deleteImg2)
   {
     logger.info("Schedule: /p8admin/fetchImage: " + key);
     TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/deleteItem");
     param.param("key", key);
     if(forceDelete)
     	param.param("delete", "1");
+    
+    if(deleteImage)
+    	param.param("deleteImage", "1");
+    
+    if(deleteImg2)
+    	param.param("deleteImg2", "1");
 
     Queue queue = QueueFactory.getQueue("deleteItem-queue");
     queue.add(param);

@@ -64,7 +64,9 @@ public class LomoImporterServlet extends HttpServlet {
 			if(req.getParameter("page") != null)
 				page = Integer.valueOf(req.getParameter("page"));
 			
-			
+			//if(page != 0)
+			//	return;
+				
 			DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
 				
 			
@@ -86,33 +88,34 @@ public class LomoImporterServlet extends HttpServlet {
 					logger.log(Level.WARNING, "No data is imported because feed is empty: " + url);
 				else {
 					
-					if(lomo.photos != null)
-					for(Photo photo : lomo.photos) {
-						if(photo.assets.large != null) {
-							Asset asset = photo.assets.large;
-							Key key = GAEFeedRepository.createKey(photo.url);
-							try {
-								Entity entity;
+					if(lomo.photos != null) {
+						for(Photo photo : lomo.photos) {
+							if(photo.assets.large != null) {
+								Asset asset = photo.assets.large;
+								Key key = GAEFeedRepository.createKey(photo.url);
 								try {
-									entity = dataStore.get(key);
-									String supCategory = supcategory(type);
-									if(supCategory != null) {
-										feedRepository.addToCategories(key, entity, supCategory);
-									}									
-								}catch (EntityNotFoundException e) {
-									FeedItemBasic item = new FeedItemBasic();
-									if(LomoUtil.fillEntity(item,lomo,photo,asset)) {	
-//										if(photo.camera != null && !Util.isBlank(photo.camera.name))
-//											entity.setProperty("camera", photo.camera.name);
-										
-										feedRepository.storeFeed(item, categories(type));
+									Entity entity;
+									try {
+										entity = dataStore.get(key);
+										String supCategory = supcategory(type);
+										if(supCategory != null) {
+											feedRepository.addToCategories(key, entity, supCategory);
+										}									
+									}catch (EntityNotFoundException e) {
+										FeedItemBasic item = new FeedItemBasic();
+										if(LomoUtil.fillEntity(item,lomo,photo,asset)) {	
+	//										if(photo.camera != null && !Util.isBlank(photo.camera.name))
+	//											entity.setProperty("camera", photo.camera.name);
+											
+											feedRepository.storeFeed(item, categories(type));
+										}
 									}
+									
+								}catch(Exception e1) {
+									logger.log(Level.SEVERE, "could not store lomo feed: " + photo.id ,e1);
 								}
 								
-							}catch(Exception e1) {
-								logger.log(Level.SEVERE, "could not store lomo feed: " + photo.id ,e1);
 							}
-							
 						}
 					}
 					
