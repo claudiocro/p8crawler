@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="ch.plus8.hikr.gappserver.admin.*" %>
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
@@ -8,6 +9,7 @@
 <%
    UserService userService = UserServiceFactory.getUserService();
    if (userService.isUserLoggedIn()) {
+   	UserUtils.createUser();
 %>
     <script type="text/javascript" src="sample/sample.nocache.js"></script>
     <script type="text/javascript">

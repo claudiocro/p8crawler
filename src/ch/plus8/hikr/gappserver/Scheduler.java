@@ -78,7 +78,7 @@ public class Scheduler
 
   public static final void scheduleDeleteItem(String key, boolean forceDelete, boolean deleteImage, boolean deleteImg2)
   {
-    logger.info("Schedule: /p8admin/fetchImage: " + key);
+    logger.info("Schedule: /p8admin/fetchImage: " + key+" delete:"+forceDelete+" deleteImage:"+deleteImage+" deleteImg2:"+deleteImg2);
     TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/deleteItem");
     param.param("key", key);
     if(forceDelete)
@@ -94,7 +94,7 @@ public class Scheduler
     queue.add(param);
   }
 
-  public static void scheduleDeleteOldFeedItems(String cursor, String source, String cat, String timeType, String timeValue, boolean forceDelete)
+  public static void scheduleDeleteOldFeedItems(String cursor, String source, String cat, String timeType, String timeValue, boolean forceDelete, boolean deleteImage, boolean deleteImg2)
   {
     logger.info("Schedule: /p8admin/deleteOldItems: " + source);
     TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/deleteOldItems");
@@ -108,6 +108,12 @@ public class Scheduler
     if(forceDelete)
     	param.param("delete", "1");
 
+    if(deleteImage)
+    	param.param("deleteImage", "1");
+    
+    if(deleteImg2)
+    	param.param("deleteImg2", "1");
+    
     if (cursor != null) {
       param.param("cursor", cursor);
     }

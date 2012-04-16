@@ -1,7 +1,9 @@
 package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +22,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @SuppressWarnings("serial")
 public class DeleteBlobstore extends HttpServlet {
 
-	private int MAX_DEL = 1000;
+	private int MAX_DEL = 500;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,13 +42,21 @@ public class DeleteBlobstore extends HttpServlet {
 		int i = 0;
 		
 		Queue delqueue = QueueFactory.getQueue("deleteItem-queue");
+		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		
+		Set<BlobKey> keys = new HashSet<BlobKey>();
 		while (i < MAX_DEL && iterator.hasNext()) {
-			TaskOptions params = TaskOptions.Builder.withUrl("/p8admin/deleteBlobstore");
+			/*TaskOptions params = TaskOptions.Builder.withUrl("/p8admin/deleteBlobstore");
 			params.param("blob", iterator.next().getBlobKey().getKeyString());
 			delqueue.add(params);
+			*/
 			i++;
+			//keys.add(iterator.next().getBlobKey());
+			blobstoreService.delete(iterator.next().getBlobKey());
 		}
+		//blobstoreService.delete(keys.toArray(new BlobKey[MAX_DEL]));
+		
+		
 		
 		if (iterator.hasNext()) {
 			Queue queue = QueueFactory.getDefaultQueue();

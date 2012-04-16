@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.images.Image;
@@ -36,6 +37,8 @@ import com.google.appengine.api.urlfetch.URLFetchService;
 public class DropboxUtil {
 
 	private static final Logger logger = Logger.getLogger(DropboxUtil.class.getName());
+	
+	public static final String PROP_DROPBOX_REVISION = "dropboxRev";
 	
 	public static String[] fileName(String path) {
 		Pattern p = Pattern.compile("^(.*)/(.*)\\.(.*)$");
@@ -69,7 +72,7 @@ public class DropboxUtil {
 		
 		entity.authorLink = account.referralLink;
 
-		additional.put("dropboxRev", cnt.rev);
+		additional.put(PROP_DROPBOX_REVISION, cnt.rev);
 
 		return true;
 	}
@@ -101,24 +104,26 @@ public class DropboxUtil {
 		return false;
 	}
 	
-	public static DropboxAPI createDropboxApi(String dropboxUid) {
+	public static DropboxAPI createDropboxApi(Key dropboxUserKey) {
 		OAuthConsumer consumer = new AppEngineOAuthConsumer(DropboxSyncher.APP_KEY, DropboxSyncher.APP_SECRET);
 		DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 		
 		try {
-			Entity dropboxUserEntity = datastoreService.get(KeyFactory.createKey(DropboxSyncher.DROPBOXUSER_KIND, dropboxUid));
+			Entity dropboxUserEntity = datastoreService.get(dropboxUserKey);
 			consumer.setTokenWithSecret((String)dropboxUserEntity.getProperty("token"), (String)dropboxUserEntity.getProperty("tokenSecret"));
-			
-			
 			
 			return new DropboxAPI(consumer);
 		} catch (EntityNotFoundException e) {
-			logger.severe("Dropbox user: " + dropboxUid + " not found.");
+			logger.severe("Dropbox user: " + dropboxUserKey + " not found.");
 		}
 		
 		/*consumer.setTokenWithSecret("fc4vpaho6wuo1wj","lm19zvmjxloibzl");
 		return new DropboxAPI(consumer);*/
 		return null;
+	}
+	
+	public static DropboxAPI createDropboxApi(Key userKey, String dropboxUid) {
+		return createDropboxApi(KeyFactory.createKey(userKey, DropboxSyncher.DROPBOXUSER_KIND, dropboxUid));
 	}
 	
 	public static String getDropboxUidFromCategories(Object categories) {

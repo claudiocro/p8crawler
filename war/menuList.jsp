@@ -8,6 +8,8 @@
 <%@ page import="com.google.appengine.api.images.*" %>
 
 <%@ page import="ch.plus8.hikr.gappserver.repository.*" %>
+<%@ page import="ch.plus8.hikr.gappserver.admin.*" %>
+
 <%@ page import="com.google.appengine.api.datastore.Query.FilterOperator" %>
 <%@ page import="com.google.appengine.api.datastore.Query.SortDirection" %>
 
@@ -38,7 +40,11 @@
     	fetchOptions.startCursor(Cursor.fromWebSafeString(startCursor));  
 	}  
   
+  	if(request.getParameter("group") != null)
+  		query.addFilter("group", FilterOperator.EQUAL, request.getParameter("group"));
+		
     QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
+    
 %>
 
   <table>
@@ -54,7 +60,8 @@
   </thead>
   <tbody>
 <%  
-    for (Entity entity : results) {  
+    for (Entity entity : results) {
+     
 %>  
     <tr>
       <td><img height=40 width=40 src="<%= entity.getProperty("image")%>" </img></td>

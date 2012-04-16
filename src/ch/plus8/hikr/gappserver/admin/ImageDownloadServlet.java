@@ -2,7 +2,7 @@ package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,31 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import ch.plus8.hikr.gappserver.Datastore;
 import ch.plus8.hikr.gappserver.DatastoreFactory;
-import ch.plus8.hikr.gappserver.ImageUtil;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
-import ch.plus8.hikr.gappserver.dropbox.DropboxAPI;
-import ch.plus8.hikr.gappserver.dropbox.DropboxImageEvaluator;
-import ch.plus8.hikr.gappserver.dropbox.DropboxUtil;
-import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
-import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
-import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.images.Image;
-import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;

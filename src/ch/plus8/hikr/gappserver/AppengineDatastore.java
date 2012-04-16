@@ -61,12 +61,17 @@ public class AppengineDatastore extends Datastore {
 	
 	
 	protected boolean delete(Entity entity, String type, String val) {
+		logger.fine("Delete image type: "+type+" / "+entity.getProperty(type));
 		if(Util.DATASTORE_APPENGINE.equals(entity.getProperty(type))) {
 			BlobKey imgKey = (BlobKey)entity.getProperty(val);
 	    	if(imgKey != null) {
+	    		logger.fine("Delete "+type+" :"+imgKey);
 	    		blobstoreService.delete(imgKey);
+	    		return true;
+	    	} else {
+	    		logger.info("Image key is null "+type+" :"+val);
+	    		return true;
 	    	}
-	    	return true;
 		}
 		throw new IllegalArgumentException("Datastore type is wrong:"+entity.getProperty(type));
 	}

@@ -3,17 +3,21 @@
 <%@ page import="com.google.appengine.api.blobstore.*" %>
 <%@ page import="com.google.appengine.api.datastore.*" %>
 <%@ page import="java.util.UUID" %>
+
+<%@ page import="ch.plus8.hikr.gappserver.admin.*" %>
 <%
 
 boolean store = "1".equals(request.getParameter("store"));
 Entity entity = null;
 
-DatastoreService datastore = DatastoreServiceFactory.getDatastoreService(); 
+DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+ 
 Key key = null;
 if(!"".equals(request.getParameter("id")) && request.getParameter("id") != null) { 
-	key= KeyFactory.createKey("cnt:simple", request.getParameter("id"));
+	key= KeyFactory.createKey(UserUtils.getCurrentKeyFor(), "cnt:simple", request.getParameter("id"));
 } else{
-	key= KeyFactory.createKey("cnt:simple", UUID.randomUUID().toString());
+	key= KeyFactory.createKey(UserUtils.getCurrentKeyFor(), "cnt:simple", UUID.randomUUID().toString());
 }
 
 

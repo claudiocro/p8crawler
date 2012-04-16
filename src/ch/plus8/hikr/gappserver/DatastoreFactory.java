@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import ch.plus8.hikr.gappserver.dropbox.DropboxDatastore;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.images.Image;
 
 public class DatastoreFactory {
@@ -14,6 +16,7 @@ public class DatastoreFactory {
 	private static final HashMap<String, Datastore> cache =new HashMap<String, Datastore>();
 
 	public static Datastore createDatastore(Long datastore, Entity entity) {
+		logger.info("createDatastore for: "+datastore);
 		if(datastore.equals(Util.DATASTORE_APPENGINE)) {
 			if(cache.containsKey("appengine"))
 				return cache.get("appengine");
@@ -28,7 +31,7 @@ public class DatastoreFactory {
 			if(cache.containsKey(key))
 				return cache.get(key);
 			else {
-				Datastore ds = new DropboxDatastore(author);
+				Datastore ds = new DropboxDatastore((Key)entity.getProperty("sourceAuth"));
 				cache.put(key, ds);
 				return ds;
 			}
@@ -38,27 +41,9 @@ public class DatastoreFactory {
 			return null;
 		}
 		
-		logger.severe("Could not found datastore for type: " + datastore);
+		logger.warning("Could not found datastore for type: " + datastore);
 		throw new IllegalArgumentException("No datastore found for type:"+datastore);
 		
 	}
 	
-	private static class ZeroDatastore extends Datastore{
-
-		@Override
-		protected boolean deleteImageItem(Entity entity) {
-			return true;
-		}
-
-		@Override
-		protected boolean deleteImg2(Entity entity) {
-			return true;
-		}
-
-		@Override
-		protected boolean uploadImg2(Entity entity, Image orgImageB) {
-			return true;
-		}
-		
-	}
 }

@@ -5,12 +5,16 @@ import java.util.logging.Logger;
 
 import ch.plus8.hikr.gappserver.ImageEvaluator;
 import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
 import ch.plus8.hikr.repository.FeedRepository;
 
+import com.google.api.client.http.HttpResponseException;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.images.ImagesService;
@@ -37,11 +41,11 @@ public class DropboxImageEvaluator extends ImageEvaluator {
 	}
 	
 	public boolean evaluate(FeedRepository feedRepository, Entity entity) throws Exception {
-		String dropboxUid = entity.getProperty("author").toString();
-		DropboxAPI dropboxAPI = dropboxApiCache.get(dropboxUid);
+		Key sourceAuth = (Key)entity.getProperty("sourceAuth");
+		DropboxAPI dropboxAPI = dropboxApiCache.get(sourceAuth.toString());
 		if(dropboxAPI == null) {
-			dropboxAPI = DropboxUtil.createDropboxApi(dropboxUid);
-			dropboxApiCache.put(dropboxUid, dropboxAPI);
+			dropboxAPI = DropboxUtil.createDropboxApi(sourceAuth);
+			dropboxApiCache.put(sourceAuth.toString(), dropboxAPI);
 		}
 		
 		
@@ -52,14 +56,19 @@ public class DropboxImageEvaluator extends ImageEvaluator {
 			String thumbName = fileInfo[0]+"/thumbs/"+fileInfo[1]+"-img2." + fileInfo[2];
 			boolean thumbFound = false;
 			try {
-				DropboxLink thumbLink = dropboxAPI.media(thumbName);
+				DropboxLink thumbLink = null;
+				DropboxEntity metadata = dropboxAPI.metadata(thumbName);
+				if(metadata != null && metadata.bytes >0)
+					thumbLink = dropboxAPI.media(thumbName);
+				
 				if(thumbLink != null) {
 					entity.setProperty("img2A", Util.DATASTORE_DROPBOX);
 					entity.setUnindexedProperty("img2", thumbName);
 					entity.setUnindexedProperty("img2Link", thumbLink.url);
 					thumbFound = true;
 				}
-			} catch(Exception e) {
+			} 
+			catch(Exception e) {
 				logger.info("No thumb found on dropbox");
 			}
 			

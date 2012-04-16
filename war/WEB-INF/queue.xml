@@ -17,7 +17,7 @@
 	
 	<queue>
 		<name>fetchImage-queue</name>
-		<rate>10/m</rate>
+		<rate>30/m</rate>
 		<retry-parameters>
  			<task-retry-limit>3</task-retry-limit>
  		</retry-parameters>

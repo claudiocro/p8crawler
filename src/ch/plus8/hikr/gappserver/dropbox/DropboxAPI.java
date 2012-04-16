@@ -57,6 +57,8 @@ public class DropboxAPI {
 	}
 	
 	public DropboxEntity metadata(String path) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
+		if(path.startsWith("/"))
+			path = path.substring(1);
 		String url = "https://api.dropbox.com/1/metadata/dropbox/"+encodePath(path);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept("*/*");
@@ -64,14 +66,25 @@ public class DropboxAPI {
 		HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(url));
 		request.addParser(parser);
 		request.setHeaders(headers);
-		
-		consumer.sign(request);
-		DropboxEntity metadata = request.execute().parseAs(DropboxEntity.class);
-		return metadata;
+
+		try {
+			consumer.sign(request);
+			DropboxEntity metadata = request.execute().parseAs(DropboxEntity.class);
+			return metadata;
+		} catch(HttpResponseException e) {
+			if(e.getResponse().getStatusCode() == 404) //not found;
+				return null;
+			else 
+				throw e;
+		}
+
 	}
 	
 	public DropboxLink share(String path) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
-		String url = "https://api.dropbox.com/1/shares/dropbox"+encodePath(path);
+		if(path.startsWith("/"))
+			path = path.substring(1);
+		
+		String url = "https://api.dropbox.com/1/shares/dropbox/"+encodePath(path);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept("*/*");
 
@@ -85,7 +98,10 @@ public class DropboxAPI {
 	}
 	
 	public DropboxLink media(String path) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
-		String url = "https://api.dropbox.com/1/media/dropbox"+encodePath(path);
+		if(path.startsWith("/"))
+			path = path.substring(1);
+		
+		String url = "https://api.dropbox.com/1/media/dropbox/"+encodePath(path);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept("*/*");
 
@@ -99,7 +115,10 @@ public class DropboxAPI {
 	}
 	
 	public DropboxEntity uploadImage(String path, String thumbName, Image thumb) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
-		String url = "https://api-content.dropbox.com/1/files_put/dropbox"+encodePath(path+thumbName);
+		if(path.startsWith("/"))
+			path = path.substring(1);
+		
+		String url = "https://api-content.dropbox.com/1/files_put/dropbox/"+encodePath(path+thumbName);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept("*/*");
 

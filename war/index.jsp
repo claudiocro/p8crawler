@@ -2,6 +2,7 @@
 <%@ page import="com.google.appengine.api.*" %>
 <%@ page import="com.google.appengine.api.blobstore.*" %>
 <%@ page import="com.google.appengine.api.datastore.*" %>
+<%@ page import="ch.plus8.hikr.gappserver.admin.*" %>
 <%@ page import="ch.plus8.hikr.gappserver.repository.*" %>
 <%@ page import="com.google.appengine.api.datastore.Query.FilterOperator" %>
 <%@ page import="com.google.appengine.api.datastore.Query.SortDirection" %>
@@ -416,12 +417,19 @@
   	<div id="mainGallery"></div>
     <div id="mainNavigationContent" style="opacity: 0;">
 <%
+
+	String u = request.getParameter("u");
+	if(u == null)
+		 u = "FD88335391E8948A2CC50CE79D7E0CFE";
+		 
+
 	String ctx = request.getParameter("ctx");
 	if(ctx == null)
 		 ctx = "photography-stream";
 
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();  
     Query query = new Query("cnt:simple");
+    query.setAncestor(UserUtils.getUserKeyById(u));
     query.addFilter("group", FilterOperator.EQUAL, ctx);
     query.addSort("sort", SortDirection.ASCENDING);
     

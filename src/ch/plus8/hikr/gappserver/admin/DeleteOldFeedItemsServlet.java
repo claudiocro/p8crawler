@@ -19,6 +19,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -39,6 +40,7 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     boolean deleteImage = (req.getParameter("deleteImage") != null && "1".equals(req.getParameter("deleteImage")));
     boolean deleteImg2 = (req.getParameter("deleteImg2") != null && "1".equals(req.getParameter("deleteImg2")));
     
+    logger.info("delete old items delete:"+delete+" deleteImage:"+deleteImage+" deleteImg2:"+deleteImg2);
 
     if ((source == null && cat == null) || (timeType == null) || ((!"M".equals(timeType)) && (!"D".equals(timeType))) || (timeValue == null) || (!Util.isInt(timeValue))) {
       logger.log(Level.SEVERE, "invalidParams");
@@ -87,9 +89,9 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     for (Entity entity : resultList) {
       try {
     	if(delete)
-    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete, deleteImage, deleteImg2);
+    		Scheduler.scheduleDeleteItem(KeyFactory.keyToString(entity.getKey()), delete, deleteImage, deleteImg2);
     	else if(!delete && !Util.ITEM_STATUS_DELETED.equals(entity.getProperty("status")))
-    		Scheduler.scheduleDeleteItem(entity.getKey().getName(), delete, deleteImage, deleteImg2);
+    		Scheduler.scheduleDeleteItem(KeyFactory.keyToString(entity.getKey()), delete, deleteImage, deleteImg2);
     	else {
     		logger.info("Skip mark deleted: "+entity.getKey().getName());
     	}
@@ -99,7 +101,7 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     }
 
     if (!resultList.isEmpty())
-      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, cat, timeType, timeValue, delete);
+      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, cat, timeType, timeValue, delete, deleteImage, deleteImg2);
   }
 
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)

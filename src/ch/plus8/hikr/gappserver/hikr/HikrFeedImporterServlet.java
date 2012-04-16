@@ -66,6 +66,7 @@ public class HikrFeedImporterServlet extends HttpServlet {
 					FeedItemBasic item = new FeedItemBasic();
 					
 					if(GoogleFeedUtil.fillEntity(item, entry, feed.feedLink(), "hikr")) {
+						resp.getWriter().write("store<br>");
 						feedRepository.storeFeed(item, categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL);
 					}
 				}
@@ -75,7 +76,9 @@ public class HikrFeedImporterServlet extends HttpServlet {
 			logger.log(Level.SEVERE, "Error request hikr feed: " + HIKR_FOTO_FEED,e);
 		}
 		
+		resp.getWriter().write("scedule<br>");
 		Scheduler.scheduleImageEvaluator();
+		resp.getWriter().write("DONE<br>");
 	}
 
 	@Override

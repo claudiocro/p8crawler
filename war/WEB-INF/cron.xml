@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-  <!--  cron>
+
+  <cron>
     <url>/hikr/feedImport</url>
     <description>Import Hikr feed</description>
     <schedule>every 360 minutes</schedule>
@@ -10,85 +11,121 @@
   <cron>
     <url>/gplus/personsActivitiesImport</url>
     <description>google+ persons activities import</description>
-    <schedule>every 180 minutes</schedule>
+    <schedule>every 240 minutes</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=365project</url>
+    <description>google+ #365project</description>
+    <schedule>every day 03:40</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=monochromemonday</url>
     <description>google+ #monochromemonday</description>
-    <schedule>every monday 23:20</schedule>
+    <schedule>every tuesday 06:10</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=mountainmonday</url>
     <description>google+ #mountainmonday</description>
-    <schedule>every monday 23:40</schedule>
+    <schedule>every tuesday 06:20</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=treetuesday</url>
     <description>google+ #treetuesday</description>
-    <schedule>every tuesday 23:20</schedule>
+    <schedule>every wednesday 06:10</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=portraittuesday</url>
     <description>google+ #portraittuesday</description>
-    <schedule>every tuesday 23:40</schedule>
+    <schedule>every wednesday 06:20</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=womenwednesday</url>
     <description>google+ #womenwednesday</description>
-    <schedule>every wednesday 23:20</schedule>
+    <schedule>every thursday 06:00</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=widewednesdaypanorama</url>
     <description>google+ #widewednesdaypanorama</description>
-    <schedule>every wednesday 23:40</schedule>
+    <schedule>every thursday 06:10</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=longexposurethursday</url>
     <description>google+ #longexposurethursday</description>
-    <schedule>every thursday 23:20</schedule>
+    <schedule>every friday 06:00</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=travelthursday</url>
     <description>google+ #travelthursday</description>
-    <schedule>every thursday 23:40</schedule>
+    <schedule>every friday 06:10</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
    <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=fisheyefriday</url>
     <description>google+ #fisheyefriday</description>
-    <schedule>every friday 23:00</schedule>
+    <schedule>every saturday 06:00</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=fashionfriday</url>
     <description>google+ #fashionfriday</description>
-    <schedule>every friday 23:20</schedule>
+    <schedule>every saturday 06:10</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
   <cron>
     <url>/gplus/hashTagActivitiesImporter?hashtag=fallfriday</url>
     <description>google+ #fallfriday</description>
-    <schedule>every friday 23:40</schedule>
+    <schedule>every saturday 06:20</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <!-- cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=colorsonsaturday</url>
+    <description>google+ #fallfriday</description>
+    <schedule>every sunday 06:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=paintitsaturday</url>
+    <description>google+ #fallfriday</description>
+    <schedule>every sunday 06:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron -->
+  
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=sepiasunday</url>
+    <description>google+ #sepiasunday</description>
+    <schedule>every monday 06:00</schedule>
+    <timezone>Europe/Zurich</timezone>
+  </cron>
+  
+  <cron>
+    <url>/gplus/hashTagActivitiesImporter?hashtag=skysunday</url>
+    <description>google+ #skysunday</description>
+    <schedule>every monday 06:10</schedule>
     <timezone>Europe/Zurich</timezone>
   </cron>
   
@@ -121,8 +158,7 @@
     <description>fetch images and after convert it</description>
     <schedule>every 35 minutes</schedule>
     <timezone>Europe/Zurich</timezone>
-  </cron -->
-  
+  </cron>
   
   
   

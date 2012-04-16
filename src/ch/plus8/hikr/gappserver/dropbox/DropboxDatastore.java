@@ -10,6 +10,7 @@ import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
@@ -22,9 +23,9 @@ public class DropboxDatastore extends Datastore {
 	private DropboxAPI dropboxAPI;
 	private ImagesService imagesService;
 
-	public DropboxDatastore(String dropboxUid) {
-		logger.info("Create dropbox datastore: "+dropboxUid);
-		dropboxAPI = DropboxUtil.createDropboxApi(dropboxUid);
+	public DropboxDatastore(Key dropboxUserKey) {
+		logger.info("Create dropbox datastore: "+dropboxUserKey);
+		dropboxAPI = DropboxUtil.createDropboxApi(dropboxUserKey);
 		imagesService = ImagesServiceFactory.getImagesService();
 	}
 	
@@ -78,6 +79,7 @@ public class DropboxDatastore extends Datastore {
 	    			throw new IllegalArgumentException("Could not delete image from dropbox: "+imgKey,e);
 	    		}
 			} else {
+				logger.info("Image key is null "+type+" :"+val);
 				return true;
 			}
 		}

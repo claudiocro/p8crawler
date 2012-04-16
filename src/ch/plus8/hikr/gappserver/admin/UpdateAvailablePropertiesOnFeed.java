@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -32,7 +33,7 @@ public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		
+			
 		Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
 		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
 		
@@ -51,48 +52,9 @@ public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 		PreparedQuery prepare = dataStore.prepare(query);
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for(Entity entity : resultList) {
-			
 			boolean update = false;
-			
-			if(entity.getProperty("imageLink") != null) {
-				entity.setProperty("img1A", 1);
-				update = true;
-			}
-			else {
-				entity.setProperty("img1A", 0);
-				update = true;
-			}
-			
-			if(entity.getProperty("img1") != null) {
-				entity.setProperty("img1A", 1);
-				update = true;
-			}
-			else {
-				entity.setProperty("img1A", 0);
-				update = true;
-			}
-			
-			if(entity.getProperty("img2") != null) {
-				entity.setProperty("img2A", 1);
-				update = true;
-			}
-			else {
-				entity.setProperty("img2A", 0);
-				update = true;
-			}
-			
-			if("hikr".equals(entity.getProperty("source"))) {
-				List categories = new ArrayList();
-				categories.add("mountain");
-				categories.add("nature");
-				entity.setProperty("categories", categories);
-			} else if("gplus".equals(entity.getProperty("source"))) {
-				List categories = new ArrayList();
-				categories.add("street");
-				categories.add("photographer");
-				entity.setProperty("categories", categories);
-			}
-			
+			update = oldUpdate(entity);
+						
 			if(update) {
 				dataStore.put(entity);
 			}
@@ -110,6 +72,62 @@ public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 		
 	}
 	
+	private boolean updateDropbox(Entity entity) {
+		boolean update = false;
+		
+		if("dropbox".equals(entity.getProperty("source")) && entity.getProperty("user") == null) {
+			entity.setProperty("authKey", KeyFactory.createKey("user", "claudiocro@gmail.com"));
+			update = true;
+		}
+		
+		return update;
+	}
+	
+	private boolean oldUpdate(Entity entity) {
+		boolean update = false;
+		
+		if(entity.getProperty("imageLink") != null) {
+			entity.setProperty("img1A", 1);
+			update = true;
+		}
+		else {
+			entity.setProperty("img1A", 0);
+			update = true;
+		}
+		
+		if(entity.getProperty("img1") != null) {
+			entity.setProperty("img1A", 1);
+			update = true;
+		}
+		else {
+			entity.setProperty("img1A", 0);
+			update = true;
+		}
+		
+		if(entity.getProperty("img2") != null) {
+			entity.setProperty("img2A", 1);
+			update = true;
+		}
+		else {
+			entity.setProperty("img2A", 0);
+			update = true;
+		}
+		
+		if("hikr".equals(entity.getProperty("source"))) {
+			List categories = new ArrayList();
+			categories.add("mountain");
+			categories.add("nature");
+			entity.setProperty("categories", categories);
+		} else if("gplus".equals(entity.getProperty("source"))) {
+			List categories = new ArrayList();
+			categories.add("street");
+			categories.add("photographer");
+			entity.setProperty("categories", categories);
+		}
+
+		return update;
+	}
+
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		doGet(req, resp);

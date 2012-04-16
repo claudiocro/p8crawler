@@ -25,11 +25,16 @@ public class ImageUtil {
 
 		if (entity.getProperty("img1") != null) {
 			try {
-				blobstoreService.delete(new BlobKey[] { (BlobKey) entity.getProperty("img1") });
+				Datastore ds = DatastoreFactory.createDatastore((Long)entity.getProperty("img1A"), entity);
+				if(ds != null)
+					ds.deleteImage(entity);
+				
+				/*blobstoreService.delete(new BlobKey[] { (BlobKey) entity.getProperty("img1") });
 				entity.setProperty("img1", null);
 				entity.setProperty("img1A", Util.ZERO);
+				*/
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Could not delete img2 for: " + entity.getKey(), e);
+				logger.log(Level.SEVERE, "Could not delete img1 for: " + entity.getKey(), e);
 			}
 
 		}
@@ -59,7 +64,7 @@ public class ImageUtil {
 	}
 
 	public static BlobKey transformToImg2(FileService fileService, ImagesService imagesService, BlobstoreService blobstoreService, Entity entity, Image orgImage) throws IOException, InterruptedException {
-		logger.log(Level.FINE, "Create images for format img1: " + entity.getProperty("link"));
+		logger.log(Level.FINE, "Create images for format img2: " + entity.getProperty("link"));
 		
 		String thumbName = entity.getProperty("imageLink") + "-img2";
 		Image newImage1 = thumb(thumbName, 350, 350, imagesService, orgImage);

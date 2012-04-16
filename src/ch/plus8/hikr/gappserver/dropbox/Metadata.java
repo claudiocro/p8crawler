@@ -9,6 +9,9 @@ public class Metadata {
 	public static class DropboxEntity {
 		@Key("size")
 		public String size;
+		
+		@Key("bytes")
+		public int bytes;
 
 		@Key("hash")
 		public String hash;
