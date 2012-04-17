@@ -32,6 +32,7 @@ import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 
 @SuppressWarnings("serial")

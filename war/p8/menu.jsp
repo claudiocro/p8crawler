@@ -43,13 +43,11 @@ if(entity != null && entity.getProperty("content") instanceof String) {
 }
 
 %>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><head>
+<jsp:include page="defaultHeader.jsp" />
 
-</head>
-<body>
+<% if(entity != null){ %><h1>Gallery menu: <%=entity.getProperty("title")%></h1><% } %>
+<% if(entity == null){ %><h1>New gallery menu</h1><% } %>
+
 <div>
   <form action="menu.jsp" method="post">
     title: <input type="text" name="title" <% if(entity != null){ %> value="<%=entity.getProperty("title") %>"<% } %> ></input>
@@ -69,5 +67,4 @@ if(entity != null && entity.getProperty("content") instanceof String) {
     <input type="submit"></input>
   </form>
 </div>  
-</body>
-</html>
+<jsp:include page="defaultFooter.jsp" />

@@ -13,22 +13,21 @@
 <%@ page import="com.google.appengine.api.datastore.Query.FilterOperator" %>
 <%@ page import="com.google.appengine.api.datastore.Query.SortDirection" %>
 
-
-<html>
- <head>
-<%
-//   UserService userService = UserServiceFactory.getUserService();
-//   if (userService.isUserLoggedIn()) {
-%>
-  </head>
-  <body>
-  <div id="searchResult">
+<jsp:include page="defaultHeader.jsp" />
+<div style="position:relative;height:100%;">
+  <div class="cnt"><h1>Galleries menus</h1></div>
+  <div id="searchResult" class="cnt p8-scroll" style="top:50px;">
 <%  
   		
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();  
     Query query = new Query("cnt:simple");
-    		
+    query.setAncestor(UserUtils.getCurrentKeyFor());
+    
 	query.addSort("sort", SortDirection.ASCENDING);
+	
+	if(request.getParameter("group") != null)
+  		query.addFilter("group", FilterOperator.EQUAL, request.getParameter("group"));
+	
     PreparedQuery pq = datastore.prepare(query);  
     int pageSize = 30;  
   
@@ -39,10 +38,7 @@
     if (startCursor != null) {  
     	fetchOptions.startCursor(Cursor.fromWebSafeString(startCursor));  
 	}  
-  
-  	if(request.getParameter("group") != null)
-  		query.addFilter("group", FilterOperator.EQUAL, request.getParameter("group"));
-		
+  	
     QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
     
 %>
@@ -65,8 +61,8 @@
 %>  
     <tr>
       <td><img height=40 width=40 src="<%= entity.getProperty("image")%>" </img></td>
-      <td><a href="menu.jsp?id=<%= entity.getKey().getName()%>"><%= entity.getKey().getName()%></a></td>
-      <td><%= entity.getProperty("group")%></td>
+      <td><a href="p8/menu.jsp?id=<%= entity.getKey().getName()%>"><%= entity.getKey().getName()%></a></td>
+      <td><a href="p8/menuList.jsp?group=<%= entity.getProperty("group")%>"><%= entity.getProperty("group")%></a></td>
       <td><%= entity.getProperty("sort")%></td>
       <td><%= entity.getProperty("menu1_idx")%></td>
       <td><%= entity.getProperty("title")%></td>
@@ -78,4 +74,5 @@
   </table>
 
   </div>
-</html>
+</div>
+<jsp:include page="defaultFooter.jsp" />

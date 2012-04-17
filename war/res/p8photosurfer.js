@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.2
+ *  p8 photosurfer  0.9.4
  * 
  * Depends on:
  * 
@@ -238,6 +238,8 @@ $(".feedTitle", article).jTruncate({
 		clean : function() {
 			var self = this;
 			var elem = this.element;
+			
+			this.options._imageLoadTicket = this.options._imageLoadTicket + 1;
 			
 			self._setLoading(false);
 			
