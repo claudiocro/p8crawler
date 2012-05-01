@@ -1,3 +1,4 @@
+<%@ page import="ch.plus8.hikr.gappserver.admin.*" %>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -13,7 +14,7 @@
   <link href="res/jquery-ui.css" rel="stylesheet" type="text/css"/>
   <link href="res/style.css" rel="stylesheet" type="text/css"/>
   <link href="res/content1.css" rel="stylesheet" type="text/css"/>
-  <link href="p8/res/admin.css" rel="stylesheet" type="text/css"/>
+  <link href="/p8/res/admin.css" rel="stylesheet" type="text/css"/>
   <link href="res/colorbox.css" rel="stylesheet" type="text/css"/>
   <link href="res/jquery.jscrollpane.css" rel="stylesheet" type="text/css"/>
 	
@@ -25,9 +26,24 @@
   <script type="text/javascript" language="javascript" src="res/jquery.colorbox-min.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.mousewheel.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.jscrollpane.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.il18n.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.validate.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery.infoTip.js"></script>
+  
+  <script type="text/javascript" language="javascript" src="p8/res/ember-0.9.7.1.js"></script>
   
   <script type="text/javascript" language="javascript" src="res/p8core.js"></script>
   <script type="text/javascript" language="javascript" src="res/p8photosurfer.js"></script>
+  <script type="text/javascript" language="javascript" src="res/p8ui.js"></script>
+  <script type="text/javascript" language="javascript" src="/p8/res/p8ember-ui.js"></script>
+  <script type="text/javascript" language="javascript" src="/p8/res/admin.js"></script>
   
- 
+  <script type="text/javascript" language="javascript">
+ 	/*App.UserDto = Ember.Object.extend({
+		email: null,
+		id: null
+	});
+	*/
+	App.User = App.DatastoreDto.create({ email:null, id: <% if(UserUtils.isUserLoggedIn()) { %>"<%=UserUtils.getUserIdByCurrent()%>"<% } else {%>null<% } %> });
+	</script>
 </head>

@@ -156,6 +156,52 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/p8admin/fetchImage</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>DatastoreServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.client.service.DatastoreServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DatastoreServlet</servlet-name>
+		<url-pattern>/p8admin/client/datastore/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ContentGroupServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.client.service.ContentGroupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ContentGroupServlet</servlet-name>
+		<url-pattern>/p8admin/client/contentgroup</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>SimpleContentServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.client.service.SimpleContentServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SimpleContentServlet</servlet-name>
+		<url-pattern>/p8admin/client/simplecontent</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>GalleryServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.client.service.GalleryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GalleryServlet</servlet-name>
+		<url-pattern>/p8admin/client/gallery</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>FeedItemServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.client.service.FeedItemServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FeedItemServlet</servlet-name>
+		<url-pattern>/p8admin/client/feeditem</url-pattern>
+	</servlet-mapping>
+	
 	
 	<servlet>
 		<servlet-name>DeleteUserServlet</servlet-name>

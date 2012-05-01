@@ -23,6 +23,10 @@ public class UserUtils {
 
 	private static final Logger logger = Logger.getLogger(UserUtils.class.getName());
 	
+	public static boolean isUserLoggedIn() {
+		UserService userService = UserServiceFactory.getUserService();
+		return userService.isUserLoggedIn();
+	}
 	public static void createUser() {
 		UserService userService = UserServiceFactory.getUserService();
 		if(!userService.isUserLoggedIn()) {
@@ -67,7 +71,18 @@ public class UserUtils {
 			return entity.getKey();
 	}
 	
+	public static String getUserIdByCurrent() {
+		return getUserIdByKey(getCurrentKeyFor());
+	}
 	
+	public static String getUserIdByKey(Key userKey) {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		try {
+			return (String)ds.get(userKey).getProperty("id");
+		} catch (EntityNotFoundException e) {
+			return null;
+		}
+	}
 	
 	public static Entity getUserEntityFor(String email) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();

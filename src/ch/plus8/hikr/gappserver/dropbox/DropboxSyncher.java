@@ -92,7 +92,7 @@ public class DropboxSyncher extends HttpServlet {
 						UserUtils.getCurrentKeyFor(),
 						DROPBOXUSER_KIND, req.getParameter("uid")));
 				
-				dropboxUserEntity.setProperty("dropbboxUid", req.getParameter("uid"));
+				dropboxUserEntity.setProperty("dropboxUid", req.getParameter("uid"));
 				dropboxUserEntity.setProperty("token", req.getParameter("token"));
 				dropboxUserEntity.setProperty("tokenSecret", req.getParameter("tokenSecret"));
 				datastoreService.put(dropboxUserEntity);
@@ -102,6 +102,7 @@ public class DropboxSyncher extends HttpServlet {
 				
 				String oauthsequence = UUID.randomUUID().toString();
 				String authUrl = provider.retrieveRequestToken(consumer, "http://photo.plus8.ch/dropbox/dropboxSyncher?"+PARAM_OAUTHSEQUENCE+"="+oauthsequence);
+				//String authUrl = provider.retrieveRequestToken(consumer, "http://localhost:8888/dropbox/dropboxSyncher?"+PARAM_OAUTHSEQUENCE+"="+oauthsequence);
 				
 				Map<String, Object> sequenceParams = new HashMap<String, Object>();
 				sequenceParams.put("consumer", consumer);
@@ -109,8 +110,7 @@ public class DropboxSyncher extends HttpServlet {
 				MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
 				memcacheService.put(PARAM_OAUTHSEQUENCE+":"+oauthsequence, sequenceParams);
 				
-						
-				resp.getWriter().print("<a href=\""+authUrl+"\">"+authUrl+"</a>");
+				resp.getWriter().print("<script type=\"text/javascript\">window.location = \""+authUrl+"\";</script>");
 			} else if (req.getParameter(PARAM_OAUTHSEQUENCE) != null) {
 				
 				MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
@@ -123,13 +123,13 @@ public class DropboxSyncher extends HttpServlet {
 				Entity userEntity = UserUtils.getCurrentEntityFor();
 				DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 				Entity dropboxUserEntity = new Entity(KeyFactory.createKey(userEntity.getKey(), DROPBOXUSER_KIND, req.getParameter("uid")));
-				dropboxUserEntity.setProperty("dropbboxUid", req.getParameter("uid"));
+				dropboxUserEntity.setProperty("dropboxUid", req.getParameter("uid"));
 				dropboxUserEntity.setProperty("token", consumer.getToken());
 				dropboxUserEntity.setProperty("tokenSecret", consumer.getTokenSecret());
 				datastoreService.put(dropboxUserEntity);
 				
 								
-				resp.getWriter().write("dropbox user: " + req.getParameter("uid") + " added.");
+				resp.getWriter().print("<script type=\"text/javascript\">window.opener.App.datastoresController.load();window.close();</script>");
 			} else if("1".equals(req.getParameter(PARAM_CREATE_ALBUM))) {
 				String dropboxUid = req.getParameter("dropboxUid");
 				String path = req.getParameter("path"); //public-upload/paris

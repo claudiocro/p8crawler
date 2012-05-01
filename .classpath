@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-1.5.1-beta.jar" sourcepath="lib-src/google-api-client-1.5.1-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-1.5.3-beta.jar" sourcepath="lib-src/google-http-client-1.5.3-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xmlParserAPIs-2.6.2.jar"/>

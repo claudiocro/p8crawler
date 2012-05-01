@@ -39,6 +39,9 @@ public class GAEFeedRepository implements FeedRepository {
 
 	public final static String FEED_ITEM_KIND = "FeedItem";
 	public final static String USER_GALLERY_KIND = "user:gallery";
+	public final static String CNT_GROUP_KIND = "cnt:group";
+	public final static String CNT_SIMPLE_CONTENT_KIND = "cnt:simple";
+	
 
 	//public final static Integer STATUS_DELETED = new Integer(-999);
 

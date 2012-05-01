@@ -1,5 +1,6 @@
 package ch.plus8.hikr.gappserver;
 
+import java.util.Collection;
 import java.util.Date;
 
 import com.google.gson.Gson;
@@ -11,7 +12,10 @@ public class FeedItem extends FeedItemBasic {
 	public String img1Link;
 	public String img2Link;
 	
+	public Date publishedDate;
 	public Date storeDate;
+	public long status;
+	public Collection categories;
 
 	public FeedItem(){};
 	
@@ -20,6 +24,7 @@ public class FeedItem extends FeedItemBasic {
 		super(publishedDate, source, author, authorName, authorLink, link, title, feedLink,imageLink, img1A);
 	
 		this.storeDate = storeDate;
+		
 	}
 	
 	

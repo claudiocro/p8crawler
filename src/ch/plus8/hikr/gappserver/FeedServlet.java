@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ch.plus8.hikr.gappserver.admin.UserUtils;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
 import com.google.appengine.api.blobstore.BlobKey;
@@ -32,7 +31,6 @@ import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 
 @SuppressWarnings("serial")

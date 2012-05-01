@@ -22,3 +22,76 @@
 .p8-scroll {
 	overflow: auto;
 }
+
+
+#searchNavigation ul {
+	padding:0;
+	margin:0;
+	white-space:nowrap;
+	list-style-type:none;
+}
+
+#searchNavigation li {
+	display:inline;
+}
+
+#galleriesCnt {
+	
+}
+
+#datastoresCnt {
+	
+}
+
+#datastoreEdit .action-panel {
+	display: none;
+}
+
+#datastoreEdit .form-row-inner {
+	width: 395px;
+	padding-left: 4px;
+	border-width: 0;
+}
+
+
+#galleryEdit tr {
+	vertical-align: top;
+}
+
+#galleryEdit tr label {
+	padding-right: 10px;
+}
+
+#galleryEdit .ember-text-field {
+	width:100%;	
+}
+
+#galleryEdit .ember-text-area {
+	width:100%;
+	height: 250px;	
+}
+
+
+#contentGroupEdit .contentGroup-editor {
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #DDDDDD;
+}
+
+#contentGroupEdit .contentGroup-editor-list {
+	float:left; 
+	width:200px;
+}
+
+#contentGroupEdit .simplecontent-editor {
+	float: right;
+	width:560px;
+	padding-left: 9px;
+	border-left: 1px solid #DDDDDD;
+	
+}
+
+#contentGroupEdit .simplecontent-editor .contentField {
+	width:100%;
+	height: 350px;	
+}

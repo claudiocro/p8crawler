@@ -41,8 +41,11 @@ public class Util {
 	}
 
 	public static boolean isBlank(String str) {
+		if(str == null)
+			return true;
+		
 		int strLen = str.length();
-		if ((str == null) || (strLen == 0))
+		if (strLen == 0)
 			return true;
 
 		for (int i = 0; i < strLen; i++) {
