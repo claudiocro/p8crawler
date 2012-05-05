@@ -214,26 +214,14 @@ public class FeedServlet extends HttpServlet {
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for(Entity entity : resultList) {
 			try {
-				FeedItem feedItem = new FeedItem(
-						(Date)entity.getProperty("publishedDate"),
-						Util.translateSource(entity.getProperty("source").toString()), 
-						entity.getProperty("author").toString(),
-						(entity.getProperty("authorName") != null) ? entity.getProperty("authorName").toString() : entity.getProperty("author").toString(),
-						(entity.getProperty("authorLink") != null) ? entity.getProperty("authorLink").toString() : null,
-						entity.getProperty("link").toString(),
-						(entity.getProperty("title") != null)?entity.getProperty("title").toString():"",
-						entity.getProperty("feedLink").toString(),
-						entity.getProperty("imageLink").toString(),
-						Long.valueOf(entity.getProperty("img1A").toString()),
-						(Date)entity.getProperty("storeDate"));
+				FeedItem feedItem = FeedItem.createFromEntity(entity);
 	
-				if(entity.getProperty("img2Link") != null) {
-					feedItem.img2Link = (String)entity.getProperty("img2Link");
-				} else if(entity.getProperty("img2") != null) {
+				if(feedItem.img2Link == null) {
 					feedItem.img2Link =  imagesService.getServingUrl((BlobKey)entity.getProperty("img2"));
 					entity.setUnindexedProperty("img2Link", feedItem.img2Link);
 					datastoreService.put(entity);
 				}
+				
 					
 				items.add(feedItem);
 			} catch( Exception e) {

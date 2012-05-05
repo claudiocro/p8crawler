@@ -72,6 +72,36 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	
+	
+	<servlet>
+		<servlet-name>GoogleDriveSyncher</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GoogleDriveSyncher</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GoogleDriveSyncher</servlet-name>
+		<url-pattern>/gdrive/gdriveSyncher</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>GoogleDriveAuthServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GoogleDriveAuthServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GoogleDriveAuthServlet</servlet-name>
+		<url-pattern>/gdrive/gdriveAuth</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>GoogleDriveAuthCallbackServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GoogleDriveAuthCallbackServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GoogleDriveAuthCallbackServlet</servlet-name>
+		<url-pattern>/oauth2callback</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>DeleteBlobstore</servlet-name>
 		<servlet-class>ch.plus8.hikr.gappserver.admin.DeleteBlobstore</servlet-class>
@@ -200,6 +230,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet-mapping>
 		<servlet-name>FeedItemServlet</servlet-name>
 		<url-pattern>/p8admin/client/feeditem</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>FeedProcessorServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.admin.client.service.FeedProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FeedProcessorServlet</servlet-name>
+		<url-pattern>/p8admin/client/feedprocessor</url-pattern>
 	</servlet-mapping>
 	
 	

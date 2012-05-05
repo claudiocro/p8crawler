@@ -19,6 +19,8 @@ App.DatastoreDto = Ember.Object.extend(Ember.Copyable,{
 });
 
 
+
+
 App.datastoresController = Ember.ArrayProxy.create({
 	content: [],
 	
@@ -109,11 +111,24 @@ App.GalleryDto = Ember.Object.extend(Ember.Copyable,{
 	}
 });
 
+App.NewDropboxGalleryDto = Ember.Object.extend(Ember.Copyable,{
+	dropboxUid: null,
+	path: null,
+	title: null,
+	desc: null,
+	copy: function(deep) {
+		return App.NewDropboxGalleryDto.create().setProperties(this.getProperties([
+			'path','title','desc'
+		]));
+	}
+});
+
 App.galleriesController = Ember.ArrayProxy.create({
 	content: [],
 	
 	current: null,
 	editCopy: null,
+	newModel: null,
 	
 	load: function() {
 		var self = this;
@@ -128,14 +143,22 @@ App.galleriesController = Ember.ArrayProxy.create({
 		});
 	},
 	createNew: function() {
+		this.set("newModel", null);
 		this.set("current", null);
 		this.set("editCopy", App.ContentGroupDto.create({ }));
 	},
+	newDropbox: function() {
+		this.set("newModel", App.NewDropboxGalleryDto.create({dropboxUid: 5031239}));
+		this.set("editCopy", null);
+		this.set("current", null);
+	},
 	edit: function(gallery) {
+		this.set("newModel", null);
 		this.set("current", gallery);
 		this.set("editCopy", Ember.copy(gallery));
 	},
 	cancelEdit: function(postFunc) {
+		this.set("newModel", null);
 		this.set("current", null);
 		this.set("editCopy", null);
 		postFunc();
@@ -148,6 +171,22 @@ App.galleriesController = Ember.ArrayProxy.create({
 			postFunc();
 		}, "json");		
 		
+	},
+	updateNewModel: function(postFunc) {
+		var self = this;
+		$.post("/dropbox/dropboxSyncher", 
+				{createAlbum:1,
+				dropboxUid:self.getPath("newModel.dropboxUid"),
+				path:self.getPath("newModel.path"),
+				title:self.getPath("newModel.title"),
+				desc:self.getPath("newModel.desc")
+			}, 
+			function(data) {
+				self.set('newModel', null);
+				self.load();
+				postFunc();
+			},
+			"json");		
 	}
 });
 
@@ -187,8 +226,40 @@ App.GallerySingleView = Ember.View.extend({
 		});
 		
 		return false;
+	},
+	newDropboxGallery: function() {
+		var self = this;
+
+		App.galleriesController.newDropbox();
+
+		$("#galleryNewDropbox").dialog({
+			buttons: 
+				{ "Ok": function() {
+					var dialogSelf = this;
+					if($("form").valid()) {
+						App.galleriesController.updateNewModel(function() {
+							$(dialogSelf).dialog("close");
+							$(dialogSelf).dialog("destroy");
+						});
+					}
+				}, "Cancel": function() {
+					var dialogSelf = this;
+					App.galleriesController.cancelEdit(function() {
+						$(dialogSelf).dialog("close");
+						$(dialogSelf).dialog("destroy");
+					});
+				}},
+			title: "Edit gallery",
+			position: ["center",100],
+			modal: true,
+			width:430
+		});
+		
+		return false;
 	}
 });
+
+
 
 
 
@@ -447,6 +518,7 @@ App.FeedItemDto = Ember.Object.extend(Ember.Copyable,{
 App.feedItemsController = Ember.ArrayProxy.create({
 	content: [],
 	
+	current: null,
 	previousOffset: function() {
 		return this.get("offset")-30;
 	}.property("offset"),
@@ -466,6 +538,15 @@ App.feedItemsController = Ember.ArrayProxy.create({
 		this.load(this.get("cat"));
 		return false;
 	},
+	reparseItem: function(item) {
+		var self = this;
+		self.set("current", item);
+		$.post("/p8admin/client/feedprocessor", {reparse:1,key:item.key}, function(data) {
+			self.get('current').setProperties(data);
+		}, "json");		
+		
+	},
+	
 	load: function(pcat) {
 		var self = this;
 		self.set("cat", pcat);
@@ -477,6 +558,15 @@ App.feedItemsController = Ember.ArrayProxy.create({
 				self.pushObject(d);
 			}
 		});
+	}
+});
+
+
+App.FeedItemSingleView = Ember.View.extend({
+	reparse: function() {
+		var self = this;
+		App.feedItemsController.reparseItem(this.getPath('content'));
+		return false;
 	}
 });
 

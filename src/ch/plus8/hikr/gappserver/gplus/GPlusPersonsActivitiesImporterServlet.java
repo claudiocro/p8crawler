@@ -20,8 +20,8 @@ import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTranspor
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Activity;
+import com.google.api.services.plus.model.Activity.PlusObject.Attachments;
 import com.google.api.services.plus.model.ActivityFeed;
-import com.google.api.services.plus.model.ActivityObjectAttachments;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -76,9 +76,10 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for(Entity personEntity : resultList) {
 			Plus plus = new Plus(new UrlFetchTransport(), new GsonFactory());
-			plus.setKey(Util.GOOGLE_API_KEY);
+			Plus.Activities.List activities = plus.activities().list((String)personEntity.getProperty("id"), "public");
+			activities.setKey(Util.GOOGLE_API_KEY);
 			//Person person = plus.people.get("110416871235589164413").execute();
-			ActivityFeed feed = plus.activities.list((String)personEntity.getProperty("id"), "public").execute();
+			ActivityFeed feed = activities.execute();
 			
 			
 			if(feed.getItems() == null) {
@@ -88,10 +89,10 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
 			
 			
 			for(Activity act :  feed.getItems()) {
-				if(act.getPlusObject().getAttachments() == null) 
+				if(act.getObject().getAttachments() == null) 
 					continue;
 				
-				for(ActivityObjectAttachments att : act.getPlusObject().getAttachments()) {
+				for(Attachments att : act.getObject().getAttachments()) {
 					logger.fine("Parse attachement: " + att.getId());
 					if(att.getUrl() == null || att.getUrl().length() == 0 ||  !"photo".equals(att.getObjectType())) {
 						continue;

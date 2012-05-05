@@ -21,7 +21,7 @@
   <tbody>
      {{#each content}}
        {{#view App.DatastoreSingleView tagName="tr" contentBinding="this" }}         
-           <td>aDropbox</td><td>{{content.dropboxUid}}</td><td>{{content.title}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
+           <td>Dropbox</td><td>{{content.dropboxUid}}</td><td>{{content.title}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
        {{/view}}
      {{/each}}
   </tbody>	
@@ -34,17 +34,18 @@
 <h2>Galleries</h2>
 <div class="cnt" style="position:relative;height:250px;">
 <div class="cnt p8-scroll" >
+{{#view App.GallerySingleView contentBinding="App.feedItemsController"}}
+<div><a href="#" {{action "newDropboxGallery" }}>Create new dropbox gallery</a></div>
+{{/view}}
 <table>
   <tbody>
   {{#each content }}
     {{#view App.GallerySingleView contentBinding="this"}}
       <tr>
         <td>{{content.title}}</td>
-        <td>{{content.ref}}</td>
         <td>[<a href="#" {{action "edit"}}>edit</a>]</a></td>
         <td><a target="_blank" href="?{{userparam "u"}}&{{urlparam "cat" content.key}}">[show]</a></td>
         <td>[<a href="#" {{action "showFeeds"}}>showFeeds</a>]</a></td>
-        <td>[reparse]</td>
       </tr>
     {{/view}}
   {{/each}}
@@ -89,6 +90,7 @@
   <thead>
     <tr>
       <th>img2</th>
+      <th>actions</th>
       <th>link</th>
       <th>imageLink</th>
       <th>publishedDate</th>
@@ -99,9 +101,10 @@
   </thead>
   <tbody>
     {{#each content}}
-      {{#view App.ContentGroupSingleView contentBinding="this" tagName="tr"}}
+      {{#view App.FeedItemSingleView contentBinding="this" tagName="tr"}}
         <td><img height=40 width=40 {{urlparam "src" content.img2Link}}/></td>
         <td>{{content.link}}</td>
+        <td>[<a href="#" {{action "reparse"}}>reparse</a>]</td>
         <td>{{content.imageLink}}</td>
         <td>{{content.publishedDate}}</td>
         <td>{{content.source}}</td>

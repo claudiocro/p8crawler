@@ -23,6 +23,8 @@ public class Util {
 	public static final Long DATASTORE_UNKNOWN = 4L;
 
 	public static final String GOOGLE_API_KEY = "AIzaSyD6FWIhhEskZwN2E_uTsrxZT-vs67px8-Y";
+	public static final String GOOGLE_OAUTH2_CLIENT_ID = "597361721424-9ggbqtai0djdihtpkk58b3e5a2dfa7pq.apps.googleusercontent.com";
+	public static final String GOOGLE_OAUTH2_CLIENT_SECRET = "qx1c56YWobrevp1xIdd4Kz4w";
 
 	public static final String[] sources = { "gplus", "hikr", "dropbox" };
 	public static final String[] categories = { "photographer", "lomo", "lomo:popular", "lomo:selected", "monochromemonday", "mountainmonday" };

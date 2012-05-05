@@ -7,8 +7,8 @@ import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Util;
 
 import com.google.api.services.plus.model.Activity;
+import com.google.api.services.plus.model.Activity.PlusObject.Attachments;
 import com.google.api.services.plus.model.ActivityFeed;
-import com.google.api.services.plus.model.ActivityObjectAttachments;
 
 public class GPlusUtil {
 
@@ -16,11 +16,11 @@ public class GPlusUtil {
 	
 	public static final String PERSON_KIND = "gplus:person";
 	
-	public static boolean fillEntity(FeedItemBasic entity, ActivityFeed feed, Activity act, ActivityObjectAttachments att) {
+	public static boolean fillEntity(FeedItemBasic entity, ActivityFeed feed, Activity act, Attachments att) {
 		return fillEntity(entity, feed, act, att, 800, 1000);
 	}
 	
-	public static boolean fillEntity(FeedItemBasic entity, ActivityFeed feed, Activity act, ActivityObjectAttachments att, int maxImgSize, int maxImgSize1) {
+	public static boolean fillEntity(FeedItemBasic entity, ActivityFeed feed, Activity act, Attachments att, int maxImgSize, int maxImgSize1) {
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(act.getPublished().getValue());
@@ -31,10 +31,10 @@ public class GPlusUtil {
 		entity.title =  att.getDisplayName()!= null ? Util.truncate(att.getDisplayName(), 499) : null;
 		entity.feedLink = act.getUrl();
 		
-		if(act.getPlusObject() != null && act.getPlusObject().getActor() != null) {
-			entity.author = act.getPlusObject().getActor().getId();
-			entity.authorName = act.getPlusObject().getActor().getDisplayName();
-			entity.authorLink = act.getPlusObject().getActor().getUrl();
+		if(act.getObject() != null && act.getObject().getActor() != null) {
+			entity.author = act.getObject().getActor().getId();
+			entity.authorName = act.getObject().getActor().getDisplayName();
+			entity.authorLink = act.getObject().getActor().getUrl();
 		} else {
 			entity.author = act.getActor().getId();
 			entity.authorName = act.getActor().getDisplayName();

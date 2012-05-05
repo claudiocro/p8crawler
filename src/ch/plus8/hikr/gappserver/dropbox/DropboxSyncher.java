@@ -44,6 +44,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -150,6 +151,8 @@ public class DropboxSyncher extends HttpServlet {
 					gallery.setProperty("kind", dropboxKey.getKind());
 					gallery.setProperty("key", dropboxKey);
 					gallery.setProperty("ref", path);
+					gallery.setUnindexedProperty("title", req.getParameter("title"));
+					gallery.setUnindexedProperty("desc", new Text(req.getParameter("desc")));
 					datastoreService.put(gallery);
 				}
 				

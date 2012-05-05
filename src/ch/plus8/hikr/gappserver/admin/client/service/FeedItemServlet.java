@@ -67,27 +67,7 @@ public class FeedItemServlet  extends HttpServlet {
 	    QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
 		List<FeedItem> items = new ArrayList<FeedItem>();
 		for(Entity entity : results) {
-			
-			FeedItem feedItem = new FeedItem(
-					(Date)entity.getProperty("publishedDate"),
-					Util.translateSource(entity.getProperty("source").toString()), 
-					entity.getProperty("author").toString(),
-					(entity.getProperty("authorName") != null) ? entity.getProperty("authorName").toString() : entity.getProperty("author").toString(),
-					(entity.getProperty("authorLink") != null) ? entity.getProperty("authorLink").toString() : null,
-					entity.getProperty("link").toString(),
-					(entity.getProperty("title") != null)?entity.getProperty("title").toString():"",
-					entity.getProperty("feedLink").toString(),
-					entity.getProperty("imageLink").toString(),
-					Long.valueOf(entity.getProperty("img1A").toString()),
-					(Date)entity.getProperty("storeDate"));
-			
-			feedItem.categories = ((Collection)entity.getProperty("categories"));
-			feedItem.publishedDate = ((Date)entity.getProperty("publishedDate"));
-			feedItem.status = ((Number)entity.getProperty("status")).longValue();
-			feedItem.img1Link = (String)entity.getProperty("img1Link");
-			feedItem.img2Link = (String)entity.getProperty("img2Link");
-			
-			
+			FeedItem feedItem = FeedItem.createFromEntity(entity);
 			items.add(feedItem);
 		}
 		logger.info("Found items: "+items.size());

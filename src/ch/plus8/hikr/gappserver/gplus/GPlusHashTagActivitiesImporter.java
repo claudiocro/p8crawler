@@ -21,9 +21,10 @@ import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTranspor
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.Plus.Activities.Search;
+import com.google.api.services.plus.PlusRequest;
 import com.google.api.services.plus.model.Activity;
+import com.google.api.services.plus.model.Activity.PlusObject.Attachments;
 import com.google.api.services.plus.model.ActivityFeed;
-import com.google.api.services.plus.model.ActivityObjectAttachments;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -66,15 +67,14 @@ public class GPlusHashTagActivitiesImporter extends HttpServlet {
 			
 		
 		Plus plus = new Plus(new UrlFetchTransport(), new GsonFactory());
-		plus.setKey(Util.GOOGLE_API_KEY);
+		Plus.Activities.Search searchActivities = plus.activities().search("#"+hashTag);
+		searchActivities.setKey(Util.GOOGLE_API_KEY);
 		//Person person = plus.people.get("110416871235589164413").execute();
-		Search search = plus.activities.search();
-			
-		search.setQuery("#"+hashTag);
+
 		if(nextPageToken != null)
-			search.setPageToken(nextPageToken);
+			searchActivities.setPageToken(nextPageToken);
 		
-		ActivityFeed feed = search.execute();
+		ActivityFeed feed = searchActivities.execute();
 		
 		
 		if(feed.getItems() == null) {
@@ -84,11 +84,11 @@ public class GPlusHashTagActivitiesImporter extends HttpServlet {
 		
 		
 		for(Activity act :  feed.getItems()) {
-			if(act.getPlusObject().getAttachments() == null) 
+			if(act.getObject().getAttachments() == null) 
 				continue;
 			
 			//only ONE!!!!!
-			for(ActivityObjectAttachments att : act.getPlusObject().getAttachments()) {
+			for(Attachments att : act.getObject().getAttachments()) {
 				logger.fine("Parse attachement: " + att.getId());
 				if(att.getUrl() == null || att.getUrl().length() == 0 ||  !"photo".equals(att.getObjectType())) {
 					continue;
