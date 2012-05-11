@@ -16,6 +16,15 @@
     function createPicker() {
         var picker = new google.picker.PickerBuilder().
             addView(google.picker.ViewId.FOLDERS).
+            addView(google.picker.ViewId.PHOTOS).
+            addView(google.picker.ViewId.PHOTO_UPLOAD).
+            addViewGroup(
+                    new google.picker.ViewGroup(google.picker.ViewId.PHOTOS).
+                        addView(new google.picker.PhotosView().
+                            setType(google.picker.PhotosView.Type.UPLOADED)).
+                        addView(new google.picker.PhotosView().
+                            setType(google.picker.PhotosView.Type.FEATURED))).
+                addView(google.picker.ViewId.RECENTLY_PICKED).
             enableFeature(google.picker.Feature.MULTISELECT_ENABLED).
             setCallback(pickerCallback).
             build();

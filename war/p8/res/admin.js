@@ -9,11 +9,11 @@ window.App = Ember.Application.create();
 App.DatastoreDto = Ember.Object.extend(Ember.Copyable,{
 	key: null,
 	kind: null,
-	dropboxUid: null,
+	uid: null,
 	title: null,
 	copy: function(deep) {
 		return App.DatastoreDto.create().setProperties(this.getProperties([
-			'key','kind','dropboxUid','title'
+			'key','kind','uid','title'
 		]));
 	}
 });
@@ -61,6 +61,11 @@ App.datastoresController = Ember.ArrayProxy.create({
 App.DatastoreSingleView = Ember.View.extend({
 	createNewDropbox: function() {
 		window.open("http://photo.plus8.ch/dropbox/dropboxSyncher?createToken=1", "createNewDropbox");
+		return false;
+	},
+	createNewGoogle: function() {
+		//window.open("http://photo.plus8.ch/gdrive/createDatastore", "createNewGoogle");
+		window.open("http://localhost:8888/gdrive/createDatastore", "createNewGoogle");
 		return false;
 	},
 	edit: function() {

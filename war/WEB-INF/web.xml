@@ -72,33 +72,22 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	
-	
 	<servlet>
-		<servlet-name>GoogleDriveSyncher</servlet-name>
-		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GoogleDriveSyncher</servlet-class>
+		<servlet-name>GDriveCreateDatastoreServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GDriveCreateDatastoreServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>GoogleDriveSyncher</servlet-name>
-		<url-pattern>/gdrive/gdriveSyncher</url-pattern>
+		<servlet-name>GDriveCreateDatastoreServlet</servlet-name>
+		<url-pattern>/gdrive/createDatastore</url-pattern>
 	</servlet-mapping>
 	
 	
 	<servlet>
-		<servlet-name>GoogleDriveAuthServlet</servlet-name>
-		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GoogleDriveAuthServlet</servlet-class>
+		<servlet-name>GoogleUserAuthCallbackServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.google.GoogleUserAuthCallbackServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>GoogleDriveAuthServlet</servlet-name>
-		<url-pattern>/gdrive/gdriveAuth</url-pattern>
-	</servlet-mapping>
-	
-	
-	<servlet>
-		<servlet-name>GoogleDriveAuthCallbackServlet</servlet-name>
-		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GoogleDriveAuthCallbackServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>GoogleDriveAuthCallbackServlet</servlet-name>
+		<servlet-name>GoogleUserAuthCallbackServlet</servlet-name>
 		<url-pattern>/oauth2callback</url-pattern>
 	</servlet-mapping>
 	

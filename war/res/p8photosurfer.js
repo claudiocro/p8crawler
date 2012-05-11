@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.4
+ *  p8 photosurfer  0.9.6
  * 
  * Depends on:
  * 
@@ -765,6 +765,8 @@ elem
 				options.nextSelector.bind('click', function() {
 					if($(self).p8JsonGallery('canMoveForwards'))
 						$(self).p8JsonGallery('moveForwards');
+					
+					return false;
 				});
 			}
 			
@@ -773,6 +775,8 @@ elem
 				options.previousSelector.bind('click', function() {
 					if($(self).p8JsonGallery('canMoveBackwards'))
 						$(self).p8JsonGallery('moveBackwards');
+					
+					return false;
 				});
 			}
 			
@@ -787,6 +791,7 @@ elem
 							index--;
 						} 
 						updateSingleNavigation.call(self);
+						return false;
 					});
 				}
 				
@@ -803,6 +808,7 @@ elem
 							}
 							updateSingleNavigation.call(self);
 						}
+						return false;
 					});
 				}
 				
@@ -819,13 +825,14 @@ elem
 							if(options.singleCompareFunction(this, allFeeds[i])) {
 							//if(src == $(allFeeds[i]).attr("src")) {
 								index = i;
-								options.singleClickSelectorFunction.call(self, allFeeds[index]);
+								options.singleClickSelectorFunction.call(self, allFeeds[index],index);
 								break;
 							}
 								
 						}
 					}
 					updateSingleNavigation.call(self);
+					return false;
 				});
 			}
 			

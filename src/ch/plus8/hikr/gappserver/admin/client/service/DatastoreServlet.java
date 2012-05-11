@@ -13,6 +13,7 @@ import ch.plus8.hikr.gappserver.PagedResponse;
 import ch.plus8.hikr.gappserver.admin.UserUtils;
 import ch.plus8.hikr.gappserver.admin.client.Datastore;
 import ch.plus8.hikr.gappserver.dropbox.DropboxSyncher;
+import ch.plus8.hikr.gappserver.google.P8CredentialStore;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -63,6 +64,24 @@ public class DatastoreServlet extends HttpServlet {
 			
 			datastores.add(new Datastore(entity.getKey().getName(), entity.getKind(), (String)entity.getProperty("dropboxUid"), (String)entity.getProperty("title")));
 		}
+		
+		
+		
+		query = new Query(P8CredentialStore.KIND);
+		query.setAncestor(UserUtils.getCurrentKeyFor());
+		
+		fetchOptions = FetchOptions.Builder.withLimit(20);
+		fetchOptions.prefetchSize(20);
+		prepare = datastore.prepare(query);
+		
+		resultList = prepare.asQueryResultList(fetchOptions);
+		for(Entity entity : resultList) {
+			datastores.add(new Datastore(entity.getKey().getName(), entity.getKind(), (String)entity.getProperty("userid"), (String)entity.getProperty("name")));
+		}
+		
+		
+		
+		
 		logger.info("Found datastores: "+datastores.size());
 		
 		PagedResponse response = new PagedResponse();

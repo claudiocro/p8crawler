@@ -289,6 +289,15 @@ public class GAEFeedRepository implements FeedRepository {
 		return pquery.asSingleEntity();
 
 	}
+	
+	public Entity findGalleryByRef(DatastoreService ds, String kind, String ref, Key userKey) {
+		Query q = new Query(GAEFeedRepository.USER_GALLERY_KIND);
+		q.setAncestor(userKey);
+		q.addFilter("kind", FilterOperator.EQUAL, kind);
+		q.addFilter("ref", FilterOperator.EQUAL, ref);
+		PreparedQuery pq = ds.prepare(q);
+		return pq.asSingleEntity();
+	}
 
 	protected final boolean updateFeedCategories(Object cats, Entity entity, String hashTag) {
 		if (cats != null) {

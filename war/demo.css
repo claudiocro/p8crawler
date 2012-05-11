@@ -1,0 +1,90 @@
+body {
+  font-size:75%;
+  background-color: #3F3F3F;
+  font-family: arial, serif; 
+}
+
+.ui-widget {
+	font-family: arial, serif;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+	font-family: arial, serif;
+}
+a {
+	color:black;
+}
+
+#navigationCont {
+	margin: 0 auto;
+	margin-bottom: 10px;
+	width: 1283px;
+}
+
+#galleryContent {
+  position: relative;
+  width: 1253px;
+  height: 620px;
+  margin: 0 auto;
+  padding: 15px;
+  border: 1px solid white;
+  overflow: hidden;
+}
+
+#footer {
+  margin: 0 auto;  
+  width: 1283px;  
+  height: 50px;
+}
+
+
+
+#mainGallery {
+  position: absolute;
+  width: 10000px;
+}
+
+#mainGallery .col {
+  float: left;
+  margin-right: 15px;
+}
+
+
+#mainGallery .p8FeedItem {
+	position: relative;
+	width: 185px;
+	height: 185px;
+	padding-bottom:15px;
+}
+
+#mainGallery .col .article {
+  display: block;
+  width:185px;
+  height:185px;
+  border: 1px solid white;
+  background-repeat: no-repeat;
+  background-position: center 0;
+  z-index:5;
+}
+
+#navigationCont .prevNextCont {
+  padding-top: 20px;
+}
+
+#navigationCont .prefNavBusy {
+  margin-left:10px;
+  opacity: .7;
+}
+
+#navigationCont .page-count {
+  width:100%;
+  text-align:right;
+  position:absolute;
+  right:1px;
+  bottom:0;
+}
+
+.truncate_more_link {
+  display: none;	
+}
+

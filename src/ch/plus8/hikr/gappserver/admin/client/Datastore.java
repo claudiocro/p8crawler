@@ -4,15 +4,15 @@ public class Datastore {
 	
 	public String key;
 	public String kind;
-	public String dropboxUid;
+	public String uid;
 	public String title;
 	
 	public Datastore() {}
 	
-	public Datastore(String key, String kind, String dropboxUid, String title) {
+	public Datastore(String key, String kind, String uid, String title) {
 		this.key = key;
 		this.kind = kind;
-		this.dropboxUid = dropboxUid;
+		this.uid = uid;
 		this.title = title;
 	}
 	

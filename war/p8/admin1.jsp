@@ -15,13 +15,14 @@
 <h2>Storages</h2>
 {{#view App.DatastoreSingleView}}
   <div><a href="#" {{action "createNewDropbox"}}>Create new dropbox</a></div>
+  <div><a href="#" {{action "createNewGoogle"}}>Create new google datastore</a></div>
 {{/view}}
 
 <table>
   <tbody>
      {{#each content}}
        {{#view App.DatastoreSingleView tagName="tr" contentBinding="this" }}         
-           <td>Dropbox</td><td>{{content.dropboxUid}}</td><td>{{content.title}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
+           <td>{{content.kind}}</td><td>{{content.uid}}</td><td>{{content.title}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
        {{/view}}
      {{/each}}
   </tbody>	

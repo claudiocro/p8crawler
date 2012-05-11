@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER/App Engine (4)"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xpp3-1.1.4c.jar" sourcepath="lib-src/xpp3-1.1.4c-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-1.7.1.jar" sourcepath="lib-src/gson-1.7.1-sources.jar"/>
@@ -20,10 +19,14 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-drive-v1-rev1-java-1.5.1-beta.jar" sourcepath="lib-src/google-api-drive-v1-rev1-java-1.5.1-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-plus-v1-rev4-java-1.5.0-beta.jar" sourcepath="lib-src/google-api-plus-v1-rev4-java-1.5.0-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-appengine-1.8.0-beta.jar" sourcepath="lib-src/google-oauth-client-appengine-1.8.0-beta-sources.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-oauth2-v2-rev3-java-1.5.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-oauth2-v2-rev3-java-1.5.0-beta.jar" sourcepath="lib-src/google-api-oauth2-v2-rev3-java-1.5.0-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-appengine-1.8.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-docs-3.0.jar" sourcepath="lib-src/gdata-src.java-1.47.0.zip"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-core-1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_23"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER/App Engine (4)"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 	<referencedentry kind="lib" path="war/WEB-INF/lib/guava-r09.jar" sourcepath="lib-src/guava-r09-sources.jar"/>
 	<referencedentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-1.8.0-beta.jar" sourcepath="lib-src/google-oauth-client-1.8.0-beta-sources.jar"/>
+	<referencedentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-servlet-1.8.0-beta.jar" sourcepath="lib-src/google-oauth-client-servlet-1.8.0-beta-sources.jar"/>
 </classpath>

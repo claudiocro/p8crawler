@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,9 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.HTML;
-
-import org.apache.commons.codec.net.URLCodec;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
@@ -34,19 +31,17 @@ import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxContent;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationRequestUrl;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultIterable;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -54,6 +49,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.UserServiceFactory;
 
+@SuppressWarnings("serial")
 public class DropboxSyncher extends HttpServlet {
 
 	private static final Logger logger = Logger.getLogger(DropboxSyncher.class.getName());
@@ -145,7 +141,7 @@ public class DropboxSyncher extends HttpServlet {
 				
 				DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 				
-				Entity gallery = findGalleryByRef(datastoreService, path, uKey);
+				Entity gallery = feedRepository.findGalleryByRef(datastoreService, dropboxKey.getKind(), path, uKey);
 				if(gallery == null) {
 					gallery = new Entity(KeyFactory.createKey(uKey, GAEFeedRepository.USER_GALLERY_KIND, UUID.randomUUID().toString()));
 					gallery.setProperty("kind", dropboxKey.getKind());
@@ -283,14 +279,7 @@ public class DropboxSyncher extends HttpServlet {
 
 	}
 	
-	protected Entity findGalleryByRef(DatastoreService ds, String ref, Key userKey) {
-		Query q = new Query(GAEFeedRepository.USER_GALLERY_KIND);
-		q.setAncestor(userKey);
-		q.addFilter("kind", FilterOperator.EQUAL, DROPBOXUSER_KIND);
-		q.addFilter("ref", FilterOperator.EQUAL, ref);
-		PreparedQuery pq = ds.prepare(q);
-		return pq.asSingleEntity();
-	}
+	
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {

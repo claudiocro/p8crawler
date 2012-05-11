@@ -94,6 +94,9 @@ public class FeedServlet extends HttpServlet {
 				resp.setContentType("application/json");
 				
 				logger.info("Returned from memcache: "+memcacheKey + " / "+memCachePage);
+				
+				
+				
 				resp.getWriter().write(cachedFeed);
 				return;
 			}
@@ -174,7 +177,11 @@ public class FeedServlet extends HttpServlet {
 			
 		}
 		logger.info("Returned from datastore for page "+memCachePage);
-		resp.getWriter().write(json);
+		if(req.getParameter("callback") != null) {
+			logger.info("JSONP");
+			resp.getWriter().write(req.getParameter("callback")+"("+json+")");
+		} else
+			resp.getWriter().write(json);
 	}
 	
 	
