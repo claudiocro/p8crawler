@@ -33,7 +33,7 @@ public class DropboxImageEvaluator extends ImageEvaluator {
 	private ImagesService imagesService;
 	private BlobstoreService blobStoreService;
 	
-	public DropboxImageEvaluator(String dropboxUid) {
+	public DropboxImageEvaluator() {
 		urlFetchService = URLFetchServiceFactory.getURLFetchService();
 		fileService = FileServiceFactory.getFileService();
 		blobStoreService = BlobstoreServiceFactory.getBlobstoreService();

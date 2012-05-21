@@ -33,6 +33,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.File.ParentsCollection;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -47,8 +48,10 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.gdata.client.DocumentQuery;
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.DocumentListEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
+import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
@@ -67,6 +70,9 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 	private String googleUid;
 
 
+	private GDriveApi gDriveApi;
+
+
 	@Override
 	  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
@@ -74,19 +80,21 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			GAEFeedRepository feedRepository = new GAEFeedRepository();
 			feedRepository.init();
 			
-			DocsService docs = new DocsService("photography-stream/1.1.1");
+			/*DocsService docs = new DocsService("photography-stream/1.1.1");
 			docs.setOAuth2Credentials(getCredential());
 			
 			Drive drive = Drive.builder(new UrlFetchTransport(), new GsonFactory()).
 				setHttpRequestInitializer(getCredential()).
 				setApplicationName("photography-stream/1.1.1").
 			build();
-			
+			*/
 			String googleUid = request.getParameter("googleUid");
 			String path = request.getParameter("path"); //public-upload/paris
 			String userKey = request.getParameter("userKey");
 			String title = request.getParameter("title");
 			String desc = request.getParameter("desc");
+			
+			gDriveApi = new GDriveApi(googleUid);
 			
 			Key uKey = null;
 			if(userKey != null)
@@ -115,18 +123,20 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			String catkey = gallery.getKey().getName(); 
 			categories.add(catkey);
 			
-			DocumentListFeed entries = getContents(docs, path);
+			DocumentListEntry imageFolder = getFolderByPath(path);
+			DocumentListFeed entries = gDriveApi.getContentsFromEntry(imageFolder.getDocId());
+			String thumbsFolderId = getOrCreateThumbsFolder(imageFolder, path+"/thumbs");
 			System.out.println("-------------------------------------------------_");
 			for(DocumentListEntry entry  : entries.getEntries()) {
 				FeedItemBasic item = new FeedItemBasic();
 				Map<String, Object> additional = new HashMap<String, Object>();
 				
-				File file = drive.files().get(entry.getDocId()).execute();
+				File file = gDriveApi.getGFileById(entry.getDocId());
 				
-				String revision = entry.getEtag();
-				if(GDriveUtil.fillEntity(item, additional, entry, file)) {
+				String revision = file.getEtag();
+				if(GDriveUtil.fillEntity(item, additional, entry, file, credentialsKey, thumbsFolderId)) {
 
-					if(!feedRepository.storeFeed(item, file.getId(), categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional, uKey, null)) {
+					if(!feedRepository.storeFeed(item, file.getId(), categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional, uKey, credentialsKey)) {
 						Key key = GAEFeedRepository.createKey(uKey, file.getId());
 						Entity feEntity = datastoreService.get(key);
 						if(!revision.equals(feEntity.getProperty(GDriveUtil.PROP_GDRIVE_REVISION))) {
@@ -137,15 +147,10 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 							feedRepository.deleteImagesFromEntityItem(feEntity, false, true);
 							feEntity.setProperty("status",Util.ITEM_STATUS_IMAGE_LINK_EVAL);
 							datastoreService.put(feEntity);
-							
 						}
-						
-						
 					}
 					presentKeys.add(file.getId());
-					
 				}
-				
 			}
 			
 			Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
@@ -154,7 +159,7 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			PreparedQuery prepare = datastoreService.prepare(query);
 			QueryResultIterable<Entity> results = prepare.asQueryResultIterable();
 			for(Entity oldEntity : results) {
-				if(!presentKeys.contains(oldEntity.getProperty("author").toString()+oldEntity.getProperty("link"))) {
+				if(!presentKeys.contains(oldEntity.getKey().getName())) {
 					Scheduler.scheduleDeleteItem(KeyFactory.keyToString(oldEntity.getKey()), true, true, true);
 				}
 			}
@@ -163,17 +168,39 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			e.printStackTrace();
 		}
 	  }
-
-	protected DocumentListFeed getContents(DocsService docs, String path) throws IOException, ServiceException {
-		
-		DocumentListEntry entry = getFolderByPath(docs, path);
-		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A"+entry.getDocId()+"/contents";
-		DocumentQuery query = new DocumentQuery(new URL(feedLink));
-		return docs.query(query, DocumentListFeed.class);
-		
-	}
 	
-	protected DocumentListEntry getFolderByPath(DocsService docs, String path) throws IOException, ServiceException {
+	protected String getOrCreateThumbsFolder(DocumentListEntry imageFolder, String path) throws IOException, ServiceException {
+		DocumentListEntry thumbFolder = getFolderByPath(path);
+		if(thumbFolder == null) {
+			String title;
+			if(path.indexOf("/")>-1)
+				title = path.substring(path.lastIndexOf("/")+1);
+			else
+				title = path;
+			
+			return gDriveApi.createFolder(imageFolder.getDocId(), title).getDocId();
+			
+			
+			/*File file = new File();
+			file.setMimeType(GDriveDatastore.MIME_FOLDER);
+			file.setTitle(path.substring(path.lastIndexOf("/")+1));
+			
+			ParentsCollection parent = new ParentsCollection();
+			parent.setId(imageFolder.getDocId());
+			List<ParentsCollection> parents = new ArrayList<File.ParentsCollection>();
+			parents.add(parent);
+			file.setParentsCollection(parents);
+			
+			return drive.files().insert(file).execute().getId();
+			*/
+		} else {
+			return thumbFolder.getDocId();
+		}
+			
+	}
+
+	
+	protected DocumentListEntry getFolderByPath(String path) throws IOException, ServiceException {
 		if(!path.startsWith("/"))
 			path = "/"+path;
 		
@@ -181,10 +208,10 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			path = path.substring(0, path.length()-1);
 		
 		path = "root"+path;
-		return findFolderByPath(docs, path);
+		return findFolderByPath(path);
 	}
 	
-	protected DocumentListEntry findFolderByPath(DocsService docs, String path) throws IOException, ServiceException {
+	protected DocumentListEntry findFolderByPath(String path) throws IOException, ServiceException {
 		String title = null;
 		String childTitle = null;
 		
@@ -197,18 +224,14 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			childTitle = path;
 			path = null;
 		}
-		
-		
-		
-		
+
 		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A"+title+"/contents/-/folder";
-		
 			
 		DocumentQuery query = new DocumentQuery(new URL(feedLink));
 		query.setTitleQuery(childTitle);
 		query.setTitleExact(true);
 		
-		DocumentListFeed documentLists = docs.query(query, DocumentListFeed.class);
+		DocumentListFeed documentLists = gDriveApi.getFolderFromParentByTitle(title, childTitle);
 		if(documentLists.getEntries().size() == 1) {
 			DocumentListEntry subEntry = documentLists.getEntries().get(0);
 			System.out.println(subEntry.getId());
@@ -218,7 +241,7 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 	    	System.out.println(subEntry.getTitle().getPlainText());
 	    	
 	    	if(path != null)
-	    		return findFolderByPath(docs, subEntry.getDocId()+"/"+path);
+	    		return findFolderByPath(subEntry.getDocId()+"/"+path);
 	    	else
 	    		return subEntry;
 		}

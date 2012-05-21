@@ -39,6 +39,9 @@ public class ImageDownloadServlet extends HttpServlet {
 	private static final int MAX_COUNT = 5;
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		
+		UserUtils.init(req);
+		
 		URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
 		DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
 	
@@ -72,7 +75,7 @@ public class ImageDownloadServlet extends HttpServlet {
 			logger.log(Level.FINE, "Create images from: " + entity.getProperty("link"));
 			try {
 				String bigImageUrl = entity.getProperty("imageLink").toString();
-
+				
 				HTTPResponse bigImageResp = urlFetchService.fetch(new URL(bigImageUrl));
 				Image orgImageB = ImagesServiceFactory.makeImage(bigImageResp.getContent());
 				

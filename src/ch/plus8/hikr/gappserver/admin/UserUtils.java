@@ -5,8 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import ch.plus8.hikr.gappserver.Util;
-import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -23,9 +24,15 @@ public class UserUtils {
 
 	private static final Logger logger = Logger.getLogger(UserUtils.class.getName());
 	
+	private static Key CURRENT_USER_KEY = null;
+	
 	public static boolean isUserLoggedIn() {
-		UserService userService = UserServiceFactory.getUserService();
-		return userService.isUserLoggedIn();
+		if(CURRENT_USER_KEY != null)
+			return true;
+		else {
+			UserService userService = UserServiceFactory.getUserService();
+			return userService.isUserLoggedIn();
+		}
 	}
 	public static void createUser() {
 		UserService userService = UserServiceFactory.getUserService();
@@ -52,11 +59,17 @@ public class UserUtils {
 	}
 
 	public static Key getCurrentKeyFor() {
-		return getUserKeyFor(UserServiceFactory.getUserService().getCurrentUser().getEmail());
+		if(CURRENT_USER_KEY != null)
+			return CURRENT_USER_KEY;
+		else
+			return getUserKeyFor(UserServiceFactory.getUserService().getCurrentUser().getEmail());
 	}
 	
 	public static Entity getCurrentEntityFor() {
-		return getUserEntityFor(UserServiceFactory.getUserService().getCurrentUser().getEmail());
+		if(CURRENT_USER_KEY != null) {
+			return getUserEntityFor(CURRENT_USER_KEY.getName());
+		} else
+			return getUserEntityFor(UserServiceFactory.getUserService().getCurrentUser().getEmail());
 	}
 	
 	public static Key getUserKeyFor(String email) {
@@ -106,6 +119,12 @@ public class UserUtils {
 			logger.severe("User not found by id: "+id);
 			return null;
 		}
+	}
+	public static void init(HttpServletRequest req) {
+		if(!Util.isBlank(req.getParameter("p8TaskQueueAuth"))) {
+			CURRENT_USER_KEY = KeyFactory.stringToKey(req.getParameter("p8TaskQueueAuth"));
+		}
+		
 	}
 	
 }

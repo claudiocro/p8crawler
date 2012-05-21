@@ -35,6 +35,8 @@ public class ImageEvaluator extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		
+		UserUtils.init(req);
+		
 		logger.info("ImageEvaluator called");
 		
 		DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
@@ -88,7 +90,7 @@ public class ImageEvaluator extends HttpServlet {
 			Scheduler.scheduleImageEvaluator(resultList.getCursor().toWebSafeString());
 		}
 		else  {
-			Scheduler.scheduleImageFetcher();
+			//Scheduler.scheduleImageFetcher();
 		}
 		
 		resp.getWriter().write("DONE");

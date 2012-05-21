@@ -50,6 +50,16 @@ public class DropboxUtil {
 		return null;
 	}
 	
+	public static String[] fileNameNoPath(String path) {
+		Pattern p = Pattern.compile("^(.*)\\.(.*)$");
+		Matcher m = p.matcher(path);
+		
+		if(m.find()) {
+			return new String[]{m.group(1),m.group(2)};
+		}
+		return null;
+	}
+	
 	public static boolean fillEntity(FeedItemBasic entity, Map<String, Object> additional, DropboxAccount account, DropboxEntity dentity, DropboxContent cnt, String authorName) throws ParseException {
 		if(cnt.is_dir)
 			return false;

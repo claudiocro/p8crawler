@@ -21,6 +21,7 @@ public class Util {
 	public static final Long DATASTORE_DROPBOX = 2L;
 	public static final Long DATASTORE_GCS = 3L;
 	public static final Long DATASTORE_UNKNOWN = 4L;
+	public static final Long DATASTORE_GDRIVE = 5L;
 
 	
 	//claudiocro@plus8.ch
@@ -34,6 +35,7 @@ public class Util {
 			DATASTORE_DROPBOX, //dropbox
 			DATASTORE_GCS //google cloud storage
 	};
+
 
 	public static boolean isInt(String integer) {
 		try {

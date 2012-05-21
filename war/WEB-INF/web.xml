@@ -81,6 +81,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/gdrive/createDatastore</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>GDriveGalleryServlet</servlet-name>
+		<servlet-class>ch.plus8.hikr.gappserver.googledrive.GDriveGalleryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GDriveGalleryServlet</servlet-name>
+		<url-pattern>/gdrive/createGallery</url-pattern>
+	</servlet-mapping>
+	
 	
 	<servlet>
 		<servlet-name>GoogleUserAuthCallbackServlet</servlet-name>
