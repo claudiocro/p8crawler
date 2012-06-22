@@ -123,7 +123,19 @@ App.NewDropboxGalleryDto = Ember.Object.extend(Ember.Copyable,{
 	desc: null,
 	copy: function(deep) {
 		return App.NewDropboxGalleryDto.create().setProperties(this.getProperties([
-			'path','title','desc'
+			'dropboxUid','path','title','desc'
+		]));
+	}
+});
+
+App.NewGDriveGalleryDto = Ember.Object.extend(Ember.Copyable,{
+	googleId: null,
+	path: null,
+	title: null,
+	desc: null,
+	copy: function(deep) {
+		return App.NewGDriveGalleryDto.create().setProperties(this.getProperties([
+			'googleId','path','title','desc'
 		]));
 	}
 });
@@ -154,6 +166,11 @@ App.galleriesController = Ember.ArrayProxy.create({
 	},
 	newDropbox: function() {
 		this.set("newModel", App.NewDropboxGalleryDto.create({dropboxUid: 5031239}));
+		this.set("editCopy", null);
+		this.set("current", null);
+	},
+	newGDrive: function() {
+		this.set("newModel", App.NewGDriveGalleryDto.create({googleId: 'be393ccf-f8ef-47ce-8f25-78590cc1e12b'}));
 		this.set("editCopy", null);
 		this.set("current", null);
 	},
@@ -238,6 +255,37 @@ App.GallerySingleView = Ember.View.extend({
 		App.galleriesController.newDropbox();
 
 		$("#galleryNewDropbox").dialog({
+			buttons: 
+				{ "Ok": function() {
+					var dialogSelf = this;
+					if($("form").valid()) {
+						App.galleriesController.updateNewModel(function() {
+							$(dialogSelf).dialog("close");
+							$(dialogSelf).dialog("destroy");
+						});
+					}
+				}, "Cancel": function() {
+					var dialogSelf = this;
+					App.galleriesController.cancelEdit(function() {
+						$(dialogSelf).dialog("close");
+						$(dialogSelf).dialog("destroy");
+					});
+				}},
+			title: "Edit gallery",
+			position: ["center",100],
+			modal: true,
+			width:430
+		});
+		
+		return false;
+	},
+	
+	newGDriveGallery : function() {
+		var self = this;
+
+		App.galleriesController.newGDrive();
+
+		$("#galleryNewGDrive").dialog({
 			buttons: 
 				{ "Ok": function() {
 					var dialogSelf = this;

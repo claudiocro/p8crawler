@@ -23,6 +23,8 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class UserUtils {
 
 	private static final Logger logger = Logger.getLogger(UserUtils.class.getName());
+
+	public static final String P8_TASK_QUEUE_AUTH = "p8TaskQueueAuth";
 	
 	private static Key CURRENT_USER_KEY = null;
 	
@@ -121,8 +123,8 @@ public class UserUtils {
 		}
 	}
 	public static void init(HttpServletRequest req) {
-		if(!Util.isBlank(req.getParameter("p8TaskQueueAuth"))) {
-			CURRENT_USER_KEY = KeyFactory.stringToKey(req.getParameter("p8TaskQueueAuth"));
+		if(!Util.isBlank(req.getParameter(P8_TASK_QUEUE_AUTH))) {
+			CURRENT_USER_KEY = KeyFactory.stringToKey(req.getParameter(P8_TASK_QUEUE_AUTH));
 		}
 		
 	}

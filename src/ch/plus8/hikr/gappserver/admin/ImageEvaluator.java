@@ -90,7 +90,7 @@ public class ImageEvaluator extends HttpServlet {
 			Scheduler.scheduleImageEvaluator(resultList.getCursor().toWebSafeString());
 		}
 		else  {
-			//Scheduler.scheduleImageFetcher();
+			Scheduler.scheduleImageFetcher();
 		}
 		
 		resp.getWriter().write("DONE");

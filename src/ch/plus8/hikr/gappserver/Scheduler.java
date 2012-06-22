@@ -3,6 +3,10 @@ package ch.plus8.hikr.gappserver;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import ch.plus8.hikr.gappserver.admin.UserUtils;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -13,6 +17,16 @@ public class Scheduler
 {
   private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
 
+  protected static final void addUserIfExists(TaskOptions param) {
+	  try {
+		  Key key = UserUtils.getCurrentKeyFor();
+		  if(key != null)
+			  param.param(UserUtils.P8_TASK_QUEUE_AUTH, KeyFactory.keyToString(key));
+	  }catch (Exception e) {
+		;
+	}
+  }
+  
   public static final void scheduleImageEvaluator() {
     scheduleImageEvaluator(null);
   }
@@ -24,6 +38,9 @@ public class Scheduler
     if (cursor != null) {
       param.param("cursor", cursor);
     }
+    
+    addUserIfExists(param);
+    
     queue.add(param);
   }
 
@@ -72,6 +89,9 @@ public class Scheduler
     if (cursor != null) {
       param.param("cursor", cursor);
     }
+    
+    addUserIfExists(param);
+    
     Queue queue = QueueFactory.getQueue("fetchImage-queue");
     queue.add(param);
   }

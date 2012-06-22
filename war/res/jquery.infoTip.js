@@ -84,7 +84,7 @@
 					.css('opacity',.5);
 				tinyTip.css(nPos);
 				tinyTip.animate(
-					{opacity:.8, top: nPos.top+15 },
+					{opacity:settings.opacity, top: nPos.top+15 },
 					{queue: false, duration:settings.speed});
 			}
 			
@@ -181,6 +181,7 @@
 	
 	$.fn.p8InfoTip.defaults = {
 		'tipClass'				: 'error-tip',
+		'opacity'				: .8,
 		'speed'					: 375,
 		'hideSpeed'				: 125,
 		'width'					: '150px',

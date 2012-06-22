@@ -37,6 +37,7 @@
 <div class="cnt p8-scroll" >
 {{#view App.GallerySingleView contentBinding="App.feedItemsController"}}
 <div><a href="#" {{action "newDropboxGallery" }}>Create new dropbox gallery</a></div>
+<div><a href="#" {{action "newGDriveGallery" }}>Create new gdrive gallery</a></div>
 {{/view}}
 <table>
   <tbody>

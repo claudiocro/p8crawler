@@ -58,6 +58,24 @@
       {{/view}}
     </div>
   </script>
+  
+  
+  <script type="text/x-handlebars">
+    <div id="galleryNewGDrive">
+      {{#view App.FormView contentBinding="App.galleriesController" className="gallery-gdrive-new-form" tagName="form"}}
+      <table width="100%">
+        <tbody>  
+          <tr><td><label>Google: </label></td><td>{{content.newModel.googleId}}</td></tr>
+          <tr><td><label>Path: </label></td><td>{{view App.TextField style="width:400px" name="path" title="Path" valueBinding="content.newModel.path"}}</td></tr>
+          <tr><td><label>Title: </label></td><td>{{view App.TextField style="width:400px" name="title" title="Title" valueBinding="content.newModel.title"}}</td></tr>
+          <tr><td colspan="2">&nbsp;</td></tr>
+          <tr><td colspan="2"><label>Description: </label></td></tr>
+          <tr><td colspan="2">{{view Ember.TextArea style="width:400px" valueBinding="content.newModel.desc"}}</td></tr>
+        </tbody>
+      </table>
+      {{/view}}
+    </div>
+  </script>
 
   <script type="text/x-handlebars">
     <div id="contentGroupEdit">
