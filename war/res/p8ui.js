@@ -574,11 +574,11 @@ $.fn.p8uiSimpleSearchPanel = function (poptions) {
 (function($) {
 
 
-	/*
-	 * JQUERY FUNCTION
-	 * CREATE hint text based on the title for an input field
-	 * 
-	 */
+/*
+ * JQUERY FUNCTION
+ * CREATE hint text based on the title for an input field
+ * 
+ */
 
 $.fn.p8AddHint = function() {
 	// applies a text hint to the text input field by using the input's title attribute
