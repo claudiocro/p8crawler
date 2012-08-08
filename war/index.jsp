@@ -323,8 +323,8 @@
 			if(data != null || data.error == null) {
 				reqParams.cursor = data.cursor;
 								
-				var heavyImage = new Image(); 
 				for ( var i=0; i <data.response.length; i++ ){
+					var heavyImage = new Image();
 					//heavyImage.src = data.response[i].img1Link;
 					heavyImage.src = data.response[i].img2Link;
 				}

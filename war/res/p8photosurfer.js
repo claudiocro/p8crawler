@@ -438,7 +438,7 @@ elem
 
 	$.widget("ui.p8JsonGallery", {
 		options : {
-			maxCount : 100,
+			maxCount : 150,
 			requestFunction : null,
 			feedLoaderFunction : null
 		},

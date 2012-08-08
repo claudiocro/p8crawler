@@ -2,9 +2,12 @@ package ch.plus8.hikr.gappserver.dropbox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +38,9 @@ import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 
 public class DropboxUtil {
-
+	
+	public static final DateFormat dateFormat = new SimpleDateFormat("EE, dd MMM yyyy hh:mm:ss Z", Locale.ENGLISH);
+	
 	private static final Logger logger = Logger.getLogger(DropboxUtil.class.getName());
 	
 	public static final String PROP_DROPBOX_REVISION = "dropboxRev";
@@ -68,7 +73,7 @@ public class DropboxUtil {
 		
 		//Calendar cal = Calendar.getInstance();
 		//cal.setTime(lomo.dateFormat.parse(photo.createdAt));
-		//entity.publishedDate = cal.getTime();
+		entity.publishedDate = dateFormat.parse(cnt.modified);
 		entity.source = "dropbox";
 		entity.link = cnt.path;
 		entity.title = null;

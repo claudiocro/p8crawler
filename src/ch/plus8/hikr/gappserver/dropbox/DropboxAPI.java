@@ -3,6 +3,7 @@ package ch.plus8.hikr.gappserver.dropbox;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import oauth.signpost.OAuthConsumer;
@@ -34,15 +35,19 @@ public class DropboxAPI {
 	private JsonHttpParser parser;
 	private final OAuthConsumer consumer;
 	private UrlFetchTransport transport;
+	
+	private DropboxAccount accountInfo;
 
 	public DropboxAPI(OAuthConsumer consumer) {
 		this.consumer = consumer;
 		this.parser = JsonHttpParser.builder(new GsonFactory()).setContentType("text/javascript").build();
 		this.transport = new UrlFetchTransport();
-		
 	}
 	
 	public DropboxAccount accountInfo() throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
+		if(accountInfo != null)
+			return accountInfo;
+		
 		String url = "https://api.dropbox.com/1/account/info/";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept("*/*");
@@ -53,6 +58,7 @@ public class DropboxAPI {
 		
 		consumer.sign(request);
 		DropboxAccount metadata = request.execute().parseAs(DropboxAccount.class);
+		accountInfo = metadata;
 		return metadata;
 	}
 	
@@ -100,6 +106,14 @@ public class DropboxAPI {
 	public DropboxLink media(String path) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
 		if(path.startsWith("/"))
 			path = path.substring(1);
+		
+		
+		if(path.toLowerCase().startsWith("public/")) {
+			DropboxLink dropboxLink = new DropboxLink();
+			dropboxLink.expires = null;
+			dropboxLink.url = "https://dl.dropbox.com/u/"+accountInfo().uid+"/"+encodePath(path.substring(7));
+			return dropboxLink;
+		}
 		
 		String url = "https://api.dropbox.com/1/media/dropbox/"+encodePath(path);
 		HttpHeaders headers = new HttpHeaders();

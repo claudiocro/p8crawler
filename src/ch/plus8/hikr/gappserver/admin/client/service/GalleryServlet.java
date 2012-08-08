@@ -47,7 +47,7 @@ public class GalleryServlet extends HttpServlet {
 		Query query = new Query(GAEFeedRepository.USER_GALLERY_KIND);
 		query.setAncestor(UserUtils.getCurrentKeyFor());
 		
-		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(100);
 		fetchOptions.prefetchSize(100);
 		PreparedQuery prepare = datastore.prepare(query);
 		
