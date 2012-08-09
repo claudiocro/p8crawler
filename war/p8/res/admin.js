@@ -60,7 +60,8 @@ App.datastoresController = Ember.ArrayProxy.create({
 
 App.DatastoreSingleView = Ember.View.extend({
 	createNewDropbox: function() {
-		window.open("http://photo.plus8.ch/dropbox/dropboxSyncher?createToken=1", "createNewDropbox");
+		//window.open("http://photo.plus8.ch/dropbox/dropboxSyncher?createToken=1", "createNewDropbox");
+		window.open("http://localhost:8888/dropbox/dropboxSyncher?createToken=1", "createNewDropbox");
 		return false;
 	},
 	createNewGoogle: function() {

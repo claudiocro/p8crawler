@@ -223,7 +223,7 @@ public class FeedServlet extends HttpServlet {
 			try {
 				FeedItem feedItem = FeedItem.createFromEntity(entity);
 	
-				if(feedItem.img2Link == null) {
+				if(feedItem.img2Link == null) { //TODO: only for img2 that resides in the appengine blobstore
 					feedItem.img2Link =  imagesService.getServingUrl((BlobKey)entity.getProperty("img2"));
 					entity.setUnindexedProperty("img2Link", feedItem.img2Link);
 					datastoreService.put(entity);
