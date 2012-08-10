@@ -141,7 +141,7 @@ public class Scheduler
     queue.add(param);
   }
 
-  public static void scheduleFeedCacher(String param, String paramV, Integer[] page, boolean forceCache) {
+  public static void scheduleFeedCacher(String param, String paramV, Integer[] page, String sortCol, boolean forceCache) {
     Queue queue = QueueFactory.getQueue("feedCacher-queue");
     for (int i = 0; i < page.length; i++) {
       logger.info("Schedule: /feed:" + param + " / " + paramV + " / " + page[i]);
@@ -152,6 +152,9 @@ public class Scheduler
         .param("cache-request", "1")
         .param(param, paramV)
         .param("page", String.valueOf(page[i]));
+      
+      	if(sortCol != null)
+      		options.param("sort", sortCol);
 
       queue.add(options);
     }
@@ -176,7 +179,7 @@ public class Scheduler
     for (int i = 0; i < Util.categories.length; i++) {
       if (forceCache)
         memcacheService.put("feedItems:cat:" + Util.categories[i], new HashMap());
-      scheduleFeedCacher("cat", Util.categories[i], new Integer[] { Integer.valueOf(0) }, forceCache);
+      scheduleFeedCacher("cat", Util.categories[i], new Integer[] { Integer.valueOf(0) }, null, forceCache);
     }
   }
 

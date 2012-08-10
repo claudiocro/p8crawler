@@ -247,9 +247,13 @@
 	}
 
 	
-	var loadGallery = function(type, album) {
+	var loadGallery = function(type, album, sort) {
 		if(type == 'cat') {
 			pCat = album;
+			
+			var sortDir = "storeDate";
+			if(sort != undefined)
+				sortDir = "publishedDate";
 
 		  	$('#mainNavigationContent').css({'z-index':1}).animate({opacity:0},900);
 		  	$('#galleryContent').busy({hide:false});
@@ -259,6 +263,7 @@
 	  		reqParams.cat = pCat;
 	  		reqParams.callCount= 0;
 	  		reqParams.cursor=null;
+	  		reqParams.sort = sortDir;
 	  		
 	  		gSel.data('galleryRequestParam',reqParams);
 			gSel.p8JsonGallery('reload');
@@ -313,9 +318,9 @@
 		var self = this;
 		var reqParams = self.element.data("galleryRequestParam");
 		
-		var jp = {cat:reqParams.cat, 'page':reqParams.callCount++};
-		if(reqParams.cursor != null)
-			jp = {cat:reqParams.cat, 'cursor':reqParams.cursor, 'page': reqParams.callCount++};
+		var jp = {cat:reqParams.cat, 'page':reqParams.callCount++, sort:reqParams.sort};
+		//if(reqParams.cursor != null)
+		//	jp = {cat:reqParams.cat, 'cursor':reqParams.cursor, 'page': jp.page, sort:reqParams.sort};
 						
 		jQuery.getJSON("feed", jp, function(data){
 			self._preProcessResponse();

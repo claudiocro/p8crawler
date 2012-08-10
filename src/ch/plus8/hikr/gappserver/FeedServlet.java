@@ -80,6 +80,11 @@ public class FeedServlet extends HttpServlet {
 		if("1".equals(req.getParameter("nocache")))
 			nocache = true;
 		
+		String sortCol = "storeDate";
+		if("publishedDate".equals(req.getParameter("sort")))
+			sortCol = "publishedDate";
+		
+		
 		int memCachePage = (page==-1)?0:page;
 		String memcacheKey = null;
 		
@@ -87,6 +92,8 @@ public class FeedServlet extends HttpServlet {
 			memcacheKey = MEM_FEED_PAGE_PREFIX+"source:"+source;
 		else if(cat != null)
 			memcacheKey = MEM_FEED_PAGE_PREFIX+"cat:"+cat;
+		
+		memcacheKey += ":"+sortCol;
 		
 		if(!nocache) {
 			String cachedFeed = getCachedFeed(memcacheService, memcacheKey, memCachePage);
@@ -117,7 +124,7 @@ public class FeedServlet extends HttpServlet {
 		
 		
 		query.addFilter("status", FilterOperator.EQUAL, Util.ITEM_STATUS_READY);
-		query.addSort("storeDate", SortDirection.DESCENDING);
+		query.addSort(sortCol, SortDirection.DESCENDING);
 		
 		if(req.getParameter("cursor") != null) {
 			try {
@@ -172,9 +179,7 @@ public class FeedServlet extends HttpServlet {
 			}
 			
 			
-			storeCachedPage(memcacheService, memcacheKey, memCachePage, gson.toJson(response), param, paramV,!cacheRequest, nocache);
-			
-			
+			storeCachedPage(memcacheService, memcacheKey, memCachePage, sortCol, gson.toJson(response), param, paramV,!cacheRequest, nocache);
 		}
 		logger.info("Returned from datastore for page "+memCachePage);
 		if(req.getParameter("callback") != null) {
@@ -194,7 +199,7 @@ public class FeedServlet extends HttpServlet {
 		return null;
 	}
 	
-	private void storeCachedPage(MemcacheService memcacheService, String memcacheKey, int page, String feed, String param, String paramV, boolean preCache, boolean forceCache) {
+	private void storeCachedPage(MemcacheService memcacheService, String memcacheKey, int page, String sortCol, String feed, String param, String paramV, boolean preCache, boolean forceCache) {
 		Map map = (Map)memcacheService.get(memcacheKey);
 		if(map == null)
 			map = new HashMap();
@@ -211,7 +216,7 @@ public class FeedServlet extends HttpServlet {
 				}
 				
 			}
-			Scheduler.scheduleFeedCacher(param, paramV, pages.toArray(new Integer[pages.size()]),forceCache);
+			Scheduler.scheduleFeedCacher(param, paramV, pages.toArray(new Integer[pages.size()]), sortCol, forceCache);
 		}
 		
 	}

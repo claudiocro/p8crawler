@@ -2,8 +2,9 @@ package ch.plus8.hikr.gappserver;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
 import java.util.logging.Logger;
+
+import com.google.appengine.api.utils.SystemProperty;
 
 public class Util {
 	private static final Logger logger = Logger.getLogger(Util.class.getName());
@@ -36,6 +37,10 @@ public class Util {
 			DATASTORE_GCS //google cloud storage
 	};
 
+	
+	public static boolean isProductionServer() {
+		return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
+	}
 
 	public static boolean isInt(String integer) {
 		try {

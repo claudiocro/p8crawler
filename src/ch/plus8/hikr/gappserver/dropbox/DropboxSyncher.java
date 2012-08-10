@@ -99,7 +99,8 @@ public class DropboxSyncher extends HttpServlet {
 				
 				String oauthsequence = UUID.randomUUID().toString();
 				String authUrl = provider.retrieveRequestToken(consumer, "http://photo.plus8.ch/dropbox/dropboxSyncher?"+PARAM_OAUTHSEQUENCE+"="+oauthsequence);
-				authUrl = provider.retrieveRequestToken(consumer, "http://localhost:8888/dropbox/dropboxSyncher?"+PARAM_OAUTHSEQUENCE+"="+oauthsequence);
+				if(!Util.isProductionServer())
+					authUrl = provider.retrieveRequestToken(consumer, "http://localhost:8888/dropbox/dropboxSyncher?"+PARAM_OAUTHSEQUENCE+"="+oauthsequence);
 				
 				Map<String, Object> sequenceParams = new HashMap<String, Object>();
 				sequenceParams.put("consumer", consumer);
