@@ -44,9 +44,9 @@ public class FeedItemServlet  extends HttpServlet {
 	    String pcat = request.getParameter("cat");
 	    String psource = request.getParameter("source");
 	    if(!Util.isBlank(pcat)) {
-	    	query.addFilter("categories", FilterOperator.EQUAL, pcat);
+	    	query.setFilter(new Query.FilterPredicate("categories", FilterOperator.EQUAL, pcat));
 	    } else if(!Util.isBlank(psource)) {
-	    	query.addFilter("source", FilterOperator.EQUAL, psource);
+	    	query.setFilter(new Query.FilterPredicate("source", FilterOperator.EQUAL, psource));
 	    }
 	    
 		

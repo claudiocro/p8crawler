@@ -52,7 +52,7 @@ public class SimpleContentServlet extends HttpServlet {
 		
 		Query query = new Query(GAEFeedRepository.CNT_SIMPLE_CONTENT_KIND);
 		query.setAncestor(UserUtils.getCurrentKeyFor());
-		query.addFilter("group", FilterOperator.EQUAL, req.getParameter("group"));
+		query.setFilter(new Query.FilterPredicate("group", FilterOperator.EQUAL, req.getParameter("group")));
 		query.addSort("sort", SortDirection.ASCENDING);
 		
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
