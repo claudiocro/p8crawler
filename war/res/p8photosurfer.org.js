@@ -60,15 +60,13 @@
 			elem.append(p8FeetInactiveCont);
 
 			var article = $('<div class="article"></div>').addClass('feedItem');
-			if (self.options.activeCnt !== null) {
+			if (self.options.activeCnt != null)
 				article.append(self.options.activeCnt);
-			}
 			p8FeetCont.append(article);
 
-			article = $('<div class="article"></div>').addClass('feedItem');
-			if (self.options.inactiveCnt !== null) {
+			var article = $('<div class="article"></div>').addClass('feedItem');
+			if (self.options.inactiveCnt != null)
 				article.append(self.options.inactiveCnt);
-			}
 			p8FeetInactiveCont.append(article);
 		},
 		
@@ -81,31 +79,29 @@
 		},
 		
 		isVisible : function() {
-			return $(".active", this.element).css('opacity') !== "0" || $(".inactive", this.element).css('opacity') !== "0";
+			return $(".active", this.element).css('opacity') != 0 || $(".inactive", this.element).css('opacity') != 0;
 		},
 		
 		isHidden : function() {
-			return $(".active", this.element).css('opacity') === "0" && $(".inactive", this.element).css('opacity') === "0";
+			return $(".active", this.element).css('opacity') == 0 && $(".inactive", this.element).css('opacity') == 0;
 		},
 		
 		isMoving : function() {
-			return $(".active", this.element).css('opacity') !== "0" && $(".inactive", this.element).css('opacity') !== "0";
+			return $(".active", this.element).css('opacity') != 0 && $(".inactive", this.element).css('opacity') != 0;
 		},
 		
 		load : function(image, feed) {
 			var self = this;
 			var elem = this.element;
 
-			if (self.options._timeout !== null) {
+			if (self.options._timeout != null)
 				clearTimeout(self.options._timeout);
-			}
 
 			// wait until animation has stopped
 			if (self.isMoving()) {
-				if (self.options._timeout !== null) {
+				if (self.options._timeout != null)
 					clearTimeout(self.options._timeout);
-				}
-				
+
 				self.options._timeout = setTimeout(function() {
 					self.options._timeout = null;
 					self.load(image, feed);
@@ -118,13 +114,12 @@
 			var nowTicket = this.options._imageLoadTicket;
 
 			var article = null;
-			if (self.isHidden()) {
+			if (self.isHidden())
 				article = $('.active .article', elem);
-			} else {
+			else
 				article = $('.inactive .article', elem);
-			}
-			
-			if (image !== null) {
+
+			if (image != null) {
 				article.data('feedImage', image);
 				article.css({
 					'background-image' : 'url(' + image + ')'
@@ -132,33 +127,30 @@
 				var imageToWaitFor = new Image();
 				if ($.browser.msie && parseInt($.browser.version, 10) <= 8) {
 					setTimeout(function() {
-						if (nowTicket === self.options._imageLoadTicket) {
+						if (nowTicket == self.options._imageLoadTicket)
 							self.switchFeeds();
-						}
 					}, 350);
 				} else {
 					self._setLoading(true);
 					imageToWaitFor.onerror = function() {
-						if (nowTicket === self.options._imageLoadTicket) {
+						if (nowTicket == self.options._imageLoadTicket) {
 							self._setLoading(false);
 							self.switchFeeds();
 						}
 					};
 					imageToWaitFor.onload = function() {
-						if (nowTicket === self.options._imageLoadTicket) {
+						if (nowTicket == self.options._imageLoadTicket)
 							self._setLoading(false);
-						}
 						
 						setTimeout(function() {
-							if (nowTicket === self.options._imageLoadTicket) {
+							if (nowTicket == self.options._imageLoadTicket)
 								self.switchFeeds();
-							}
 						}, 250);
 					};
 					imageToWaitFor.src = image;
 					
 				}
-				if (feed !== null && feed !== undefined) {
+				if (feed != null) {
 					article.empty().append(self.options.contentFunc(feed));
 					article.data("feedItem", feed);
 				} else {
@@ -169,7 +161,7 @@
 				article.css({
 					'background-image' : 'none'
 				});
-				if (feed !== null && feed !== undefined) {
+				if (feed != null) {
 					article.empty().append(self.options.contentFunc(feed));
 					article.data("feedItem", feed);
 				} else {
@@ -209,7 +201,7 @@ $(".feedTitle", article).jTruncate({
 			moveIn.css('z-index', 10);
 
 			moveAway.animate({
-				opacity : 0.001
+				opacity : .001
 			}, {
 				duration : 1000,
 				queue : true
@@ -237,11 +229,10 @@ $(".feedTitle", article).jTruncate({
 		},
 		
 		activeFeedItem : function() {
-			if ($('.inactive', this.element).css('z-index') === "10") {
+			if ($('.inactive', this.element).css('z-index') == 10)
 				return $('.inactive article', this.element).data('feedItem');
-			} else {
+			else
 				return $('.active .article', this.element).data('feedItem');
-			}
 		},
 		
 		clean : function() {
@@ -261,12 +252,11 @@ $(".feedTitle", article).jTruncate({
 		},
 		_setLoading : function(loading) {
 			this._loading = loading;
-			if(this.options.showBusy === true) {
-				if(loading === true && ((this.options.showBusyOnlyIfHidden === true && this.isHidden() === true) || this.options.showBusyOnlyIfHidden === false)) {
+			if(this.options.showBusy == true) {
+				if(loading == true && ((this.options.showBusyOnlyIfHidden == true && this.isHidden() == true) || this.options.showBusyOnlyIfHidden == false)) {
 					var busyP = {hide : false};
-					if(this.options.busyImage !== null) {
-						$.extend(busyP, {img:this.options.busyImage});
-					}
+					if(this.options.busyImage != null)
+						$extend(busyP, {img:this.options.busyImage});
 					
 					$(this.element).busy(busyP);
 				}
@@ -315,7 +305,7 @@ elem
 // .css({height:"10px"})
 .hover(function() {
 	$('.bigimage-desc', this).stop().animate({
-		opacity : 0.5,
+		opacity : .5,
 		height : "30px"
 	}, {
 		duration : 250,
@@ -341,7 +331,7 @@ elem
 				hide : false
 			});
 			
-			if (self.isBigContent && self.options.hideOnLoad === true) {
+			if (self.isBigContent && self.options.hideOnLoad == true) {
 				bigImageCnt.stop().animate({
 					opacity : 0
 				}, 200);
@@ -350,7 +340,7 @@ elem
 
 			var imageToWaitFor = new Image();
 			imageToWaitFor.onerror = function() {
-				if(curTicket === self.ticket) {
+				if(curTicket == self.ticket) {
 					imageToWaitFor.onerror = "";
 					bigImageCnt.busy("hide");
 					self.unload();
@@ -359,15 +349,15 @@ elem
 			
 			var curTicket = ++this.ticket;
 			imageToWaitFor.onload = function() {
-				if(curTicket === self.ticket) {
+				if(curTicket == self.ticket) {
 					var imgElem = $('img', elem);
 					
 					bigImageCnt.busy("hide");
 					
 					
 					setTimeout(function() {
-						if(curTicket === self.ticket) {
-							if (self.isBigContent && self.options.hideOnLoad === false) {
+						if(curTicket == self.ticket) {
+							if (self.isBigContent && self.options.hideOnLoad == false) {
 								bigImageCnt.stop().animate({
 									opacity : 0
 								}, 200, function() {
@@ -414,19 +404,19 @@ elem
 			var width = imageToWaitFor.naturalWidth;
 			var height = imageToWaitFor.naturalHeight;
 
-			if (width || height) {
+			if (width == null || height == null) {
 				width = imageToWaitFor.width;
 				height = imageToWaitFor.height;
 			}
 
 			var scaled = $.scaleSize(self.options.maxWidth, self.options.maxHeight, width, height);
-			imgElem.attr("width", parseInt(scaled[0],10)).attr("height", parseInt(scaled[1],10)).css({
-				"margin-top" : parseInt((self.options.maxHeight - scaled[1]) / 2, 10)
+			imgElem.attr("width", parseInt(scaled[0])).attr("height", parseInt(scaled[1])).css({
+				"margin-top" : parseInt((self.options.maxHeight - scaled[1]) / 2)
 			});
 
 			bigimageDesc.css({
-				bottom : parseInt((self.options.maxHeight - scaled[1]) / 2, 10) + 'px',
-				right : parseInt((self.options.maxWidth - scaled[0]) / 2, 10) + 'px',
+				bottom : parseInt((self.options.maxHeight - scaled[1]) / 2) + 'px',
+				right : parseInt((self.options.maxWidth - scaled[0]) / 2) + 'px',
 				width : scaled[0]
 			});
 			bigimageInnerDesc.append(description);
@@ -448,14 +438,14 @@ elem
 
 	$.widget("ui.p8JsonGallery", {
 		options : {
-			maxCount : 100,
+			maxCount : 150,
 			requestFunction : null,
 			feedLoaderFunction : null
 		},
 		_init : function() {
 			this.currentCount = 0;
 			this.ajaxTickedId = 0;
-			this.allFeeds = [];
+			this.allFeeds = new Array();
 			this.feedStreamEnd = false;
 			this.isRetrivingFeed = false;
 			this.forceMoveForeward = false;
@@ -468,7 +458,7 @@ elem
 		},
 		reload : function() {
 			this.currentCount = 0;
-			this.allFeeds = [];
+			this.allFeeds = new Array();
 			this.feedStreamEnd = false;
 
 			this._trigger('reload');
@@ -489,9 +479,8 @@ elem
 		},
 
 		moveForwards : function(force) {
-			if (this.canMoveForwards() === false && force !== true) {
+			if (this.canMoveForwards() == false && force != true)
 				return false;
-			}
 
 			var self = this;
 
@@ -503,7 +492,7 @@ elem
 			*/
 
 			// preload feed if necessary
-			if (self.feedStreamEnd !== true && self.allFeeds.length - (self.total * 4) < self.currentCount * self.total && !self.isRetrivingFeed) {
+			if (self.feedStreamEnd != true && self.allFeeds.length - (self.total * 4) < self.currentCount * self.total && !self.isRetrivingFeed) {
 				self.isRetrivingFeed = true;
 
 				self.ajaxTickedId++;
@@ -530,9 +519,8 @@ elem
 		},
 
 		moveBackwards : function() {
-			if (this.canMoveBackwards() === false) {
+			if (this.canMoveBackwards() == false)
 				return false;
-			}
 
 			var self = this;
 			self.forceMoveForeward = false;
@@ -554,7 +542,7 @@ elem
 		},
 		
 		moveToPage : function(page) {
-			if(this.currentCount !== page) {
+			if(this.currentCount != page) {
 				var oldCurrentCount = this.currentCount;
 				this.currentCount = page-1;
 				if(this.moveForwards()) {
@@ -596,7 +584,7 @@ elem
 			
 			self.isRetrivingFeed = false;
 			self._trigger('loading', null, {loading:false});
-			if (self.forceMoveForeward === true) {
+			if (self.forceMoveForeward == true) {
 				self.moveForwards();
 			}
 			
@@ -608,8 +596,10 @@ elem
 
 (function($) {
 
-	
-	//TODO: Simple grid sollte in eine funktion umgewandelt werden. 
+	/*
+	 * Simple grid sollte in eine funktion umgewandelt werden. 
+	 *  
+	 */
 	
 	$.widget("ui.p8SimpleGrid", {
 		options : {
@@ -619,10 +609,9 @@ elem
 		},
 
 		_create : function() {
-			if (this.options.contentSelector === null) {
+			if (this.options.contentSelector == null)
 				this.options.contentSelector = this.element.children();
-			}
-			
+
 			var self = this;
 			var elem = this.element;
 
@@ -634,13 +623,13 @@ elem
 			var currentRow = 0;
 			var currentColE = null;
 			self.options.contentSelector.each(function() {
-				if (currentRow === 0) {
+				if (currentRow == 0) {
 					currentColE = $('<div class="grid col col-' + currentCol + '">');
 				}
 				currentColE.append($(this));
 
 				elem.append(currentColE);
-				if (currentRow === self.options.totalInRow - 1) {
+				if (currentRow == self.options.totalInRow - 1) {
 					currentCol++;
 					currentRow = 0;
 				} else {
@@ -666,7 +655,7 @@ elem
 		var options = jQuery.extend ({
 				extractFunction:extractFunction,
 				showBusyOnlyIfHidden : true,
-				showBusy : false
+				showBusy : false,
 			},poptions);
 		
 		return this.each (function () {
@@ -674,7 +663,7 @@ elem
 			var feed = options.extractFunction.call(self);
 			return $(self).p8FeedItem({
 				showBusyOnlyIfHidden : options.showBusyOnlyIfHidden,
-				showBusy : options.showBusy
+				showBusy : options.showBusy,
 //TODO: busyImage
 			}).p8FeedItem('load', feed.image,feed.content);
 		});
@@ -686,15 +675,14 @@ elem
 (function($) {
 	
 	var feedLoaderFunction = function(element,data) {
-		if(data !== null) {
+		if(data!= null)
 			element.empty().append($(data).clone().show());
-		} else {
+		else
 			element.empty();
-		}
 	};
 	
 	var navigationShowHideFunction = function(element, show, type) {
-		if(show === true) {
+		if(show == true) {
 			$(element).show(200);
 		} else {
 			$(element).hide(200);
@@ -727,16 +715,16 @@ elem
 		var index = -1;
 		var updateSingleNavigation = function() {
 				var length = $(this).p8JsonGallery('getAllFeeds').length;
-				if(options.singleNextSelector !== null) {
-					if(index !== -1 && index+1 < length) {
+				if(options.singleNextSelector != null) {
+					if(index != -1 && index+1 < length) {
 						options.singleNavigationShowHideFunction(options.singleNextSelector, true, 'fwd');
 					} else {
 						options.singleNavigationShowHideFunction(options.singleNextSelector, false, 'fwd');
 					}
 				}
 				
-				if(options.singlePreviousSelector !== null) {
-					if(length === 0 || index <=0) {
+				if(options.singlePreviousSelector != null) {
+					if(length == 0 || index <=0) {
 						options.singleNavigationShowHideFunction(options.singlePreviousSelector, false, 'back');
 					} else {
 						options.singleNavigationShowHideFunction(options.singlePreviousSelector, true, 'back');
@@ -747,19 +735,18 @@ elem
 		
 		
 		var updateNavigation = function() {
-			if(options.nextSelector !== null) {
+			if(options.nextSelector != null)
 				options.navigationShowHideFunction(options.nextSelector, $(this).p8JsonGallery('canMoveForwards'), 'fwd');
-			}
-			if(options.previousSelector !== null) {
+			
+			if(options.previousSelector != null)
 				options.navigationShowHideFunction(options.previousSelector, $(this).p8JsonGallery('canMoveBackwards'), 'back');
-			}
 		};
 		
 		if(options.datas instanceof jQuery) {
 			options.datas = options.datas.toArray();
 		}
 		
-		if(options.requestFunction === null) {
+		if(options.requestFunction == null) {
 			options.requestFunction = function() {
 				this._preProcessResponse();
 				
@@ -773,30 +760,28 @@ elem
 		return this.each (function () {
 			var self = this;
 			
-			if(options.nextSelector !== null) {
+			if(options.nextSelector != null) {
 				options.navigationShowHideFunction(options.nextSelector, false);
 				options.nextSelector.bind('click', function() {
-					if($(self).p8JsonGallery('canMoveForwards')) {
+					if($(self).p8JsonGallery('canMoveForwards'))
 						$(self).p8JsonGallery('moveForwards');
-					}
 					
 					return false;
 				});
 			}
 			
-			if(options.previousSelector !== null) {
+			if(options.previousSelector != null) {
 				options.navigationShowHideFunction(options.previousSelector, false);
 				options.previousSelector.bind('click', function() {
-					if($(self).p8JsonGallery('canMoveBackwards')) {
+					if($(self).p8JsonGallery('canMoveBackwards'))
 						$(self).p8JsonGallery('moveBackwards');
-					}
 					
 					return false;
 				});
 			}
 			
-			if(options.singleClickSelectorFunction !== null) {
-				if(options.singleNextSelector !== null) {
+			if(options.singleClickSelectorFunction != null) {
+				if(options.singleNextSelector != null) {
 					options.singleNextSelector.click(function() {
 						index++;
 						var canMove = $(self).p8JsonGallery('moveToSingleIndex', index);
@@ -810,9 +795,9 @@ elem
 					});
 				}
 				
-				if(options.singlePreviousSelector !== null) {
+				if(options.singlePreviousSelector != null) {
 					options.singlePreviousSelector.click(function() {
-						if(index!==0){
+						if(index!=0){
 							index--;
 							var canMove = $(self).p8JsonGallery('moveToSingleIndex', index);
 							if(index >=0 && canMove) {
@@ -830,9 +815,9 @@ elem
 				
 			}
 			
-			if(options.singleClickSelector !== null) {
+			if(options.singleClickSelector != null) {
 				$(options.singleClickSelector, self).click(function() {
-					if(options.singleClickSelectorFunction !== null && options.singleCompareFunction !== null) {
+					if(options.singleClickSelectorFunction != null && options.singleCompareFunction != null) {
 						
 						var allFeeds = $(self).p8JsonGallery('getAllFeeds');
 						
@@ -857,24 +842,24 @@ elem
 				requestFunction: options.requestFunction,
 				loading: options.loadingFunction,
 				moveForwards:function(){
-					if(options.moveForwards !== null){options.moveForwards.call(this);} 
+					if(options.moveForwards != null){options.moveForwards.call(this);} 
 					updateNavigation.call(this);},
 				moveBackwards:function(){
-					if(options.moveForwards !== null){options.moveBackwards.call(this);}
+					if(options.moveForwards != null){options.moveBackwards.call(this);}
 					updateNavigation.call(this);},
 				reload: function(){
-					if(options.reloadFunction !== null){options.reloadFunction.call(this);} 
+					if(options.reloadFunction != null){options.reloadFunction.call(this);} 
 					updateNavigation.call(this);
 					updateSingleNavigation.call(this);},
 				feedItemsChanged:function(){
 					updateNavigation.call(this);
 					updateSingleNavigation.call(this);
-					if(options.feedItemsChangedFunction !== null){options.feedItemsChangedFunction.call(this);}}
+					if(options.feedItemsChangedFunction != null){options.feedItemsChangedFunction.call(this);}}
 			});
 		
-			if(options.reload) {
+			if(options.reload)
 				$(this).p8JsonGallery('reload');
-			} else {
+			else {
 				updateNavigation.call(this);
 				updateSingleNavigation.call(this);
 			}
@@ -883,5 +868,5 @@ elem
 		});
 	};
 	
-}(jQuery));
+})(jQuery);
 

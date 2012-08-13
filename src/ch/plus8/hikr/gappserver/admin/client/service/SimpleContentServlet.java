@@ -36,7 +36,7 @@ import com.google.gson.reflect.TypeToken;
 @SuppressWarnings("serial")
 public class SimpleContentServlet extends HttpServlet {
 
-	private static final Logger logger = Logger.getLogger(GalleryServlet.class.getName());
+	private static final Logger logger = Logger.getLogger(SimpleContentServlet.class.getName());
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

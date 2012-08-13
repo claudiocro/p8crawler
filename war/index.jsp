@@ -30,7 +30,7 @@
   <script type="text/javascript" language="javascript" src="res/jquery.mousewheel.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.jscrollpane.js"></script>
   
-  <script type="text/javascript" language="javascript" src="res/p8core.js"></script>
+  <script type="text/javascript" language="javascript" src="res/p8js.js"></script>
   <script type="text/javascript" language="javascript" src="res/p8photosurfer.js"></script>
   
  
