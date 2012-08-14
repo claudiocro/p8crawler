@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.urlfetch.HTTPResponse;
@@ -52,9 +53,10 @@ public class ImageDownloadServlet extends HttpServlet {
 
 		Query query = new Query("FeedItem");
 
-		query.addFilter("status", Query.FilterOperator.GREATER_THAN_OR_EQUAL, Util.ITEM_STATUS_IMAGE_LINK_PROCESS);
-		query.addFilter("status", Query.FilterOperator.LESS_THAN, Util.ITEM_STATUS_IMAGE_LINK_PROCESS + 5);
-
+		query.setFilter(CompositeFilterOperator.and(
+				new Query.FilterPredicate("status", Query.FilterOperator.GREATER_THAN_OR_EQUAL, Util.ITEM_STATUS_IMAGE_LINK_PROCESS),
+				new Query.FilterPredicate("status", Query.FilterOperator.LESS_THAN, Util.ITEM_STATUS_IMAGE_LINK_PROCESS + 5)));
+		
 		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
 
 		if (req.getParameter("cursor") != null) {

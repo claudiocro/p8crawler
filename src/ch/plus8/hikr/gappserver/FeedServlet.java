@@ -23,7 +23,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.images.ImagesService;
@@ -115,15 +118,17 @@ public class FeedServlet extends HttpServlet {
 		//if(req.getParameter("type") == null) {
 		//	logger.fine("FeedServlet with no type called");
 			
-			
+		List<Filter> filters = new ArrayList<Filter>();
 		Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
 		if(cat != null)
-			query.addFilter("categories", FilterOperator.EQUAL, cat);
+			filters.add(new Query.FilterPredicate("categories", FilterOperator.EQUAL, cat));
 		else if(source != null)
-			query.addFilter("source", FilterOperator.EQUAL, source);
+			filters.add(new Query.FilterPredicate("source", FilterOperator.EQUAL, source));
 		
 		
-		query.addFilter("status", FilterOperator.EQUAL, Util.ITEM_STATUS_READY);
+		filters.add(new Query.FilterPredicate("status", FilterOperator.EQUAL, Util.ITEM_STATUS_READY));
+		
+		query.setFilter(CompositeFilterOperator.and(filters));
 		query.addSort(sortCol, SortDirection.DESCENDING);
 		
 		if(req.getParameter("cursor") != null) {
@@ -141,14 +146,7 @@ public class FeedServlet extends HttpServlet {
 			fetchOptions.offset(page*MAX_COUNT);
 		
 		prepare = dataStore.prepare(query);
-		/*} else if("noImage".equals(req.getParameter("type"))) {
-			Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-			query.addFilter("source", FilterOperator.EQUAL, "hikr");
-			query.addFilter("img1", FilterOperator.EQUAL, null);
-			
-			prepare = dataStore.prepare(query);
-			fetchOptions.limit(MAX_COUNT);
-		}*/
+		
 		
 		List<FeedItem> items = new ArrayList<FeedItem>();
 		String cursor = iterateItems(dataStore, prepare, fetchOptions, items);

@@ -113,7 +113,7 @@ public class UserUtils {
 	public static Entity getUserEntityById(String id) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query query = new Query("user");
-		query.addFilter("id", FilterOperator.EQUAL, id);
+		query.setFilter(new Query.FilterPredicate("id", FilterOperator.EQUAL, id));
 		try {
 			Entity entity = ds.prepare(query).asSingleEntity();
 			return entity;

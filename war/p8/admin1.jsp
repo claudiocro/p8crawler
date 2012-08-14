@@ -20,9 +20,9 @@
 
 <table>
   <tbody>
-     {{#each content}}
+     {{#each view.content}}
        {{#view App.DatastoreSingleView tagName="tr" contentBinding="this" }}         
-           <td>{{content.kind}}</td><td>{{content.uid}}</td><td>{{content.title}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
+           <td>b{{kind}}</td><td>{{uid}}</td><td>{{title}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
        {{/view}}
      {{/each}}
   </tbody>	
@@ -35,18 +35,18 @@
 <h2>Galleries</h2>
 <div class="cnt" style="position:relative;height:250px;">
 <div class="cnt p8-scroll" >
-{{#view App.GallerySingleView contentBinding="App.feedItemsController"}}
+{{#view App.GallerySingleView }}
 <div><a href="#" {{action "newDropboxGallery" }}>Create new dropbox gallery</a></div>
 <div><a href="#" {{action "newGDriveGallery" }}>Create new gdrive gallery</a></div>
 {{/view}}
 <table>
   <tbody>
-  {{#each content }}
+  {{#each view.content }}
     {{#view App.GallerySingleView contentBinding="this"}}
       <tr>
-        <td>{{content.title}}</td>
+        <td>{{title}}</td>
         <td>[<a href="#" {{action "edit"}}>edit</a>]</a></td>
-        <td><a target="_blank" href="?{{userparam "u"}}&{{urlparam "cat" content.key}}">[show]</a></td>
+        <td><a target="_blank" href="?{{userparam "u"}}&{{urlparam "cat" key}}">[show]</a></td>
         <td>[<a href="#" {{action "showFeeds"}}>showFeeds</a>]</a></td>
       </tr>
     {{/view}}
@@ -65,10 +65,10 @@
 {{/view}}
 <table>
   <tbody>
-     {{#each content}}
+     {{#each view.content}}
        {{#view App.ContentGroupSingleView contentBinding="this"}}
          <tr>
-           <td>{{content.title}}</td><td>{{content.groupId}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
+           <td>{{title}}</td><td>{{groupId}}</td><td>[<a href="#" {{action "edit"}}>edit</a>]</td>
          </tr>
        {{/view}}
      {{/each}}
@@ -102,16 +102,16 @@
     </tr>
   </thead>
   <tbody>
-    {{#each content}}
+    {{#each view.content}}
       {{#view App.FeedItemSingleView contentBinding="this" tagName="tr"}}
-        <td><img height=40 width=40 {{urlparam "src" content.img2Link}}/></td>
-        <td>{{content.link}}</td>
+        <td><img height=40 width=40 {{urlparam "src" this.img2Link}}/></td>
+        <td>{{this.link}}</td>
         <td>[<a href="#" {{action "reparse"}}>reparse</a>]</td>
-        <td>{{content.imageLink}}</td>
-        <td>{{content.publishedDate}}</td>
-        <td>{{content.source}}</td>
-        <td>{{content.status}}</td>
-        <td>{{content.categories}}</td>
+        <td>{{this.imageLink}}</td>
+        <td>{{this.publishedDate}}</td>
+        <td>{{this.source}}</td>
+        <td>{{this.status}}</td>
+        <td>{{this.categories}}</td>
       {{/view}}
     {{/each}}
   </tbody>

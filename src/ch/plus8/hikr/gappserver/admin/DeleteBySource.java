@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.QueryResultList;
 
 @SuppressWarnings("serial")
@@ -36,7 +37,7 @@ public class DeleteBySource extends HttpServlet {
         
         try {
         	Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-    		query.addFilter("source", FilterOperator.EQUAL, req.getParameter("source"));
+    		query.setFilter(new Query.FilterPredicate("source", FilterOperator.EQUAL, req.getParameter("source")));
     		
     		PreparedQuery prepare = datastore.prepare(query);
     		QueryResultList<Entity> asQueryResultList = prepare.asQueryResultList(FetchOptions.Builder.withLimit(50));

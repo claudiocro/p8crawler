@@ -20,6 +20,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultList;
 
@@ -45,8 +46,9 @@ public class ImageEvaluator extends HttpServlet {
 		feedRepository.init();
 		
 		Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-		query.addFilter("status", FilterOperator.GREATER_THAN_OR_EQUAL, Util.ITEM_STATUS_IMAGE_LINK_EVAL);
-		query.addFilter("status", FilterOperator.LESS_THAN, Util.ITEM_STATUS_IMAGE_LINK_EVAL+5);
+		query.setFilter(CompositeFilterOperator.and(
+				new Query.FilterPredicate("status", FilterOperator.GREATER_THAN_OR_EQUAL, Util.ITEM_STATUS_IMAGE_LINK_EVAL),
+				new Query.FilterPredicate("status", FilterOperator.LESS_THAN, Util.ITEM_STATUS_IMAGE_LINK_EVAL+5)));
 		
 		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
 		

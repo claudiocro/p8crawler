@@ -30,7 +30,9 @@
   <script type="text/javascript" language="javascript" src="res/jquery.validate.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.infoTip.js"></script>
   
-  <script type="text/javascript" language="javascript" src="p8/res/ember-0.9.7.1.js"></script>
+  <script type="text/javascript" language="javascript" src="p8/res/handlebars-1.0.0.beta.6.js"></script>
+  <script type="text/javascript" language="javascript" src="p8/res/ember-1.0.pre.js"></script>
+  
   
   <script type="text/javascript" language="javascript" src="res/p8core.js"></script>
   <script type="text/javascript" language="javascript" src="res/p8photosurfer.js"></script>

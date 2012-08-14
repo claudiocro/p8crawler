@@ -1,8 +1,10 @@
 package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +24,8 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.QueryResultList;
 
 public class DeleteOldFeedItemsServlet extends HttpServlet
@@ -62,14 +66,15 @@ public class DeleteOldFeedItemsServlet extends HttpServlet
     cal.set(14, 0);
     cal.set(13, 0);
     cal.set(12, 0);
-    query.addFilter("storeDate", Query.FilterOperator.LESS_THAN, cal.getTime());
+    List<Filter> filters = new ArrayList<Query.Filter>();
+    filters.add(new Query.FilterPredicate("storeDate", Query.FilterOperator.LESS_THAN, cal.getTime()));
     
     if(source != null)
-    	query.addFilter("source", Query.FilterOperator.EQUAL, source);
+    	filters.add(new Query.FilterPredicate("source", Query.FilterOperator.EQUAL, source));
     else if(cat != null)
-    	query.addFilter("categories", Query.FilterOperator.EQUAL, cat);
+    	filters.add(new Query.FilterPredicate("categories", Query.FilterOperator.EQUAL, cat));
     
-
+    query.setFilter(CompositeFilterOperator.and(filters));
     FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
     if (req.getParameter("cursor") != null) {
       try {

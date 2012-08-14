@@ -30,8 +30,10 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class GAEFeedRepository implements FeedRepository {
 
@@ -281,7 +283,7 @@ public class GAEFeedRepository implements FeedRepository {
 	public Entity getDatatoreByKey(Key key) {
 		Query query = new Query("user:datastore");
 		query.setAncestor(UserUtils.getCurrentKeyFor());
-		query.addFilter("key", FilterOperator.EQUAL, key);
+		query.setFilter(new Query.FilterPredicate("key", FilterOperator.EQUAL, key));
 
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1);
 		fetchOptions.prefetchSize(1);
@@ -293,8 +295,9 @@ public class GAEFeedRepository implements FeedRepository {
 	public Entity findGalleryByRef(DatastoreService ds, String kind, String ref, Key userKey) {
 		Query q = new Query(GAEFeedRepository.USER_GALLERY_KIND);
 		q.setAncestor(userKey);
-		q.addFilter("kind", FilterOperator.EQUAL, kind);
-		q.addFilter("ref", FilterOperator.EQUAL, ref);
+		q.setFilter(CompositeFilterOperator.and(
+				new Query.FilterPredicate("kind", FilterOperator.EQUAL, kind),
+				new Query.FilterPredicate("ref", FilterOperator.EQUAL, ref)));
 		PreparedQuery pq = ds.prepare(q);
 		return pq.asSingleEntity();
 	}

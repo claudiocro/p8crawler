@@ -40,6 +40,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -208,7 +209,7 @@ public class DropboxSyncher extends HttpServlet {
 						*/
 						
 						Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-						query.addFilter("categories",FilterOperator.EQUAL, dropboxCat);
+						query.setFilter(new Query.FilterPredicate("categories",FilterOperator.EQUAL, dropboxCat));
 						PreparedQuery prepare = datastoreService.prepare(query);
 						QueryResultIterable<Entity> results = prepare.asQueryResultIterable();
 						for(Entity oldEntity : results) {

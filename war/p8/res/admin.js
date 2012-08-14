@@ -71,7 +71,7 @@ App.DatastoreSingleView = Ember.View.extend({
 		var self = this;
 
 		console.log("edit");
-		App.datastoresController.edit(this.getPath('content'));
+		App.datastoresController.edit(this.get('content'));
 
 		$("#datastoreEdit").dialog({
 			buttons: 
@@ -221,7 +221,7 @@ App.GallerySingleView = Ember.View.extend({
 	edit: function() {
 		var self = this;
 
-		App.galleriesController.edit(this.getPath('content'));
+		App.galleriesController.edit(this.get('content'));
 
 		$("#galleryEdit").dialog({
 			buttons: 
@@ -420,7 +420,7 @@ App.ContentGroupSingleView = Ember.View.extend({
 	edit: function() {
 		var self = this;
 
-		App.contentGroupsController.edit(this.getPath('content'));
+		App.contentGroupsController.edit(this.get('content'));
 		
 		$("#contentGroupEdit").dialog({
 			buttons: 
@@ -627,7 +627,7 @@ App.FeedItemSingleView = Ember.View.extend({
 
 Handlebars.registerHelper('urlparam', function(type,value,fn) {
 	var context = (fn.contexts && fn.contexts[1]) || this;
-	value = Ember.getPath(context, value, fn);
+	value = Ember.get(context, value, fn);
 	return type+'='+value;
 });
 
@@ -677,7 +677,7 @@ App.Button = Ember.Button.extend({
 });
 
 App.SaveModelButton = App.Button.extend({
-    disabledBinding: Ember.Binding.isNull('model.editCopy')
+    //disabledBinding: Ember.Binding.isNull('model.editCopy')
 });
 
 
@@ -743,10 +743,10 @@ App.pageState = Ember.StateManager.create({
 		    	templateName: 'galleries',
 	  			contentBinding: 'App.galleriesController.content'
 		    }),
-		    datastoreView: Ember.View.extend({
+		    datastoreView: Ember.View.create({
 		    	elementId: 'datastoresCnt',
 		    	templateName: 'datastores',
-	  			contentBinding: 'App.datastoresController.content'
+		    	contentBinding: 'App.datastoresController.content'
 		    }),
 		    contentGroupView: Ember.View.extend({
 		    	elementId: 'contentGroupsCnt',
