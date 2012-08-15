@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.6
+ *  p8 photosurfer  0.9.7
  * 
  * Depends on:
  * 
@@ -413,8 +413,9 @@ elem
 			
 			var width = imageToWaitFor.naturalWidth;
 			var height = imageToWaitFor.naturalHeight;
-
-			if (width || height) {
+			
+			//TODO: this is wrong it should check for false ... 
+			if (width === undefined || height == undefined) {
 				width = imageToWaitFor.width;
 				height = imageToWaitFor.height;
 			}
@@ -460,8 +461,8 @@ elem
 			this.isRetrivingFeed = false;
 			this.forceMoveForeward = false;
 			this.total = this.element.children().size();
+			this.preloadTimeout = null;
 		},
-
 		_create : function() {
 			this.element.addClass("p8JsonGallery");
 			this.element.children().addClass("p8JsonGallery-item");
@@ -484,6 +485,10 @@ elem
 			return this.allFeeds;
 		},
 
+		getTotal : function() {
+			return this.total;
+		},
+		
 		canMoveForwards : function() {
 			return (this.currentCount <= this.options.maxCount && this.allFeeds.length>0 && (this.total * (this.currentCount)) < this.allFeeds.length);
 		},
@@ -583,7 +588,6 @@ elem
 			
 			
 		},
-		
 		_preProcessResponse : function() {
 			var self = this;
 			
@@ -720,12 +724,16 @@ elem
 				loadingFunction:					null,
 				feedItemsChangedFunction:			null,
 				reloadFunction:						null,
+				imageExtractorFunction:				null,
 				moveForwards:						null,
 				moveBackwards:						null,
 				maxCount:							100
 			},poptions);
 		
 		var index = -1;
+		var currentCountSave = -1; 
+		var preloadTimeout = null;
+			
 		var updateSingleNavigation = function() {
 				var length = $(this).p8JsonGallery('getAllFeeds').length;
 				if(options.singleNextSelector !== null) {
@@ -755,6 +763,36 @@ elem
 				options.navigationShowHideFunction(options.previousSelector, $(this).p8JsonGallery('canMoveBackwards'), 'back');
 			}
 		};
+		
+		var preloadImages = function() {
+			if(options.imageExtractorFunction !== null) {
+				var self = this;
+				console.log("preload images");
+				currentCountSave = $(this).p8JsonGallery('getCurrentCount');
+				var total = $(this).p8JsonGallery('getTotal');
+				
+				if(preloadTimeout !== null) {
+					clearTimeout(this.preloadTimeout);
+				}
+				
+				preloadTimeout = setTimeout(function() {
+					console.log("survived timeout");
+					var cc = currentCountSave;
+					currentCountSave = -1;
+					
+					preloadTimeout = null;
+					if(cc ===  $(self).p8JsonGallery('getCurrentCount')) {
+						for ( var i = total * (cc), len =  $(self).p8JsonGallery('getAllFeeds').length; i < total * (cc+1) && i < len && i > -1; ++i) {
+							console.log("preload image: " + i + " / " + options.imageExtractorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[i]));
+							new Image().src = options.imageExtractorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[i]);
+						}
+					}
+					
+				},1500);
+			}
+		};
+		
+		
 		
 		if(options.datas instanceof jQuery) {
 			options.datas = options.datas.toArray();
@@ -860,7 +898,8 @@ elem
 				loading: options.loadingFunction,
 				moveForwards:function(){
 					if(options.moveForwards !== null){options.moveForwards.call(this);} 
-					updateNavigation.call(this);},
+					updateNavigation.call(this);
+					preloadImages.call(this);},
 				moveBackwards:function(){
 					if(options.moveForwards !== null){options.moveBackwards.call(this);}
 					updateNavigation.call(this);},
