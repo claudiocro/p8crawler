@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.7
+ *  p8 photosurfer  0.9.9.7
  * 
  * Depends on:
  * 
@@ -415,7 +415,7 @@ elem
 			var height = imageToWaitFor.naturalHeight;
 			
 			//TODO: this is wrong it should check for false ... 
-			if (width === undefined || height == undefined) {
+			if (width === undefined || height === undefined) {
 				width = imageToWaitFor.width;
 				height = imageToWaitFor.height;
 			}
@@ -451,7 +451,9 @@ elem
 		options : {
 			maxCount : 100,
 			requestFunction : null,
-			feedLoaderFunction : null
+			feedLoaderFunction : null,
+			useMoveDelay: false,
+			moveDelayTime: 250
 		},
 		_init : function() {
 			this.currentCount = 0;
@@ -459,9 +461,11 @@ elem
 			this.allFeeds = [];
 			this.feedStreamEnd = false;
 			this.isRetrivingFeed = false;
+			this.loadingCnt = 0;
 			this.forceMoveForeward = false;
 			this.total = this.element.children().size();
 			this.preloadTimeout = null;
+			this.moveDelayId = 0;
 		},
 		_create : function() {
 			this.element.addClass("p8JsonGallery");
@@ -488,7 +492,9 @@ elem
 		getTotal : function() {
 			return this.total;
 		},
-		
+		getIsRetrivingFeed : function() {
+			return this.isRetrivingFeed;
+		},
 		canMoveForwards : function() {
 			return (this.currentCount <= this.options.maxCount && this.allFeeds.length>0 && (this.total * (this.currentCount)) < this.allFeeds.length);
 		},
@@ -573,13 +579,29 @@ elem
 				return true;
 			}
 		},
-
 		_loadNextItems: function() {
+			if(this.options.useMoveDelay !== true || this.currentCount === 0) {
+				this._loadItemsNow(this.currentCount);
+			}
+			
+			var self = this;
+			if(this.moveDelayId !== 0) {
+				clearTimeout(this.moveDelayId);
+			}
+			var actCurrentCount = this.currentCount;
+			
+			this.moveDelayId = setTimeout(function() {
+				if(actCurrentCount+1 === self.currentCount) {
+					self._loadItemsNow(actCurrentCount);
+				}
+			}, this.options.moveDelayTime);
+		},
+		_loadItemsNow: function(fromCount) {
 			var self = this;
 			var p8Items = $('.p8JsonGallery-item', this.element);
 			var cnt = 0; 
-			for ( var i = this.total * this.currentCount, len = this.allFeeds.length; i < this.total * (this.currentCount+1) && i < len && i > -1; ++i) {
-				self.options.feedLoaderFunction.call(self, $(p8Items.get(i - this.total * this.currentCount)), this.allFeeds[i]);
+			for ( var i = this.total * fromCount, len = this.allFeeds.length; i < this.total * (fromCount+1) && i < len && i > -1; ++i) {
+				self.options.feedLoaderFunction.call(self, $(p8Items.get(i - this.total * fromCount)), this.allFeeds[i]);
 				cnt++;
 			}
 			for(;cnt < this.total; cnt++){
@@ -593,13 +615,18 @@ elem
 			
 			self.isRetrivingFeed = true;
 			self._trigger('loading', null, {loading:true});
+			this.loadingCnt++;
 		},
 
 		_postProcessResponse : function() {
 			var self = this;
 			
-			self.isRetrivingFeed = false;
-			self._trigger('loading', null, {loading:false});
+			this.loadingCnt--;
+			if(this.loadingCnt === 0){
+				self.isRetrivingFeed = false;
+				self._trigger('loading', null, {loading:false});
+			}
+			
 			if (self.forceMoveForeward === true) {
 				self.moveForwards();
 			}
@@ -727,11 +754,14 @@ elem
 				imageExtractorFunction:				null,
 				moveForwards:						null,
 				moveBackwards:						null,
-				maxCount:							100
+				maxCount:							100,
+				useMoveDelay:						false,
+				moveDelayTime:						250
 			},poptions);
 		
 		var index = -1;
-		var currentCountSave = -1; 
+//		var currentCountSave = -1;
+		var preloadedPages = [];
 		var preloadTimeout = null;
 			
 		var updateSingleNavigation = function() {
@@ -764,30 +794,28 @@ elem
 			}
 		};
 		
+		var doPreloadPage = function(page, feeds, total) {
+			if(preloadedPages[page] !== 1) {
+				for ( var i = total * (page-1), len =  feeds.length; i < total * (page) && i < len && i > -1; ++i) {
+					preloadedPages[page] = 1;
+					new Image().src = options.imageExtractorFunction.call(this, feeds[i]);
+				}
+			}
+		};
+		
 		var preloadImages = function() {
-			if(options.imageExtractorFunction !== null) {
+			if(options.imageExtractorFunction !== null && 
+					(preloadedPages[$(this).p8JsonGallery('getCurrentCount')+1] !== 1 || preloadedPages[$(this).p8JsonGallery('getCurrentCount')-1] !== 1)) {
 				var self = this;
-				console.log("preload images");
-				currentCountSave = $(this).p8JsonGallery('getCurrentCount');
-				var total = $(this).p8JsonGallery('getTotal');
 				
 				if(preloadTimeout !== null) {
-					clearTimeout(this.preloadTimeout);
+					clearTimeout(preloadTimeout);
 				}
 				
 				preloadTimeout = setTimeout(function() {
-					console.log("survived timeout");
-					var cc = currentCountSave;
-					currentCountSave = -1;
-					
-					preloadTimeout = null;
-					if(cc ===  $(self).p8JsonGallery('getCurrentCount')) {
-						for ( var i = total * (cc), len =  $(self).p8JsonGallery('getAllFeeds').length; i < total * (cc+1) && i < len && i > -1; ++i) {
-							console.log("preload image: " + i + " / " + options.imageExtractorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[i]));
-							new Image().src = options.imageExtractorFunction.call(self, $(self).p8JsonGallery('getAllFeeds')[i]);
-						}
-					}
-					
+					//preloadTimeout = null;
+					doPreloadPage.call(self, $(self).p8JsonGallery('getCurrentCount')+1, $(self).p8JsonGallery('getAllFeeds'),$(self).p8JsonGallery('getTotal'));
+					doPreloadPage.call(self, $(self).p8JsonGallery('getCurrentCount')-1, $(self).p8JsonGallery('getAllFeeds'),$(self).p8JsonGallery('getTotal'));
 				},1500);
 			}
 		};
@@ -896,17 +924,21 @@ elem
 				feedLoaderFunction: options.feedLoaderFunction,
 				requestFunction: options.requestFunction,
 				loading: options.loadingFunction,
+				useMoveDelay: options.useMoveDelay,
+				moveDelayTime: options.moveDelayTime, 
 				moveForwards:function(){
 					if(options.moveForwards !== null){options.moveForwards.call(this);} 
 					updateNavigation.call(this);
 					preloadImages.call(this);},
 				moveBackwards:function(){
 					if(options.moveForwards !== null){options.moveBackwards.call(this);}
-					updateNavigation.call(this);},
+					updateNavigation.call(this);
+					preloadImages.call(this);},
 				reload: function(){
 					if(options.reloadFunction !== null){options.reloadFunction.call(this);} 
 					updateNavigation.call(this);
-					updateSingleNavigation.call(this);},
+					updateSingleNavigation.call(this);
+					preloadedPages = [];},
 				feedItemsChanged:function(){
 					updateNavigation.call(this);
 					updateSingleNavigation.call(this);
