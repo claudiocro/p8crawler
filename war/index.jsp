@@ -115,6 +115,7 @@
 		$("#mainGallery")
 			.data("galleryRequestParam", {callCount:0,cursor:null,cat:null})
 			.p8GalleryCreator({
+				maxCount: 150,
 				singleNextSelector: $('.singleNav .next'),
 				singlePreviousSelector: $('.singleNav .previous'),
 				singleClickSelector: '.article',

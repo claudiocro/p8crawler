@@ -721,7 +721,8 @@ elem
 				feedItemsChangedFunction:			null,
 				reloadFunction:						null,
 				moveForwards:						null,
-				moveBackwards:						null
+				moveBackwards:						null,
+				maxCount:							100
 			},poptions);
 		
 		var index = -1;
@@ -853,6 +854,7 @@ elem
 			
 			
 			$(this).p8JsonGallery({
+				maxCount:options.maxCount,
 				feedLoaderFunction: options.feedLoaderFunction,
 				requestFunction: options.requestFunction,
 				loading: options.loadingFunction,
