@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.9.7
+ *  p8 photosurfer  0.9.10
  * 
  * Depends on:
  * 
@@ -24,6 +24,8 @@
 			showBusyOnlyIfHidden : true,
 			showBusy : false,
 			busyImage : null,
+			maxWidth: -1,
+			maxHeight: -1,
 			_timeout : null,
 			_imageLoadTicket : 0,
 			_loading: false
@@ -145,12 +147,35 @@
 						}
 					};
 					imageToWaitFor.onload = function() {
+						var image = this;
 						if (nowTicket === self.options._imageLoadTicket) {
 							self._setLoading(false);
 						}
 						
 						setTimeout(function() {
 							if (nowTicket === self.options._imageLoadTicket) {
+								if(self.options.maxWidth >-1 || self.options.maxHeight >-1) {
+									var width = image.naturalWidth;
+									var height = image.naturalHeight;
+									
+									if (width === undefined || height === undefined) {
+										width = image.width;
+										height = image.height;
+									}
+									
+									var scaled = [width, height];
+									if(image.width <= image.height && self.options.maxWidth >=-1) {
+										scaled = $.scaleSize(self.options.maxWidth, image.height, image.width, image.height);									
+									} else {
+										scaled = $.scaleSize(image.width, self.options.maxHeight, image.width, image.height);
+									}
+									//console.log(scaled[0] +" / "+scaled[1]);
+									article.css({
+										'background-size': scaled[0] + "px " + scaled[1]+"px"
+									});
+								}
+								
+								
 								self.switchFeeds();
 							}
 						}, 250);
@@ -414,7 +439,7 @@ elem
 			var width = imageToWaitFor.naturalWidth;
 			var height = imageToWaitFor.naturalHeight;
 			
-			//TODO: this is wrong it should check for false ... 
+			//TODO: this is wrong it should check for false ... anmerkung nach einigen tagen: was??
 			if (width === undefined || height === undefined) {
 				width = imageToWaitFor.width;
 				height = imageToWaitFor.height;

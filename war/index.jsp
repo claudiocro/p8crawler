@@ -351,7 +351,7 @@
 			self.element.data("galleryRequestParam", reqParams);
 			
 			self._postProcessResponse();
-		});
+		}).error(function(){self._postProcessResponse();});
 	};
 	
 	

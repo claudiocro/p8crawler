@@ -57,6 +57,9 @@ public class Metadata {
 
 		@Key("modified")
 		public String modified;
+		
+		@Key("client_mtime")
+		public String client_mtime;
 
 		@Key("path")
 		public String path;
