@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.10
+ *  p8 photosurfer  0.9.11
  * 
  * Depends on:
  * 
@@ -722,7 +722,9 @@ elem
 		var options = jQuery.extend ({
 				extractFunction:extractFunction,
 				showBusyOnlyIfHidden : true,
-				showBusy : false
+				showBusy : false,
+				maxWidth: -1,
+				maxHeight: -1
 			},poptions);
 		
 		return this.each (function () {
@@ -730,6 +732,8 @@ elem
 			var feed = options.extractFunction.call(self);
 			return $(self).p8FeedItem({
 				showBusyOnlyIfHidden : options.showBusyOnlyIfHidden,
+				maxWidth : options.maxWidth,
+				maxHeight : options.maxHeight,
 				showBusy : options.showBusy
 //TODO: busyImage
 			}).p8FeedItem('load', feed.image,feed.content);
