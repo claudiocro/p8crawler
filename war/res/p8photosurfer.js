@@ -1,5 +1,5 @@
 /*
- *  p8 photosurfer  0.9.11
+ *  p8 photosurfer  0.9.12
  * 
  * Depends on:
  * 
@@ -165,9 +165,9 @@
 									
 									var scaled = [width, height];
 									if(image.width <= image.height && self.options.maxWidth >=-1) {
-										scaled = $.scaleSize(self.options.maxWidth, image.height, image.width, image.height);									
+										scaled = $.scaleSize(self.options.maxWidth, image.height, image.width, image.height, true);									
 									} else {
-										scaled = $.scaleSize(image.width, self.options.maxHeight, image.width, image.height);
+										scaled = $.scaleSize(image.width, self.options.maxHeight, image.width, image.height, true);
 									}
 									//console.log(scaled[0] +" / "+scaled[1]);
 									article.css({
@@ -489,6 +489,10 @@ elem
 			this.loadingCnt = 0;
 			this.forceMoveForeward = false;
 			this.total = this.element.children().size();
+			if(this.total === 0) {
+				this.total = -1;
+			}
+			
 			this.preloadTimeout = null;
 			this.moveDelayId = 0;
 		},
@@ -513,7 +517,10 @@ elem
 		getAllFeeds : function() {
 			return this.allFeeds;
 		},
-
+		reloadChildren : function() {
+			this.total = this.element.children().size();
+			this.element.children().addClass("p8JsonGallery-item");
+		},
 		getTotal : function() {
 			return this.total;
 		},
@@ -539,7 +546,7 @@ elem
 			*/
 
 			// preload feed if necessary
-			if (self.feedStreamEnd !== true && self.allFeeds.length - (self.total * 4) < self.currentCount * self.total && !self.isRetrivingFeed) {
+			if (self.total === -1 || (self.feedStreamEnd !== true && self.allFeeds.length - (self.total * 4) < self.currentCount * self.total && !self.isRetrivingFeed)) {
 				self.isRetrivingFeed = true;
 
 				self.ajaxTickedId++;
@@ -662,51 +669,6 @@ elem
 
 }(jQuery));
 
-(function($) {
-
-	
-	//TODO: Simple grid sollte in eine funktion umgewandelt werden. 
-	
-	$.widget("ui.p8SimpleGrid", {
-		options : {
-			contentSelector : null,
-			total : 8,
-			totalInRow : 2
-		},
-
-		_create : function() {
-			if (this.options.contentSelector === null) {
-				this.options.contentSelector = this.element.children();
-			}
-			
-			var self = this;
-			var elem = this.element;
-
-			elem.addClass('p8SimpleGrid').addClass('gridded-content').css({
-				'z-index' : 2
-			});
-
-			var currentCol = 0;
-			var currentRow = 0;
-			var currentColE = null;
-			self.options.contentSelector.each(function() {
-				if (currentRow === 0) {
-					currentColE = $('<div class="grid col col-' + currentCol + '">');
-				}
-				currentColE.append($(this));
-
-				elem.append(currentColE);
-				if (currentRow === self.options.totalInRow - 1) {
-					currentCol++;
-					currentRow = 0;
-				} else {
-					currentRow++;
-				}
-			});
-		}
-	});
-
-}(jQuery));
 
 
 (function($) {
@@ -927,7 +889,7 @@ elem
 			}
 			
 			if(options.singleClickSelector !== null) {
-				$(options.singleClickSelector, self).click(function() {
+				$(options.singleClickSelector, self).live("click", function() {
 					if(options.singleClickSelectorFunction !== null && options.singleCompareFunction !== null) {
 						
 						var allFeeds = $(self).p8JsonGallery('getAllFeeds');

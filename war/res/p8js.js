@@ -1,4 +1,4 @@
-/*! p8js - v0.3.0 - 2012-08-07
+/*! p8js - v0.3.0 - 2012-08-20
 * plus8.ch
 * Copyright (c) 2012 Claudio Romano; Licensed GPL */
 
@@ -595,11 +595,53 @@
 }(jQuery));
 
 /*
- *  p8 ui  0.2.1
+ *  p8 ui  0.2.2
  * 
  * */
 
 
+
+(function($) {
+
+  $.fn.p8SimpleGrid = function(poptions) {
+    
+    var options = jQuery.extend({
+      horizontal: false,
+      totalInRow : 4
+    }, poptions);
+    
+    var elem = this;
+
+    elem
+      .addClass('p8SimpleGrid').addClass('gridded-content')
+      .css({'z-index' : 2});
+    
+    var currentCol = 0;
+    var currentRow = 0;
+    var currentColE = null;
+    var classPrefix = (options.horizontal === false) ? "col" : "row";
+    return this.children().each(function() {
+      
+      
+      
+      if (currentRow === 0) {
+        currentColE = $('<div></div>').addClass("grid").addClass(classPrefix).addClass(classPrefix+'-'+currentCol);
+      }
+      currentColE.append($(this));
+
+      elem.append(currentColE);
+      if (currentRow === options.totalInRow - 1) {
+        currentCol++;
+        currentRow = 0;
+      } else {
+        currentRow++;
+      }
+    });    
+  };
+  
+  
+
+}(jQuery));
 
 (function($) {
 

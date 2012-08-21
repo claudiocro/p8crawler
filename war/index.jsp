@@ -77,26 +77,7 @@
 		$('#mainNavigationContent div').p8CreateAutoLoadFeedItem({
 			showBusy: true
 			});
-		$('#mainNavigationContent').p8SimpleGrid();
-		
-		var datasa = [
-		 			{img2Link:'res/content-img/cat-1.jpg'},{img2Link:'res/content-img/cat-2.jpg'},{img2Link:'res/content-img/cat-3.jpg'},{img2Link:'res/content-img/cat-4.jpg'},
-		 			{img2Link:'res/content-img/cat-5.jpg'},{img2Link:'res/content-img/cat-6.jpg'},{img2Link:'res/content-img/cat-7.jpg'},{img2Link:'res/content-img/cat-8.jpg'},
-		 			{img2Link:'res/content-img/cat-5.jpg'},{img2Link:'res/content-img/cat-6.jpg'},{img2Link:'res/content-img/cat-7.jpg'},{img2Link:'res/content-img/cat-8.jpg'},
-		 			{img2Link:'res/content-img/cat-1.jpg'},{img2Link:'res/content-img/cat-2.jpg'},{img2Link:'res/content-img/cat-3.jpg'},{img2Link:'res/content-img/cat-4.jpg'}
-		 		];
-		var requestFunctiona = function() {
-			var self = this;
-			self._preProcessResponse();
-			
-			setTimeout(function() {
-				self.allFeeds = self.allFeeds.concat(datasa);
-				
-				self.feedStreamEnd = true;		
-				self._postProcessResponse();
-			
-			}, 3000);
-		}
+		$('#mainNavigationContent').p8SimpleGrid({totalInRow:2});
 		
 		
 		//create feeditems
@@ -142,7 +123,7 @@
 				requestFunction: galleryJsonRequest,
 				imageExtractorFunction: function(data) {return data.img2Link;},
 				useMoveDelay: true
-			}).p8SimpleGrid();
+			}).p8SimpleGrid({totalInRow:2});
 		
 		$('#galleryContent')
 			.append($('#mainNavigationContent'))
