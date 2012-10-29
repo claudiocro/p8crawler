@@ -22,7 +22,7 @@ public class DropboxException extends Exception {
 	}	
 	
 	public int getStatusCode() {
-		return response.getResponse().getStatusCode();
+		return response.getStatusCode();
 	}
 
 }

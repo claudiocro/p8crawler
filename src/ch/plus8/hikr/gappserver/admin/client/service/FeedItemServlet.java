@@ -2,8 +2,6 @@ package ch.plus8.hikr.gappserver.admin.client.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 

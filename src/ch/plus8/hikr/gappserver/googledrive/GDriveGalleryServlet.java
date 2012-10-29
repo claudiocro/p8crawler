@@ -25,15 +25,11 @@ import ch.plus8.hikr.gappserver.google.P8CredentialStore;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.File.ParentsCollection;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -42,17 +38,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.gdata.client.DocumentQuery;
-import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.DocumentListEntry;
 import com.google.gdata.data.docs.DocumentListFeed;
-import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
@@ -95,7 +87,8 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			String title = request.getParameter("title");
 			String desc = request.getParameter("desc");
 			
-			gDriveApi = new GDriveApi(googleUid);
+			gDriveApi = new GDriveApi();
+			gDriveApi.loadById(googleUid);
 			
 			Key uKey = null;
 			if(userKey != null)

@@ -17,11 +17,9 @@ import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.plus.Plus;
-import com.google.api.services.plus.Plus.Activities.Search;
-import com.google.api.services.plus.PlusRequest;
 import com.google.api.services.plus.model.Activity;
 import com.google.api.services.plus.model.Activity.PlusObject.Attachments;
 import com.google.api.services.plus.model.ActivityFeed;
@@ -66,7 +64,8 @@ public class GPlusHashTagActivitiesImporter extends HttpServlet {
 		DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();
 			
 		
-		Plus plus = new Plus(new UrlFetchTransport(), new GsonFactory());
+		Plus.Builder builder = new Plus.Builder(new UrlFetchTransport(), new GsonFactory(), null);
+		Plus plus = builder.setJsonHttpRequestInitializer(new PlusRequestInitializer()).build();
 		Plus.Activities.Search searchActivities = plus.activities().search("#"+hashTag);
 		searchActivities.setKey(Util.GOOGLE_API_KEY);
 		//Person person = plus.people.get("110416871235589164413").execute();

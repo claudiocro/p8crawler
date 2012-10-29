@@ -2,7 +2,6 @@ package ch.plus8.hikr.gappserver.lomo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,11 +19,11 @@ import ch.plus8.hikr.gappserver.lomo.Lomo.Asset;
 import ch.plus8.hikr.gappserver.lomo.Lomo.Photo;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.json.JsonHttpParser;
+import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -40,7 +39,7 @@ public class LomoImporterServlet extends HttpServlet {
 	private final static String LOMO_API_KEY = "bcc6757d03818aa8ddc0ceea37fd92";
 	private final static String LOMO_FOTO_FEED = "http://api.lomography.com/v1/";
 	
-	private final JsonHttpParser parser = JsonHttpParser.builder(new GsonFactory()).setContentType("application/json").build();
+	private final JsonObjectParser parser = new JsonObjectParser(new GsonFactory());
 	
 	private GAEFeedRepository feedRepository;
 	
@@ -93,7 +92,7 @@ public class LomoImporterServlet extends HttpServlet {
 				UrlFetchTransport transport = new UrlFetchTransport();
 				HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(url));
 				request.setHeaders(headers);
-				request.addParser(parser);
+				request.setParser(parser);
 				
 				Lomo lomo = request.execute().parseAs(Lomo.class);
 				if(lomo == null ) 

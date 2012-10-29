@@ -3,7 +3,6 @@ package ch.plus8.hikr.gappserver.dropbox;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import oauth.signpost.OAuthConsumer;
@@ -14,15 +13,14 @@ import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxAccount;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxEntity;
 import ch.plus8.hikr.gappserver.dropbox.Metadata.DropboxLink;
 
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpMethod;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.json.JsonHttpParser;
+import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.appengine.api.images.Image;
 
@@ -32,7 +30,7 @@ public class DropboxAPI {
 
 	public static final int STATUS_404 = 404;
 	
-	private JsonHttpParser parser;
+	private JsonObjectParser parser;
 	private final OAuthConsumer consumer;
 	private UrlFetchTransport transport;
 	
@@ -40,8 +38,10 @@ public class DropboxAPI {
 
 	public DropboxAPI(OAuthConsumer consumer) {
 		this.consumer = consumer;
-		this.parser = JsonHttpParser.builder(new GsonFactory()).setContentType("text/javascript").build();
+		this.parser = new JsonObjectParser(new GsonFactory());
 		this.transport = new UrlFetchTransport();
+		
+		logger.info("Create DropboxAPI");
 	}
 	
 	public DropboxAccount accountInfo() throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
@@ -53,7 +53,7 @@ public class DropboxAPI {
 		headers.setAccept("*/*");
 
 		HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(url));
-		request.addParser(parser);
+		request.setParser(parser);
 		request.setHeaders(headers);
 		
 		consumer.sign(request);
@@ -70,7 +70,7 @@ public class DropboxAPI {
 		headers.setAccept("*/*");
 
 		HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(url));
-		request.addParser(parser);
+		request.setParser(parser);
 		request.setHeaders(headers);
 
 		try {
@@ -78,7 +78,7 @@ public class DropboxAPI {
 			DropboxEntity metadata = request.execute().parseAs(DropboxEntity.class);
 			return metadata;
 		} catch(HttpResponseException e) {
-			if(e.getResponse().getStatusCode() == 404) //not found;
+			if(e.getStatusCode() == 404) //not found;
 				return null;
 			else 
 				throw e;
@@ -95,7 +95,7 @@ public class DropboxAPI {
 		headers.setAccept("*/*");
 
 		HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(url));
-		request.addParser(parser);
+		request.setParser(parser);
 		request.setHeaders(headers);
 		
 		consumer.sign(request);
@@ -120,7 +120,7 @@ public class DropboxAPI {
 		headers.setAccept("*/*");
 
 		HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(url));
-		request.addParser(parser);
+		request.setParser(parser);
 		request.setHeaders(headers);
 		
 		consumer.sign(request);
@@ -139,7 +139,7 @@ public class DropboxAPI {
 		ByteArrayContent imageContent = new ByteArrayContent("application/octet-stream", thumb.getImageData());
 		HttpRequest request = transport.createRequestFactory().buildPutRequest(new GenericUrl(url), imageContent);
 		request.setMethod(HttpMethod.PUT);
-		request.addParser(parser);
+		request.setParser(parser);
 		request.setHeaders(headers);
 		
 		consumer.sign(request);
@@ -158,7 +158,7 @@ public class DropboxAPI {
 		genericUrl.set("path", path);
 		
 		HttpRequest request = transport.createRequestFactory().buildPostRequest(genericUrl, null);
-		request.addParser(parser);
+		request.setParser(parser);
 		request.setHeaders(headers);
 		
 		consumer.sign(request);

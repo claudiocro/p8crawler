@@ -16,9 +16,10 @@ public class GDriveImageEvaluator extends ImageEvaluator {
 	private static final Logger logger = Logger.getLogger(GDriveImageEvaluator.class.getName());
 	
 	public boolean evaluate(FeedRepository feedRepository, Entity entity) throws Exception {
-		
+		logger.info("GDriveImageEvaluator evaluate");
 		Key sourceAuth = (Key)entity.getProperty("sourceAuth");
-		GDriveApi gDriveApi = new GDriveApi(sourceAuth.getName());
+		GDriveApi gDriveApi = new GDriveApi();
+		gDriveApi.loadById(sourceAuth.getName());
 		String link = entity.getProperty("link").toString();
 		String title = entity.getProperty("title").toString();
 		String[] fileName = DropboxUtil.fileNameNoPath(title);

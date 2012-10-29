@@ -9,16 +9,13 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.plus8.hikr.gappserver.AppengineDatastore;
 import ch.plus8.hikr.gappserver.Datastore;
 import ch.plus8.hikr.gappserver.DatastoreFactory;
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.admin.UserUtils;
-import ch.plus8.hikr.gappserver.dropbox.DropboxDatastore;
 import ch.plus8.hikr.repository.FeedRepository;
 
-import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -31,9 +28,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 
 public class GAEFeedRepository implements FeedRepository {
 

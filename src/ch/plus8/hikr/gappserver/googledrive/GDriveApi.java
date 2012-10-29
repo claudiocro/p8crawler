@@ -9,7 +9,7 @@ import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.google.P8CredentialStore;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -17,88 +17,79 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.File.ParentsCollection;
+import com.google.api.services.drive.model.ParentReference;
 import com.google.gdata.client.DocumentQuery;
 import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.DocumentListFeed;
-import com.google.gdata.data.docs.FileEntry;
 import com.google.gdata.data.docs.FolderEntry;
-import com.google.gdata.data.media.MediaByteArraySource;
 import com.google.gdata.util.ServiceException;
 
 public class GDriveApi {
 
-	private final Drive drive;
-	private final DocsService docs;
+	private Drive drive;
+	private DocsService docs;
 
-	public GDriveApi(String googleId) {
-		Credential credential = new GoogleAuthorizationCodeFlow.Builder(
-			new NetHttpTransport(), new JacksonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).
-			setCredentialStore(new P8CredentialStore()).
-		build().loadCredential(googleId);
-		
-		drive = Drive.builder(new UrlFetchTransport(), new GsonFactory()).
-			setHttpRequestInitializer(credential).
-			setApplicationName("photography-stream/1.1.1").
-		build();
-			
+	public void loadById(String googleId) throws IOException {
+		Credential credential = new GoogleAuthorizationCodeFlow.Builder(new NetHttpTransport(), new JacksonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).setCredentialStore(new P8CredentialStore()).build().loadCredential(googleId);
+
+		drive = new Drive.Builder(new UrlFetchTransport(), new GsonFactory(),credential)
+			.setApplicationName("photography-stream/1.1.1")
+			.build();
+
 		docs = new DocsService("photography-stream/1.1.1");
 		docs.setOAuth2Credentials(credential);
 	}
-	
-	public GDriveApi(Credential credential) {
-		drive = Drive.builder(new UrlFetchTransport(), new GsonFactory()).
-			setHttpRequestInitializer(credential).
-			setApplicationName("photography-stream/1.1.1").
-		build();
-			
+
+	public void loadByCredentials(Credential credential) throws IOException {
+		drive = new Drive.Builder(new UrlFetchTransport(), new GsonFactory(), credential)
+			.setApplicationName("photography-stream/1.1.1")
+			.build();
+
 		docs = new DocsService("photography-stream/1.1.1");
 		docs.setOAuth2Credentials(credential);
 	}
-	
-	
+
 	public DocumentListFeed getContentsFromEntry(String id) throws IOException, ServiceException {
-		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A"+id+"/contents";
+		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A" + id + "/contents";
 		DocumentQuery query = new DocumentQuery(new URL(feedLink));
 		return docs.query(query, DocumentListFeed.class);
 	}
-	
+
 	public DocumentListFeed getContentFromEntryByTitle(String id, String title) throws IOException, ServiceException {
-		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A"+id+"/contents";
+		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A" + id + "/contents";
 		DocumentQuery query = new DocumentQuery(new URL(feedLink));
 		query.setTitleQuery(title);
 		query.setTitleExact(true);
 		return docs.query(query, DocumentListFeed.class);
 	}
-	
-	
+
 	public DocumentListFeed getFolderFromParentByTitle(String parentId, String title) throws IOException, ServiceException {
-		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A"+parentId+"/contents/-/folder";
-		
+		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A" + parentId + "/contents/-/folder";
+
 		DocumentQuery query = new DocumentQuery(new URL(feedLink));
 		query.setTitleQuery(title);
 		query.setTitleExact(true);
 		return docs.query(query, DocumentListFeed.class);
 	}
-	
+
 	public FolderEntry createFolder(String parentId, String title) throws IOException, ServiceException {
-		String newUrl = "https://docs.google.com/feeds/default/private/full/folder%3A"+parentId+"/contents";
+		String newUrl = "https://docs.google.com/feeds/default/private/full/folder%3A" + parentId + "/contents";
 		FolderEntry tFolder = new FolderEntry();
 		tFolder.setTitle(new PlainTextConstruct(title));
 		tFolder = docs.insert(new URL(newUrl), tFolder);
 		return tFolder;
 	}
-	
+
 	public void deleteFileById(String id) throws IOException, ServiceException {
-		URL docURL = new URL("https://docs.google.com/feeds/default/private/full/"+id+"?delete=true");
+		URL docURL = new URL("https://docs.google.com/feeds/default/private/full/" + id + "?delete=true");
 		docs.delete(docURL, "*");
 	}
-	
+
 	public File getGFileById(String id) throws IOException {
 		return drive.files().get(id).execute();
 	}
-	
+
 	public File addFile(String parentId, String mimeType, String title, byte[] imageData) throws IOException, ServiceException {
 		/*
 		String newUrl = "https://docs.google.com/feeds/default/private/full/folder%3A"+parentId+"/contents";
@@ -111,14 +102,14 @@ public class GDriveApi {
 		File file = new File();
 		file.setMimeType(mimeType);
 		file.setTitle(title);
-		
-		ParentsCollection pc = new ParentsCollection();
+
+		ParentReference pc = new ParentReference();
 		pc.setId(parentId);
-		List<ParentsCollection> parentsCol = new ArrayList<File.ParentsCollection>();
+		List<ParentReference> parentsCol = new ArrayList<ParentReference>();
 		parentsCol.add(pc);
-		file.setParentsCollection(parentsCol);
-		file = drive.files().insert(file,new ByteArrayContent(mimeType, imageData)).execute();
+		file.setParents(parentsCol);
+		file = drive.files().insert(file, new ByteArrayContent(mimeType, imageData)).execute();
 		return file;
-		
+
 	}
 }

@@ -13,10 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
-import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Activity;
@@ -75,9 +74,10 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
 		PreparedQuery prepare = dataStore.prepare(query);
 		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
 		for(Entity personEntity : resultList) {
-			Plus plus = new Plus(new UrlFetchTransport(), new GsonFactory());
+			Plus.Builder builder = new Plus.Builder(new UrlFetchTransport(), new GsonFactory(), null);
+			Plus plus = builder.setJsonHttpRequestInitializer(new PlusRequestInitializer()).build();
 			Plus.Activities.List activities = plus.activities().list((String)personEntity.getProperty("id"), "public");
-			activities.setKey(Util.GOOGLE_API_KEY);
+			
 			//Person person = plus.people.get("110416871235589164413").execute();
 			ActivityFeed feed = activities.execute();
 			

@@ -1,6 +1,6 @@
 package ch.plus8.hikr.gappserver.googledrive;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,24 +8,14 @@ import ch.plus8.hikr.gappserver.Datastore;
 import ch.plus8.hikr.gappserver.ImageUtil;
 import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.dropbox.DropboxUtil;
-import ch.plus8.hikr.gappserver.google.P8CredentialStore;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.data.docs.FileEntry;
 
 public class GDriveDatastore extends Datastore {
 
@@ -39,8 +29,9 @@ public class GDriveDatastore extends Datastore {
 	//private final Drive drive;
 	//private final DocsService docs;
 
-	public GDriveDatastore(Key credentialKey) {
-		gDriveApi = new GDriveApi(credentialKey.getName());
+	public GDriveDatastore(Key credentialKey) throws IOException {
+		gDriveApi = new GDriveApi();
+		gDriveApi.loadById(credentialKey.getName());
 		/*Credential credential = new GoogleAuthorizationCodeFlow.Builder(
 			new NetHttpTransport(), new JacksonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).
 			setCredentialStore(new P8CredentialStore()).
@@ -56,8 +47,9 @@ public class GDriveDatastore extends Datastore {
 			*/
 		imagesService = ImagesServiceFactory.getImagesService();
 	}
-	public GDriveDatastore(Credential credential) {
-		gDriveApi = new GDriveApi(credential);
+	public GDriveDatastore(Credential credential) throws IOException {
+		gDriveApi = new GDriveApi();
+		gDriveApi.loadByCredentials(credential);
 		/*drive = Drive.builder(new UrlFetchTransport(), new GsonFactory()).
 			setHttpRequestInitializer(credential).
 			setApplicationName("photography-stream/1.1.1").

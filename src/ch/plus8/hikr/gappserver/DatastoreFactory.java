@@ -1,19 +1,14 @@
 package ch.plus8.hikr.gappserver;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 import ch.plus8.hikr.gappserver.dropbox.DropboxDatastore;
-import ch.plus8.hikr.gappserver.google.P8CredentialStore;
 import ch.plus8.hikr.gappserver.googledrive.GDriveDatastore;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.images.Image;
 
 public class DatastoreFactory {
 
@@ -46,9 +41,14 @@ public class DatastoreFactory {
 			if(cache.containsKey(key))
 				return cache.get(key);
 			else {
+				try {
 				Datastore ds = new GDriveDatastore((Key)entity.getProperty("sourceAuth"));
 				cache.put(key, ds);
 				return ds;
+				}catch (IOException e) {
+					logger.severe("Error creating datastore for type: " + datastore);
+					throw new IllegalArgumentException("Error creating datastore for type:"+datastore);
+				}
 			}
 		} else if(datastore.equals(Util.DATASTORE_UNKNOWN)) {
 			return null;

@@ -9,12 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ch.plus8.hikr.gappserver.Util;
-
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.plus.Plus;
-import com.google.api.services.plus.model.PeopleFeed;
 import com.google.api.services.plus.model.Person;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -46,9 +43,10 @@ public class GPlusPersonImporterServlet extends HttpServlet {
 		
 		
 		try {
-			Plus plus = new Plus(new UrlFetchTransport(), new GsonFactory());
+			Plus.Builder builder = new Plus.Builder(new UrlFetchTransport(), new GsonFactory(), null);
+			Plus plus = builder.setJsonHttpRequestInitializer(new PlusRequestInitializer()).build();
 			Plus.People.Get search = plus.people().get(personid);
-			search.setKey(Util.GOOGLE_API_KEY);
+			
 			Person person = search.execute();
 			
 			DatastoreService dataStore = DatastoreServiceFactory.getDatastoreService();

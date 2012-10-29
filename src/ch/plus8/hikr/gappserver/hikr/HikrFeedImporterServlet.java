@@ -21,10 +21,10 @@ import ch.plus8.hikr.gappserver.googlefeed.GoogleReaderFeed.Entries;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 import ch.plus8.hikr.repository.FeedRepository;
 
-import com.google.api.client.extensions.appengine.http.urlfetch.UrlFetchTransport;
+import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.json.JsonHttpParser;
+import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 
 @SuppressWarnings("serial")
@@ -35,7 +35,8 @@ public class HikrFeedImporterServlet extends HttpServlet {
 	//private final static String HIKR_FOTO_FEED = "https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=20&q=http%3A//www.hikr.org/gallery/%3Fmode%3Drss";
 	private final static String HIKR_FOTO_FEED = "https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=20&q=http://www.hikr.org/gallery/%3Fmode%3Drss%26photo_order%3Dphoto_hot%26key%3DAIzaSyD6FWIhhEskZwN2E_uTsrxZT-vs67px8-Y";
 	
-	private final JsonHttpParser parser = JsonHttpParser.builder(new GsonFactory()).setContentType("text/javascript").build();
+	
+	private final JsonObjectParser parser = new JsonObjectParser(new GsonFactory());
 	private FeedRepository feedRepository;
 
 	
@@ -53,7 +54,7 @@ public class HikrFeedImporterServlet extends HttpServlet {
 			UrlFetchTransport transport = new UrlFetchTransport();
 			HttpRequest request = transport.createRequestFactory().buildGetRequest(new GenericUrl(HIKR_FOTO_FEED));
 
-			request.addParser(parser);
+			request.setParser(parser);
 			GoogleReaderFeed feed = request.execute().parseAs(GoogleReaderFeed.class);
 			if(feed.responseData == null || feed.responseData.feed == null || feed.responseData.feed.entries == null) 
 				logger.log(Level.WARNING, "No data is imported because feed is empty: " + HIKR_FOTO_FEED);

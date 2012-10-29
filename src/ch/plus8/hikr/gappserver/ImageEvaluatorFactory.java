@@ -4,13 +4,10 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import ch.plus8.hikr.gappserver.dropbox.DropboxImageEvaluator;
-import ch.plus8.hikr.gappserver.googledrive.GDriveApi;
 import ch.plus8.hikr.gappserver.googledrive.GDriveImageEvaluator;
 import ch.plus8.hikr.gappserver.hikr.HikrImageEvaluator;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 public class ImageEvaluatorFactory {
 	private static final Logger logger = Logger.getLogger(ImageEvaluatorFactory.class.getName());
