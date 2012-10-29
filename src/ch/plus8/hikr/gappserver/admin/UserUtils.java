@@ -36,7 +36,7 @@ public class UserUtils {
 			return userService.isUserLoggedIn();
 		}
 	}
-	public static void createUser() {
+	public static Entity createUser() {
 		UserService userService = UserServiceFactory.getUserService();
 		if(!userService.isUserLoggedIn()) {
 			throw new IllegalArgumentException("User not logged in");
@@ -57,7 +57,9 @@ public class UserUtils {
 			entity.setProperty("email", userService.getCurrentUser().getEmail());
 			entity.setUnindexedProperty("nickname", userService.getCurrentUser().getNickname());
 			ds.put(entity);
+			return entity;
 		}
+		return null;
 	}
 
 	public static Key getCurrentKeyFor() {
@@ -106,7 +108,7 @@ public class UserUtils {
 			return ds.get(key);
 		} catch (EntityNotFoundException e) {
 			logger.severe("User not found;"+email);
-			return null;
+			return createUser();
 		}
 	}
 	

@@ -34,7 +34,7 @@
   <script type="text/javascript" language="javascript" src="p8/res/ember-1.0.pre.js"></script>
   
   
-  <script type="text/javascript" language="javascript" src="res/p8core.js"></script>
+  <script type="text/javascript" language="javascript" src="res/p8js.js"></script>
   <script type="text/javascript" language="javascript" src="res/p8photosurfer.js"></script>
   <script type="text/javascript" language="javascript" src="res/p8ui.js"></script>
   <script type="text/javascript" language="javascript" src="/p8/res/p8ember-ui.js"></script>

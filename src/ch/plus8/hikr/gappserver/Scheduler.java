@@ -77,6 +77,29 @@ public class Scheduler
     }
     queue.add(param);
   }
+  
+  
+  public static void scheduleDropboxGallery(String dropboxUid, String path, String userKey, int offset, String title, String desc, String authorName) {
+	  logger.info("Schedule: /dropbox/dropboxSyncher :" + dropboxUid + " / " + path + " / " + offset);
+	    Queue queue = QueueFactory.getDefaultQueue();
+	    TaskOptions param = TaskOptions.Builder.withUrl("/dropbox/dropboxSyncher");
+	    param.param("createAlbum", String.valueOf(1));
+	    param.param("userKey", userKey);
+	    param.param("dropboxUid", dropboxUid);
+	    param.param("path", path);
+	    param.param("offset", String.valueOf(offset));
+	    if(title != null)
+	    	param.param("title", title);
+	    
+	    if(desc != null)
+	    	param.param("desc", desc);
+	    
+	    if(authorName != null)
+	    	param.param("authorName", authorName);
+
+	    
+	    queue.add(param);
+  }
 
   public static final void scheduleImageFetcher() {
     scheduleImageFetcher(null);
@@ -98,7 +121,7 @@ public class Scheduler
 
   public static final void scheduleDeleteItem(String key, boolean forceDelete, boolean deleteImage, boolean deleteImg2)
   {
-    logger.info("Schedule: /p8admin/fetchImage: " + key+" delete:"+forceDelete+" deleteImage:"+deleteImage+" deleteImg2:"+deleteImg2);
+    logger.info("Schedule: /p8admin/deleteItem: " + key+" delete:"+forceDelete+" deleteImage:"+deleteImage+" deleteImg2:"+deleteImg2);
     TaskOptions param = TaskOptions.Builder.withUrl("/p8admin/deleteItem");
     param.param("key", key);
     if(forceDelete)
@@ -182,6 +205,5 @@ public class Scheduler
       scheduleFeedCacher("cat", Util.categories[i], new Integer[] { Integer.valueOf(0) }, null, forceCache);
     }
   }
-
   
 }

@@ -1,5 +1,5 @@
 /**
- * Version 0.5
+ * Version 0.5.1
  */
 
 window.App = Ember.Application.create();
@@ -164,7 +164,7 @@ App.galleriesController = Ember.ArrayProxy.create({
 		this.set("editCopy", App.ContentGroupDto.create({ }));
 	},
 	newDropbox: function() {
-		this.set("newModel", App.NewDropboxGalleryDto.create({dropboxUid: 5031239}));
+		this.set("newModel", App.NewDropboxGalleryDto.create({dropboxUid: 5031239})); //TODO: dynamic dropbox ui
 		this.set("editCopy", null);
 		this.set("current", null);
 	},
@@ -734,7 +734,7 @@ App.pageState = Ember.StateManager.create({
 				this.$().find('div').p8CreateAutoLoadFeedItem({
 					showBusy: true
 				});
-				this.$().p8SimpleGrid();
+				this.$().p8SimpleGrid({totalInRow:2});
 			},
 			elementId: 'welcomePage',
 		    childViews: ['galleryView', Ember.View.create(), 'datastoreView', Ember.View.create(), 'contentGroupView', Ember.View.create(), Ember.View.create(), Ember.View.create()],
