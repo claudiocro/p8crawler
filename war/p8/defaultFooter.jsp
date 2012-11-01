@@ -28,7 +28,9 @@
       {{#view App.FormView className="gallery-editor-form" tagName="form"}}
       <table width="100%">
         <tbody>  
-          <tr><td><label>Key: </label></td><td>{{App.galleriesController.editCopy.key}}</td></tr>
+          <tr><td><label>Key: </label></td><td>
+          	{{App.galleriesController.editCopy.key}}
+          </td></tr>
           <tr><td><label>Kind: </label></td><td>{{App.galleriesController.editCopy.kind}}</td></tr>
           <tr><td><label>Reference: </label></td><td>{{App.galleriesController.editCopy.ref}}</td></tr>
           <tr><td><label>Title: </label></td><td>{{view App.TextField style="width:400px" name="title" title="Title" valueBinding="App.galleriesController.editCopy.title"}}</td></tr>
@@ -47,7 +49,16 @@
       {{#view App.FormView className="gallery-dropbox-new-form" tagName="form"}}
       <table width="100%">
         <tbody>  
-          <tr><td><label>DropboxId: </label></td><td>{{App.galleriesController.newModel.dropboxUid}}</td></tr>
+          <tr>
+          	<td><label>DropboxId: </label></td>
+          	<td>
+          		{{view Ember.Select
+       				contentBinding="App.datastoresController.dropboxDatastores"
+       				selectionBinding="App.galleriesController.newModel.datastore"
+       				optionLabelPath="content.title"
+       				optionValuePath="content.title"
+       			}}
+          	</td></tr>
           <tr><td><label>Path: </label></td><td>{{view App.TextField style="width:400px" name="path" title="Path" valueBinding="App.galleriesController.newModel.path"}}</td></tr>
           <tr><td><label>Title: </label></td><td>{{view App.TextField style="width:400px" name="title" title="Title" valueBinding="App.galleriesController.newModel.title"}}</td></tr>
           <tr><td colspan="2">&nbsp;</td></tr>

@@ -55,7 +55,10 @@ App.datastoresController = Ember.ArrayProxy.create({
 			postFunc();
 		}, "json");		
 		
-	}
+	},
+	dropboxDatastores: function() {
+		return this.get("content").filterProperty("kind",'dropbox:user');
+	}.property('content.@each')
 });
 
 App.DatastoreSingleView = Ember.View.extend({
@@ -116,13 +119,13 @@ App.GalleryDto = Ember.Object.extend(Ember.Copyable,{
 });
 
 App.NewDropboxGalleryDto = Ember.Object.extend(Ember.Copyable,{
-	dropboxUid: null,
+	datastore: null,
 	path: null,
 	title: null,
 	desc: null,
 	copy: function(deep) {
 		return App.NewDropboxGalleryDto.create().setProperties(this.getProperties([
-			'dropboxUid','path','title','desc'
+			'datastore','path','title','desc'
 		]));
 	}
 });
@@ -164,7 +167,7 @@ App.galleriesController = Ember.ArrayProxy.create({
 		this.set("editCopy", App.ContentGroupDto.create({ }));
 	},
 	newDropbox: function() {
-		this.set("newModel", App.NewDropboxGalleryDto.create({dropboxUid: 5031239})); //TODO: dynamic dropbox ui
+		this.set("newModel", App.NewDropboxGalleryDto.create()); //was {dropboxUid: 5031239}
 		this.set("editCopy", null);
 		this.set("current", null);
 	},
@@ -197,7 +200,7 @@ App.galleriesController = Ember.ArrayProxy.create({
 		var self = this;
 		$.post("/dropbox/dropboxSyncher", 
 				{createAlbum:1,
-				dropboxUid:self.getPath("newModel.dropboxUid"),
+				dropboxUid:self.getPath("newModel.datastore.key"),
 				path:self.getPath("newModel.path"),
 				title:self.getPath("newModel.title"),
 				desc:self.getPath("newModel.desc")
