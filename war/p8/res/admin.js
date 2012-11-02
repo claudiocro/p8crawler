@@ -61,7 +61,7 @@ App.datastoresController = Ember.ArrayProxy.create({
 	}.property('content.@each'),
 	
 	googleDatastores: function() {
-		return this.get("content").filterProperty("kind",'dropbox:user');
+		return this.get("content").filterProperty("kind",'google:user');
 	}.property('content.@each')
 });
 
@@ -135,13 +135,13 @@ App.NewDropboxGalleryDto = Ember.Object.extend(Ember.Copyable,{
 });
 
 App.NewGDriveGalleryDto = Ember.Object.extend(Ember.Copyable,{
-	googleId: null,
+	datastore: null,
 	path: null,
 	title: null,
 	desc: null,
 	copy: function(deep) {
 		return App.NewGDriveGalleryDto.create().setProperties(this.getProperties([
-			'googleId','path','title','desc'
+			'datastore','path','title','desc'
 		]));
 	}
 });
