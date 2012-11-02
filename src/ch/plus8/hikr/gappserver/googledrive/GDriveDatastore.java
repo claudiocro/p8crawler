@@ -33,7 +33,7 @@ public class GDriveDatastore extends Datastore {
 		gDriveApi = new GDriveApi();
 		gDriveApi.loadById(credentialKey.getName());
 		/*Credential credential = new GoogleAuthorizationCodeFlow.Builder(
-			new NetHttpTransport(), new JacksonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).
+			new NetHttpTransport(), new GsonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).
 			setCredentialStore(new P8CredentialStore()).
 		build().loadCredential(credentialKey.getName());
 		

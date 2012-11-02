@@ -7,7 +7,7 @@ import ch.plus8.hikr.gappserver.admin.UserUtils;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -34,7 +34,7 @@ public class P8CredentialStore implements CredentialStore {
 		entity.setProperty("name", userinfo.getName());
 		datastore.put(entity);
 	}
-	
+
 	@Override
 	public void delete(String userId, Credential credential) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -56,17 +56,18 @@ public class P8CredentialStore implements CredentialStore {
 			return false;
 		}
 	}
-	
-	protected Userinfo getUserInfo(Credential credentials){
 
-		Oauth2 userInfoService = Oauth2.builder(new NetHttpTransport(), new JacksonFactory()).setHttpRequestInitializer(credentials).build();
+	protected Userinfo getUserInfo(Credential credentials) {
+
+		Oauth2 userInfoService = new Oauth2.Builder(new NetHttpTransport(), new GsonFactory(), credentials).build();
 		Userinfo userInfo = null;
+
 		try {
 			userInfo = userInfoService.userinfo().get().execute();
 		} catch (IOException e) {
 			System.err.println("An error occurred: " + e);
 		}
-		
+
 		if (userInfo != null && userInfo.getId() != null)
 			return userInfo;
 		else

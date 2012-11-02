@@ -50,15 +50,16 @@
       <table width="100%">
         <tbody>  
           <tr>
-          	<td><label>DropboxId: </label></td>
-          	<td>
-          		{{view Ember.Select
-       				contentBinding="App.datastoresController.dropboxDatastores"
-       				selectionBinding="App.galleriesController.newModel.datastore"
-       				optionLabelPath="content.title"
-       				optionValuePath="content.title"
-       			}}
-          	</td></tr>
+          	<td><label>Dropbox account: </label></td>
+            <td>
+          	  {{view Ember.Select
+       			contentBinding="App.datastoresController.dropboxDatastores"
+	       		selectionBinding="App.galleriesController.newModel.datastore"
+    	   		optionLabelPath="content.title"
+       			optionValuePath="content.title"
+              }}
+            </td>
+          </tr>
           <tr><td><label>Path: </label></td><td>{{view App.TextField style="width:400px" name="path" title="Path" valueBinding="App.galleriesController.newModel.path"}}</td></tr>
           <tr><td><label>Title: </label></td><td>{{view App.TextField style="width:400px" name="title" title="Title" valueBinding="App.galleriesController.newModel.title"}}</td></tr>
           <tr><td colspan="2">&nbsp;</td></tr>
@@ -76,7 +77,17 @@
       {{#view App.FormView className="gallery-gdrive-new-form" tagName="form"}}
       <table width="100%">
         <tbody>  
-          <tr><td><label>Google: </label></td><td>{{App.galleriesController.newModel.googleId}}</td></tr>
+		  <tr>
+            <td><label>Google account: </label></td>
+            <td>
+          	  {{view Ember.Select
+       			contentBinding="App.datastoresController.googleDatastores"
+	       		selectionBinding="App.galleriesController.newModel.datastore"
+    	   		optionLabelPath="content.title"
+       			optionValuePath="content.title"
+              }}
+            </td>
+          </tr>
           <tr><td><label>Path: </label></td><td>{{view App.TextField style="width:400px" name="path" title="Path" valueBinding="App.galleriesController.newModel.path"}}</td></tr>
           <tr><td><label>Title: </label></td><td>{{view App.TextField style="width:400px" name="title" title="Title" valueBinding="App.galleriesController.newModel.title"}}</td></tr>
           <tr><td colspan="2">&nbsp;</td></tr>

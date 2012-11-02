@@ -58,6 +58,10 @@ App.datastoresController = Ember.ArrayProxy.create({
 	},
 	dropboxDatastores: function() {
 		return this.get("content").filterProperty("kind",'dropbox:user');
+	}.property('content.@each'),
+	
+	googleDatastores: function() {
+		return this.get("content").filterProperty("kind",'dropbox:user');
 	}.property('content.@each')
 });
 
@@ -172,7 +176,7 @@ App.galleriesController = Ember.ArrayProxy.create({
 		this.set("current", null);
 	},
 	newGDrive: function() {
-		this.set("newModel", App.NewGDriveGalleryDto.create({googleId: 'be393ccf-f8ef-47ce-8f25-78590cc1e12b'}));
+		this.set("newModel", App.NewGDriveGalleryDto.create()); //was {googleId: 'be393ccf-f8ef-47ce-8f25-78590cc1e12b'}
 		this.set("editCopy", null);
 		this.set("current", null);
 	},

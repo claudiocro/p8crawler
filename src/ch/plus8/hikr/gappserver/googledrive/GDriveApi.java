@@ -31,7 +31,7 @@ public class GDriveApi {
 	private DocsService docs;
 
 	public void loadById(String googleId) throws IOException {
-		Credential credential = new GoogleAuthorizationCodeFlow.Builder(new NetHttpTransport(), new JacksonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).setCredentialStore(new P8CredentialStore()).build().loadCredential(googleId);
+		Credential credential = new GoogleAuthorizationCodeFlow.Builder(new NetHttpTransport(), new GsonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, GDriveGalleryServlet.SCOPES).setCredentialStore(new P8CredentialStore()).build().loadCredential(googleId);
 
 		drive = new Drive.Builder(new UrlFetchTransport(), new GsonFactory(),credential)
 			.setApplicationName("photography-stream/1.1.1")

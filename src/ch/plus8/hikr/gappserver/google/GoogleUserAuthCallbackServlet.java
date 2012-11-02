@@ -16,7 +16,7 @@ import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.extensions.servlet.auth.oauth2.AbstractAuthorizationCodeCallbackServlet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
@@ -51,7 +51,7 @@ public class GoogleUserAuthCallbackServlet extends AbstractAuthorizationCodeCall
 
 	  @Override
 	  protected AuthorizationCodeFlow initializeFlow() throws IOException {
-	    return new GoogleAuthorizationCodeFlow.Builder(new UrlFetchTransport(), new JacksonFactory(),
+	    return new GoogleAuthorizationCodeFlow.Builder(new UrlFetchTransport(), new GsonFactory(),
 	        Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET,
 	        GDriveCreateDatastoreServlet.SCOPES).setCredentialStore(
 	        new P8CredentialStore()).build();

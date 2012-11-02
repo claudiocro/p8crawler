@@ -17,8 +17,8 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-core-1.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-gson-1.11.0-beta.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-services-plus-v1-rev22-1.8.0-beta.jar" sourcepath="lib-src/google-api-services-plus-v1-rev22-1.8.0-beta-sources.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-oauth2-v2-rev3-java-1.5.0-beta.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-services-drive-v2-rev13-1.8.0-beta.jar" sourcepath="lib-src/google-api-services-drive-v2-rev13-1.8.0-beta-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-services-oauth2-v2-rev15-1.8.0-beta.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_23"/>
 	<classpathentry kind="lib" path="C:/mytools/development/eclipse-3.6.1-android/plugins/com.google.appengine.eclipse.sdkbundle_1.7.0/appengine-java-sdk-1.7.0/lib/opt/user/datanucleus/v1/datanucleus-appengine-1.0.10.final.jar" sourcepath="C:/mytools/development/eclipse-3.6.1-android/plugins/com.google.appengine.eclipse.sdkbundle_1.7.0/appengine-java-sdk-1.7.0/src/orm/datanucleus-appengine-1.0.10.final-src.zip">
 		<attributes>
