@@ -29,7 +29,8 @@ public class GoogleUserAuthCallbackServlet extends AbstractAuthorizationCodeCall
 		  
 		  
 		MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
-		resp.sendRedirect((String)memcacheService.get(P8CredentialStore.PARAM_OAUTHSEQUENCE+":"+request.getParameter("state")+"-redirect")+"?"+P8CredentialStore.PARAM_OAUTHSEQUENCE+"="+request.getParameter("state"));
+		resp.sendRedirect((String)memcacheService.get(P8CredentialStore.PARAM_OAUTHSEQUENCE+":"+request.getParameter("state")+"-redirect") +
+				"&"+P8CredentialStore.PARAM_OAUTHSEQUENCE+"="+request.getParameter("state"));
 	  }
 
 	  @Override
@@ -52,9 +53,10 @@ public class GoogleUserAuthCallbackServlet extends AbstractAuthorizationCodeCall
 	  @Override
 	  protected AuthorizationCodeFlow initializeFlow() throws IOException {
 	    return new GoogleAuthorizationCodeFlow.Builder(new UrlFetchTransport(), new GsonFactory(),
-	        Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET,
-	        GDriveCreateDatastoreServlet.SCOPES).setCredentialStore(
-	        new P8CredentialStore()).build();
+	        Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET,GDriveCreateDatastoreServlet.SCOPES)
+	    		.setCredentialStore(new P8CredentialStore())
+	    		.setAccessType("offline")
+	    		.build();
 	  }
 
 	@Override

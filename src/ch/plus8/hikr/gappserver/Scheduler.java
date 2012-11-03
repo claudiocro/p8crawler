@@ -17,7 +17,7 @@ public class Scheduler
 {
   private static final Logger logger = Logger.getLogger(Scheduler.class.getName());
 
-  protected static final void addUserIfExists(TaskOptions param) {
+  public static final void addUserIfExists(TaskOptions param) {
 	  try {
 		  Key key = UserUtils.getCurrentKeyFor();
 		  if(key != null)
@@ -79,12 +79,11 @@ public class Scheduler
   }
   
   
-  public static void scheduleDropboxGallery(String dropboxUid, String path, String userKey, int offset, String title, String desc, String authorName) {
+  public static void scheduleDropboxGallery(String dropboxUid, String path, int offset, String title, String desc, String authorName) {
 	  logger.info("Schedule: /dropbox/dropboxSyncher :" + dropboxUid + " / " + path + " / " + offset);
 	    Queue queue = QueueFactory.getDefaultQueue();
 	    TaskOptions param = TaskOptions.Builder.withUrl("/dropbox/dropboxSyncher");
 	    param.param("createAlbum", String.valueOf(1));
-	    param.param("userKey", userKey);
 	    param.param("dropboxUid", dropboxUid);
 	    param.param("path", path);
 	    param.param("offset", String.valueOf(offset));
@@ -97,6 +96,30 @@ public class Scheduler
 	    if(authorName != null)
 	    	param.param("authorName", authorName);
 
+	    addUserIfExists(param);
+	    
+	    queue.add(param);
+  }
+  
+  
+  public static void scheduleGDriveGallery(String googleUid, String path, String pageToken, String title, String desc, String authorName) {
+	  logger.info("Schedule: /gdrive/createGallery :" + googleUid + " / " + path + " / " + pageToken);
+	    Queue queue = QueueFactory.getDefaultQueue();
+	    TaskOptions param = TaskOptions.Builder.withUrl("/gdrive/createGallery");
+	    param.param("createAlbum", String.valueOf(1));
+	    param.param("googleUid", googleUid);
+	    param.param("path", path);
+	    param.param("pageToken", pageToken);
+	    if(title != null)
+	    	param.param("title", title);
+	    
+	    if(desc != null)
+	    	param.param("desc", desc);
+	    
+	    if(authorName != null)
+	    	param.param("authorName", authorName);
+
+	    addUserIfExists(param);
 	    
 	    queue.add(param);
   }

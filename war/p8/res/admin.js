@@ -202,26 +202,43 @@ App.galleriesController = Ember.ArrayProxy.create({
 	},
 	updateNewModel: function(postFunc) {
 		var self = this;
-		$.post("/dropbox/dropboxSyncher", 
-				{createAlbum:1,
-				dropboxUid:self.getPath("newModel.datastore.key"),
-				path:self.getPath("newModel.path"),
-				title:self.getPath("newModel.title"),
-				desc:self.getPath("newModel.desc")
-			}, 
-			function(data) {
-				self.set('newModel', null);
-				self.load();
-				postFunc();
-			},
-			"json");		
+		if(self.get("newModel.datastore.kind") === 'dropbox:user') {
+			$.post("/dropbox/dropboxSyncher", {
+					createAlbum:1,
+					dropboxUid:self.get("newModel.datastore.key"),
+					path:self.get("newModel.path"),
+					title:self.get("newModel.title"),
+					desc:self.get("newModel.desc")
+				}, 
+				function(data) {
+					self.set('newModel', null);
+					self.load();
+					postFunc();
+				},
+				"json");		
+		}
+		else if(self.get("newModel.datastore.kind") === 'google:user') {
+			$.post("/gdrive/createGallery",{
+					createAlbum:1,
+					googleUid:self.get("newModel.datastore.key"),
+					path:self.get("newModel.path"),
+					title:self.get("newModel.title"),
+					desc:self.get("newModel.desc")
+				}, 
+				function(data) {
+					self.set('newModel', null);
+					self.load();
+					postFunc();
+				},
+				"json");		
+		}
 	}
 });
 
 
 App.GallerySingleView = Ember.View.extend({
 	showFeeds: function() {
-		App.feedItemsController.load(this.getPath('content').key);
+		App.feedItemsController.load(this.get('content').key);
 		App.pageState.goToState("showingFeedListPage");
 		return false;
 	},
@@ -454,7 +471,7 @@ App.ContentGroupSingleView = Ember.View.extend({
 		return false;
 	},
 	editPage: function() {
-		App.simpleContentEditorController.edit(this.getPath('content'));
+		App.simpleContentEditorController.edit(this.get('content'));
 	}
 });
 
@@ -529,7 +546,7 @@ App.simpleContentEditorController = Ember.ArrayProxy.create({
 App.simpleContentEditorView = Ember.View.extend({
 	edit: function() {
 		var self = this;
-		App.simpleContentEditorController.edit(this.getPath('content'));
+		App.simpleContentEditorController.edit(this.get('content'));
 		return false;
 	},
 	updateCurrent: function() {
@@ -624,7 +641,7 @@ App.feedItemsController = Ember.ArrayProxy.create({
 App.FeedItemSingleView = Ember.View.extend({
 	reparse: function() {
 		var self = this;
-		App.feedItemsController.reparseItem(this.getPath('content'));
+		App.feedItemsController.reparseItem(this.get('content'));
 		return false;
 	}
 });
@@ -673,7 +690,7 @@ App.TextArea = Ember.TextArea.extend({
 	wrap: "off"
 });
 
-App.Button = Ember.Button.extend({
+App.Button = Ember.View.extend({
 	didInsertElement: function() {
 		this.$().button();
 		

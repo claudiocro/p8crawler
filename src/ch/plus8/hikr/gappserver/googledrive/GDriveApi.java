@@ -14,8 +14,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Children;
+import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.ParentReference;
 import com.google.gdata.client.DocumentQuery;
@@ -50,10 +51,16 @@ public class GDriveApi {
 		docs.setOAuth2Credentials(credential);
 	}
 
-	public DocumentListFeed getContentsFromEntry(String id) throws IOException, ServiceException {
-		String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A" + id + "/contents";
+	public ChildList getContentsFromEntry(String id, String pageToken) throws IOException, ServiceException {
+		/*String feedLink = "https://docs.google.com/feeds/default/private/full/folder%3A" + id + "/contents";
 		DocumentQuery query = new DocumentQuery(new URL(feedLink));
 		return docs.query(query, DocumentListFeed.class);
+		*/
+		Children.List list = drive.children().list(id);
+		if(pageToken != null) {
+			list.setPageToken(pageToken);
+		}
+		return list.execute();
 	}
 
 	public DocumentListFeed getContentFromEntryByTitle(String id, String title) throws IOException, ServiceException {

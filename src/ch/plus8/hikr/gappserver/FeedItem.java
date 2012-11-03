@@ -48,7 +48,7 @@ public class FeedItem extends FeedItemBasic {
 				entity.getProperty("link").toString(),
 				(entity.getProperty("title") != null)?entity.getProperty("title").toString():"",
 				entity.getProperty("feedLink").toString(),
-				entity.getProperty("imageLink").toString(),
+				(entity.getProperty("imageLink") != null) ? entity.getProperty("imageLink").toString() :  null,
 				Long.valueOf(entity.getProperty("img1A").toString()),
 				(Date)entity.getProperty("storeDate"));
 		

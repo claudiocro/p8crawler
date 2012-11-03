@@ -3,7 +3,6 @@ package ch.plus8.hikr.gappserver.googledrive;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,23 +11,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ch.plus8.hikr.gappserver.FeedItemBasic;
 import ch.plus8.hikr.gappserver.Scheduler;
 import ch.plus8.hikr.gappserver.Util;
+import ch.plus8.hikr.gappserver.admin.P8CrawlerGoogleServlet;
 import ch.plus8.hikr.gappserver.admin.UserUtils;
-import ch.plus8.hikr.gappserver.auth.AbstractAuthorizationCodeServlet;
 import ch.plus8.hikr.gappserver.google.P8CredentialStore;
 import ch.plus8.hikr.gappserver.repository.GAEFeedRepository;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.model.ChildList;
+import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -48,19 +43,11 @@ import com.google.gdata.data.docs.DocumentListFeed;
 import com.google.gdata.util.ServiceException;
 
 @SuppressWarnings("serial")
-public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
+public class GDriveGalleryServlet extends P8CrawlerGoogleServlet {
 
-	public static final List<String> SCOPES = Arrays.asList(
-			"https://www.googleapis.com/auth/drive.file",
-			"https://docs.google.com/feeds/",
-			"https://docs.googleusercontent.com/", 
-			"https://www.googleapis.com/auth/userinfo.profile");
-	
 	
 	public final static String GDRIVEUSER_KIND = "gdrive:user";
-
-
-	private String googleUid;
+	private final static String PARAM_CREATE_PAGE_TOKEN = "pageToken";
 
 
 	private GDriveApi gDriveApi;
@@ -69,6 +56,8 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 	@Override
 	  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
+		UserUtils.init(request);
+		MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
 		try {
 			GAEFeedRepository feedRepository = new GAEFeedRepository();
 			feedRepository.init();
@@ -81,28 +70,31 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 				setApplicationName("photography-stream/1.1.1").
 			build();
 			*/
-			String googleUid = request.getParameter("googleUid");
+			String googleUid = getGoogleUid();
 			String path = request.getParameter("path"); //public-upload/paris
-			String userKey = request.getParameter("userKey");
 			String title = request.getParameter("title");
 			String desc = request.getParameter("desc");
+			
+			
+			
+			if(memcacheService.contains(getGoogleUid()+"-process")) {
+				NewGallery newGallery = (NewGallery)memcacheService.get(getGoogleUid()+"-process");
+				path = newGallery.path;
+				title = newGallery.title;
+				desc = newGallery.desc;
+			}
 			
 			gDriveApi = new GDriveApi();
 			gDriveApi.loadById(googleUid);
 			
-			Key uKey = null;
-			if(userKey != null)
-				uKey = KeyFactory.stringToKey(userKey);
-			else
-				uKey = UserUtils.getCurrentKeyFor();
 			
 			DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 			
-			Key credentialsKey = KeyFactory.createKey(uKey, P8CredentialStore.KIND, googleUid);
+			Key credentialsKey = KeyFactory.createKey(UserUtils.getCurrentKeyFor(), P8CredentialStore.KIND, googleUid);
 			
-			Entity gallery = feedRepository.findGalleryByRef(datastoreService, credentialsKey.getKind(), path, uKey);
+			Entity gallery = feedRepository.findGalleryByRef(datastoreService, credentialsKey.getKind(), path, UserUtils.getCurrentKeyFor());
 			if(gallery == null) {
-				gallery = new Entity(KeyFactory.createKey(uKey, GAEFeedRepository.USER_GALLERY_KIND, UUID.randomUUID().toString()));
+				gallery = new Entity(KeyFactory.createKey(UserUtils.getCurrentKeyFor(), GAEFeedRepository.USER_GALLERY_KIND, UUID.randomUUID().toString()));
 				gallery.setProperty("kind", credentialsKey.getKind());
 				gallery.setProperty("key", credentialsKey);
 				gallery.setProperty("ref", path);
@@ -117,21 +109,25 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 			String catkey = gallery.getKey().getName(); 
 			categories.add(catkey);
 			
+			String pageToken = request.getParameter(PARAM_CREATE_PAGE_TOKEN);
 			DocumentListEntry imageFolder = getFolderByPath(path);
-			DocumentListFeed entries = gDriveApi.getContentsFromEntry(imageFolder.getDocId());
+			ChildList childList = gDriveApi.getContentsFromEntry(imageFolder.getDocId(), pageToken);
+			List<ChildReference> entries = childList.getItems();
 			String thumbsFolderId = getOrCreateThumbsFolder(imageFolder, path+"/thumbs");
 			System.out.println("-------------------------------------------------_");
-			for(DocumentListEntry entry  : entries.getEntries()) {
+			
+			for(ChildReference entry  : entries) {
 				FeedItemBasic item = new FeedItemBasic();
 				Map<String, Object> additional = new HashMap<String, Object>();
 				
-				File file = gDriveApi.getGFileById(entry.getDocId());
+				File file = gDriveApi.getGFileById(entry.getId());
+				presentKeys.add(file.getId());
 				
 				String revision = file.getEtag();
 				if(GDriveUtil.fillEntity(item, additional, entry, file, credentialsKey, thumbsFolderId)) {
 
-					if(!feedRepository.storeFeed(item, file.getId(), categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional, uKey, credentialsKey)) {
-						Key key = GAEFeedRepository.createKey(uKey, file.getId());
+					if(!feedRepository.storeFeed(item, file.getId(), categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional, UserUtils.getCurrentKeyFor(), credentialsKey)) {
+						Key key = GAEFeedRepository.createKey(UserUtils.getCurrentKeyFor(), file.getId());
 						Entity feEntity = datastoreService.get(key);
 						if(!revision.equals(feEntity.getProperty(GDriveUtil.PROP_GDRIVE_REVISION))) {
 							for(Entry<String, Object> en : additional.entrySet()) {
@@ -143,12 +139,22 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 							datastoreService.put(feEntity);
 						}
 					}
-					presentKeys.add(file.getId());
 				}
 			}
 			
-			Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-			query.setAncestor(uKey);
+			
+			if(childList.getNextPageToken() != null) {
+				Scheduler.scheduleGDriveGallery(
+						googleUid,
+						path,
+						childList.getNextPageToken(),
+						request.getParameter("title"), 
+						request.getParameter("desc"),
+						request.getParameter("authorName"));
+			}
+			
+			/*Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
+			query.setAncestor(UserUtils.getCurrentKeyFor());
 			query.setFilter(new Query.FilterPredicate("categories",FilterOperator.EQUAL, catkey));
 			PreparedQuery prepare = datastoreService.prepare(query);
 			QueryResultIterable<Entity> results = prepare.asQueryResultIterable();
@@ -156,6 +162,10 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 				if(!presentKeys.contains(oldEntity.getKey().getName())) {
 					Scheduler.scheduleDeleteItem(KeyFactory.keyToString(oldEntity.getKey()), true, true, true);
 				}
+			}*/
+			
+			if(childList.getNextPageToken() == null) {
+				Scheduler.scheduleImageEvaluator();
 			}
 			
 		} catch (Exception e) {
@@ -244,45 +254,22 @@ public class GDriveGalleryServlet extends AbstractAuthorizationCodeServlet {
 	}
 	
 	@Override
-	protected String getState(HttpServletRequest request) throws ServletException, IOException {
-		return googleUid;
+	protected String processOAuthRedirect(HttpServletRequest request) {
+		MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
+		NewGallery newGallery = new NewGallery();
+		newGallery.path = request.getParameter("path");
+		newGallery.title = request.getParameter("title");
+		newGallery.desc = request.getParameter("desc");
+		memcacheService.put(getGoogleUid()+"-process", newGallery);
+		return "/gdrive/createGallery?"+UserUtils.P8_TASK_QUEUE_AUTH+"="+KeyFactory.keyToString(UserUtils.getCurrentKeyFor());
 	}
 	
-	@Override
-	protected String getRedirectUri(HttpServletRequest request) throws ServletException, IOException {
-		GenericUrl url = new GenericUrl(request.getRequestURL().toString());
-		url.setRawPath("/oauth2callback");
-		return url.build();
-	}
-
-	@Override
-	protected AuthorizationCodeFlow initializeFlow() throws IOException {
-		return new GoogleAuthorizationCodeFlow.Builder(
-				new NetHttpTransport(), new GsonFactory(), Util.GOOGLE_OAUTH2_CLIENT_ID, Util.GOOGLE_OAUTH2_CLIENT_SECRET, SCOPES).
-				setCredentialStore(new P8CredentialStore()).
-				build();
-	}
-
-	@Override
-	protected String getUserId(HttpServletRequest request) throws ServletException, IOException {
-		googleUid = request.getParameter("googleUid");
-		if(Util.isBlank(googleUid))
-			googleUid = request.getParameter("oauthstate");
-		if(Util.isBlank(googleUid)) {
-			googleUid = UUID.randomUUID().toString();
-			MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
-			NewGallery newGallery = new NewGallery();
-			newGallery.path = request.getParameter("path");
-			newGallery.userKey = request.getParameter("userKey");
-			newGallery.title = request.getParameter("title");
-			newGallery.desc = request.getParameter("desc");
-			memcacheService.put(googleUid, newGallery);
-			memcacheService.put(googleUid+"-redirect", "/gdrive/gdriveAuth");
-		}
-		
-		return googleUid;
-		
-	}
-
 	
+
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		doGet(req, resp);
+	}
+
+
 }

@@ -80,6 +80,8 @@ public class DropboxSyncher extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		UserUtils.init(req);
+		
 		try {
 			
 			OAuthProvider provider = new DefaultOAuthProvider("https://api.dropbox.com/1/oauth/request_token", "https://api.dropbox.com/1/oauth/access_token", "https://www.dropbox.com/1/oauth/authorize");
@@ -115,7 +117,6 @@ public class DropboxSyncher extends HttpServlet {
 				MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
 				Map<String, Object> sequenceParams = (Map<String, Object>)memcacheService.get(PARAM_OAUTHSEQUENCE+":"+req.getParameter(PARAM_OAUTHSEQUENCE));
 				OAuthConsumer consumer = (OAuthConsumer)sequenceParams.get("consumer");
-				String email = (String)sequenceParams.get("email");
 				
 				provider.retrieveAccessToken(consumer, null);
 				
@@ -132,20 +133,15 @@ public class DropboxSyncher extends HttpServlet {
 			} else if("1".equals(req.getParameter(PARAM_CREATE_ALBUM))) {
 				String dropboxUid = req.getParameter("dropboxUid");
 				String path = req.getParameter("path"); //public-upload/paris
-				String userKey = req.getParameter("userKey"); 
-				Key uKey = null;
-				if(userKey != null)
-					uKey = KeyFactory.stringToKey(userKey);
-				else
-					uKey = UserUtils.getCurrentKeyFor();
 				
-				Key dropboxKey = KeyFactory.createKey(uKey, DROPBOXUSER_KIND, dropboxUid);
+				
+				Key dropboxKey = KeyFactory.createKey(UserUtils.getCurrentKeyFor(), DROPBOXUSER_KIND, dropboxUid);
 				
 				DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 				
-				Entity gallery = feedRepository.findGalleryByRef(datastoreService, dropboxKey.getKind(), path, uKey);
+				Entity gallery = feedRepository.findGalleryByRef(datastoreService, dropboxKey.getKind(), path, UserUtils.getCurrentKeyFor());
 				if(gallery == null) {
-					gallery = new Entity(KeyFactory.createKey(uKey, GAEFeedRepository.USER_GALLERY_KIND, UUID.randomUUID().toString()));
+					gallery = new Entity(KeyFactory.createKey(UserUtils.getCurrentKeyFor(), GAEFeedRepository.USER_GALLERY_KIND, UUID.randomUUID().toString()));
 					gallery.setProperty("kind", dropboxKey.getKind());
 					gallery.setProperty("key", dropboxKey);
 					gallery.setProperty("ref", path);
@@ -154,7 +150,7 @@ public class DropboxSyncher extends HttpServlet {
 					datastoreService.put(gallery);
 				}
 				
-				DropboxAPI dropboxAPI = DropboxUtil.createDropboxApi(uKey, dropboxUid);
+				DropboxAPI dropboxAPI = DropboxUtil.createDropboxApi(UserUtils.getCurrentKeyFor(), dropboxUid);
 				DropboxAccount accountInfo = dropboxAPI.accountInfo();
 				DropboxEntity metadata = dropboxAPI.metadata(path);
 				if(metadata == null ) 
@@ -172,7 +168,6 @@ public class DropboxSyncher extends HttpServlet {
 						categories.add("dropbox-"+dropboxUid+"-"+path); //old style
 						
 						int cntIndex = -1;
-						int processIdx = 0;
 						for(DropboxContent cnt : metadata.contents) {
 							String id = dropboxUid+cnt.path;
 							presentKeys.add(id);
@@ -185,16 +180,15 @@ public class DropboxSyncher extends HttpServlet {
 								
 							if(cntIndex >= offset + RETRIVE_COUNT)
 								continue;
-							
-							processIdx = cntIndex;
+
 							
 							FeedItemBasic item = new FeedItemBasic();
 							Map<String, Object> additional = new HashMap<String, Object>();
 							String revision = cnt.rev;
 							
 							if(DropboxUtil.fillEntity(item, additional, accountInfo, metadata, cnt, req.getParameter("authorName"))) {
-								if(!feedRepository.storeFeed(item, id, categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional, uKey, dropboxKey)) {
-									Key key = GAEFeedRepository.createKey(uKey, id);
+								if(!feedRepository.storeFeed(item, id, categories, Util.ITEM_STATUS_IMAGE_LINK_EVAL, additional, UserUtils.getCurrentKeyFor(), dropboxKey)) {
+									Key key = GAEFeedRepository.createKey(UserUtils.getCurrentKeyFor(), id);
 									Entity feEntity = datastoreService.get(key);
 									if(!revision.equals(feEntity.getProperty(DropboxUtil.PROP_DROPBOX_REVISION))) {
 										for(Entry<String, Object> en : additional.entrySet()) {
@@ -218,7 +212,6 @@ public class DropboxSyncher extends HttpServlet {
 							Scheduler.scheduleDropboxGallery(
 									dropboxUid,
 									path,
-									KeyFactory.keyToString(uKey),
 									offset+RETRIVE_COUNT,
 									req.getParameter("title"), 
 									req.getParameter("desc"),
@@ -289,7 +282,7 @@ public class DropboxSyncher extends HttpServlet {
 						param.param("createAlbum", String.valueOf(1));
 						param.param("dropboxUid", ((Key)o.getProperty("key")).getName());
 						param.param("path", o.getProperty("ref").toString());
-						param.param("userKey", KeyFactory.keyToString(o.getParent()));
+						Scheduler.addUserIfExists(param);
 						queue.add(param);
 						resp.getWriter().write(Util.stringToHTMLString(o.toString())+"<br><br>");
 					}

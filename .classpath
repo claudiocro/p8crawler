@@ -159,9 +159,9 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-appengine-1.11.0-beta.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-1.11.0-beta.jar" sourcepath="lib-src/google-http-client-1.11.0-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-appengine-1.11.0-beta.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-1.11.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-1.11.0-beta.jar" sourcepath="lib-src/google-oauth-client-1.11.0-beta-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-appengine-1.11.0-beta.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-servlet-1.11.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-servlet-1.11.0-beta.jar" sourcepath="lib-src/google-oauth-client-servlet-1.11.0-beta-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 	<referencedentry kind="lib" path="war/WEB-INF/lib/guava-r09.jar" sourcepath="lib-src/guava-r09-sources.jar"/>
 	<referencedentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-1.8.0-beta.jar" sourcepath="lib-src/google-oauth-client-1.8.0-beta-sources.jar"/>

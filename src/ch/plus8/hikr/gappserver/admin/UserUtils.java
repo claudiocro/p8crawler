@@ -125,7 +125,7 @@ public class UserUtils {
 		}
 	}
 	public static void init(HttpServletRequest req) {
-		if(!Util.isBlank(req.getParameter(P8_TASK_QUEUE_AUTH))) {
+		if(CURRENT_USER_KEY == null && !Util.isBlank(req.getParameter(P8_TASK_QUEUE_AUTH))) {
 			CURRENT_USER_KEY = KeyFactory.stringToKey(req.getParameter(P8_TASK_QUEUE_AUTH));
 		}
 		

@@ -27,6 +27,9 @@ public class Util {
 	
 	//claudiocro@plus8.ch
 	public static final String GOOGLE_API_KEY = "AIzaSyC0oH5HSRtrTHNaQCN7a_X9RFRrsd-1qMg";
+	
+	//public static final String GOOGLE_OAUTH2_CLIENT_ID = "562816433772-bpl8t5jjoiklpqp3k1j6419vmo10qg62.apps.googleusercontent.com";
+	//public static final String GOOGLE_OAUTH2_CLIENT_SECRET = "tPJttJ9fIgrxXdfwYnCqMTrc";
 	public static final String GOOGLE_OAUTH2_CLIENT_ID = "562816433772.apps.googleusercontent.com";
 	public static final String GOOGLE_OAUTH2_CLIENT_SECRET = "kq4-BRcxc7sAyeNh7OrRFbya";
 

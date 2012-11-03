@@ -104,7 +104,7 @@
   <tbody>
     {{#each view.content}}
       {{#view App.FeedItemSingleView contentBinding="this" tagName="tr"}}
-        <td><img height=40 width=40 {{urlparam "src" this.img2Link}}/></td>
+        <td><img height=40 width=40 {{urlparam "src" this.img2Link}} />&nbsp;</td>
         <td>{{this.link}}</td>
         <td>[<a href="#" {{action "reparse"}}>reparse</a>]</td>
         <td>{{this.imageLink}}</td>
