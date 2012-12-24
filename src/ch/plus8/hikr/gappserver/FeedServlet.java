@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
@@ -186,6 +187,7 @@ public class FeedServlet extends HttpServlet {
 	}
 	
 	
+	@SuppressWarnings("rawtypes")
 	private String getCachedFeed(MemcacheService memcacheService, String memcacheKey, int page) {
 		Map cFeed =((Map)memcacheService.get(memcacheKey));
 		if(cFeed != null && cFeed.containsKey(page)) {
@@ -195,13 +197,13 @@ public class FeedServlet extends HttpServlet {
 		return null;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void storeCachedPage(MemcacheService memcacheService, String memcacheKey, int page, String sortCol, String feed, String param, String paramV, boolean preCache, boolean forceCache) {
 		Map map = (Map)memcacheService.get(memcacheKey);
 		if(map == null)
 			map = new HashMap();
 		
 		logger.info("put to cache: "+memcacheKey+" / "+page+" / precache:"+preCache + "/ forceCache:" + forceCache);
-		map.put(page, feed);
 		memcacheService.put(memcacheKey, map,Expiration.byDeltaSeconds(10800));
 
 		if(preCache) {
@@ -225,7 +227,7 @@ public class FeedServlet extends HttpServlet {
 				FeedItem feedItem = FeedItem.createFromEntity(entity);
 	
 				if(feedItem.img2Link == null) { //TODO: only for img2 that resides in the appengine blobstore
-					feedItem.img2Link =  imagesService.getServingUrl((BlobKey)entity.getProperty("img2"));
+					feedItem.img2Link =  imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey((BlobKey)entity.getProperty("img2")));
 					entity.setUnindexedProperty("img2Link", feedItem.img2Link);
 					datastoreService.put(entity);
 				}

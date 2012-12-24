@@ -15,6 +15,8 @@ public class ImageEvaluatorFactory {
 	private static final HashMap<String, ImageEvaluator> cache =new HashMap<String, ImageEvaluator>();
 
 	public static ImageEvaluator createImageEvaluator(String source, Entity entity) {
+		logger.fine("createImageEvaluator");
+		
 		if("hikr".equals(source)) {
 			if(cache.containsKey("hikr"))
 				return cache.get("hikr");

@@ -15,6 +15,7 @@ import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.images.Transform;
 
 public class ImageUtil {
@@ -56,7 +57,7 @@ public class ImageUtil {
 		if (resizedBlobKey != null) {
 			entity.setProperty("img1A", Util.DATASTORE_APPENGINE);
 			entity.setUnindexedProperty("img1", resizedBlobKey);
-			entity.setUnindexedProperty("imageLink", imagesService.getServingUrl(resizedBlobKey));
+			entity.setUnindexedProperty("imageLink", imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey(resizedBlobKey)));
 			return true;
 		}
 

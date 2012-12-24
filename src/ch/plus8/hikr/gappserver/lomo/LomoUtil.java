@@ -16,7 +16,7 @@ public class LomoUtil {
 	public static boolean fillEntity(FeedItemBasic entity, Lomo lomo, Photo photo, Asset asset) throws ParseException {
 		
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(lomo.dateFormat.parse(photo.createdAt));
+		cal.setTime(Lomo.dateFormat.parse(photo.createdAt));
 		//cal.add(Calendar.MINUTE, act.getPublished().getTimeZoneShift());
 		entity.publishedDate = cal.getTime();
 		entity.source = "lomo";

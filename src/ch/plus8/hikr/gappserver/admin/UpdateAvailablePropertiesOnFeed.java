@@ -72,6 +72,7 @@ public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private boolean updateDropbox(Entity entity) {
 		boolean update = false;
 		
@@ -83,6 +84,7 @@ public class UpdateAvailablePropertiesOnFeed extends HttpServlet {
 		return update;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private boolean oldUpdate(Entity entity) {
 		boolean update = false;
 		

@@ -28,90 +28,87 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.QueryResultList;
 
-public class DeleteOldFeedItemsServlet extends HttpServlet
-{
-  private static final Logger logger = Logger.getLogger(DeleteOldFeedItemsServlet.class.getName());
+public class DeleteOldFeedItemsServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException
-  {
-    String source = req.getParameter("source");
-    String cat = req.getParameter("cat");
-    String timeType = req.getParameter("timeType");
-    String timeValue = req.getParameter("timeValue");
-    boolean delete = "1".equals(req.getParameter("delete"));
-    
-    boolean deleteImage = (req.getParameter("deleteImage") != null && "1".equals(req.getParameter("deleteImage")));
-    boolean deleteImg2 = (req.getParameter("deleteImg2") != null && "1".equals(req.getParameter("deleteImg2")));
-    
-    logger.info("delete old items delete:"+delete+" deleteImage:"+deleteImage+" deleteImg2:"+deleteImg2);
+	private static final Logger logger = Logger.getLogger(DeleteOldFeedItemsServlet.class.getName());
 
-    if ((source == null && cat == null) || (timeType == null) || ((!"M".equals(timeType)) && (!"D".equals(timeType))) || (timeValue == null) || (!Util.isInt(timeValue))) {
-      logger.log(Level.SEVERE, "invalidParams");
-      resp.getWriter().write("invalidParams");
-      throw new IllegalArgumentException("invalidParams");
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String source = req.getParameter("source");
+		String cat = req.getParameter("cat");
+		String timeType = req.getParameter("timeType");
+		String timeValue = req.getParameter("timeValue");
+		boolean delete = "1".equals(req.getParameter("delete"));
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		boolean deleteImage = (req.getParameter("deleteImage") != null && "1".equals(req.getParameter("deleteImage")));
+		boolean deleteImg2 = (req.getParameter("deleteImg2") != null && "1".equals(req.getParameter("deleteImg2")));
 
-    Query query = new Query("FeedItem");
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(new Date());
-    if ("M".equals(timeType)) {
-      cal.add(2, Integer.valueOf(timeValue).intValue() * -1);
-    } else if ("D".equals(timeType)) {
-      cal.add(6, Integer.valueOf(timeValue).intValue() * -1);
-    }
-    cal.set(11, 0);
-    cal.set(14, 0);
-    cal.set(13, 0);
-    cal.set(12, 0);
-    List<Filter> filters = new ArrayList<Query.Filter>();
-    filters.add(new Query.FilterPredicate("storeDate", Query.FilterOperator.LESS_THAN, cal.getTime()));
-    
-    if(source != null)
-    	filters.add(new Query.FilterPredicate("source", Query.FilterOperator.EQUAL, source));
-    else if(cat != null)
-    	filters.add(new Query.FilterPredicate("categories", Query.FilterOperator.EQUAL, cat));
-    
-    query.setFilter(CompositeFilterOperator.and(filters));
-    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
-    if (req.getParameter("cursor") != null) {
-      try {
-        fetchOptions.startCursor(Cursor.fromWebSafeString(req.getParameter("cursor")));
-        logger.fine("From websafe-cursor: " + req.getParameter("cursor"));
-      } catch (IllegalArgumentException e) {
-        logger.log(Level.SEVERE, "Could not validate cursor string", e);
-        resp.getWriter().write("Could not validate cursor string");
-        return;
-      }
-    }
+		logger.info("delete old items delete:" + delete + " deleteImage:" + deleteImage + " deleteImg2:" + deleteImg2);
 
-    PreparedQuery prepare = datastore.prepare(query);
+		if ((source == null && cat == null) || (timeType == null) || ((!"M".equals(timeType)) && (!"D".equals(timeType))) || (timeValue == null) || (!Util.isInt(timeValue))) {
+			logger.log(Level.SEVERE, "invalidParams");
+			resp.getWriter().write("invalidParams");
+			throw new IllegalArgumentException("invalidParams");
+		}
 
-    QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    for (Entity entity : resultList) {
-      try {
-    	if(delete)
-    		Scheduler.scheduleDeleteItem(KeyFactory.keyToString(entity.getKey()), delete, deleteImage, deleteImg2);
-    	else if(!delete && !Util.ITEM_STATUS_DELETED.equals(entity.getProperty("status")))
-    		Scheduler.scheduleDeleteItem(KeyFactory.keyToString(entity.getKey()), delete, deleteImage, deleteImg2);
-    	else {
-    		logger.info("Skip mark deleted: "+entity.getKey().getName());
-    	}
-      } catch (Exception e) {
-        logger.log(Level.SEVERE, "Error when delete: " + entity.getKey(), e);
-      }
-    }
+		Query query = new Query("FeedItem");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		if ("M".equals(timeType)) {
+			cal.add(2, Integer.valueOf(timeValue).intValue() * -1);
+		} else if ("D".equals(timeType)) {
+			cal.add(6, Integer.valueOf(timeValue).intValue() * -1);
+		}
+		cal.set(11, 0);
+		cal.set(14, 0);
+		cal.set(13, 0);
+		cal.set(12, 0);
+		List<Filter> filters = new ArrayList<Query.Filter>();
+		filters.add(new Query.FilterPredicate("storeDate", Query.FilterOperator.LESS_THAN, cal.getTime()));
 
-    if (!resultList.isEmpty())
-      Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, cat, timeType, timeValue, delete, deleteImage, deleteImg2);
-  }
+		if (source != null)
+			filters.add(new Query.FilterPredicate("source", Query.FilterOperator.EQUAL, source));
+		else if (cat != null)
+			filters.add(new Query.FilterPredicate("categories", Query.FilterOperator.EQUAL, cat));
 
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException
-  {
-    doGet(req, resp);
-  }
+		query.setFilter(CompositeFilterOperator.and(filters));
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
+		if (req.getParameter("cursor") != null) {
+			try {
+				fetchOptions.startCursor(Cursor.fromWebSafeString(req.getParameter("cursor")));
+				logger.fine("From websafe-cursor: " + req.getParameter("cursor"));
+			} catch (IllegalArgumentException e) {
+				logger.log(Level.SEVERE, "Could not validate cursor string", e);
+				resp.getWriter().write("Could not validate cursor string");
+				return;
+			}
+		}
+
+		PreparedQuery prepare = datastore.prepare(query);
+
+		QueryResultList<Entity> resultList = prepare.asQueryResultList(fetchOptions);
+
+		for (Entity entity : resultList) {
+			try {
+				if (delete)
+					Scheduler.scheduleDeleteItem(KeyFactory.keyToString(entity.getKey()), delete, deleteImage, deleteImg2);
+				else if (!delete && !Util.ITEM_STATUS_DELETED.equals(entity.getProperty("status")))
+					Scheduler.scheduleDeleteItem(KeyFactory.keyToString(entity.getKey()), delete, deleteImage, deleteImg2);
+				else {
+					logger.info("Skip mark deleted: " + entity.getKey().getName());
+				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Error when delete: " + entity.getKey(), e);
+			}
+		}
+
+		if (!resultList.isEmpty())
+			Scheduler.scheduleDeleteOldFeedItems(resultList.getCursor().toWebSafeString(), source, cat, timeType, timeValue, delete, deleteImage, deleteImg2);
+	}
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doGet(req, resp);
+	}
 }

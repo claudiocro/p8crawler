@@ -16,8 +16,6 @@ import ch.plus8.hikr.gappserver.Util;
 import ch.plus8.hikr.gappserver.admin.UserUtils;
 import ch.plus8.hikr.repository.FeedRepository;
 
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -44,11 +42,11 @@ public class GAEFeedRepository implements FeedRepository {
 	//public final static Integer STATUS_DELETED = new Integer(-999);
 
 	private DatastoreService dataStore;
-	private BlobstoreService blobstoreService;
+	//private BlobstoreService blobstoreService;
 
 	public void init() {
 		dataStore = DatastoreServiceFactory.getDatastoreService();
-		blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+		//blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 	}
 
 	public static final Key createKey(String link) {
@@ -298,6 +296,7 @@ public class GAEFeedRepository implements FeedRepository {
 		return pq.asSingleEntity();
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected final boolean updateFeedCategories(Object cats, Entity entity, String hashTag) {
 		if (cats != null) {
 			if ((cats instanceof String)) {

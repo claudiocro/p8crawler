@@ -78,6 +78,7 @@ public class DropboxSyncher extends HttpServlet {
 		this.feedRepository = feedRepository;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserUtils.init(req);

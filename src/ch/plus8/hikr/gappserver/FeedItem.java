@@ -16,7 +16,7 @@ public class FeedItem extends FeedItemBasic {
 	public Date publishedDate;
 	public Date storeDate;
 	public long status;
-	public Collection categories;
+	public Collection<?> categories;
 
 	public FeedItem(){};
 	
@@ -37,7 +37,8 @@ public class FeedItem extends FeedItemBasic {
     	return new Gson().fromJson(json, FeedItem.class);
     }
     
-    public static FeedItem createFromEntity(Entity entity) {
+    @SuppressWarnings("rawtypes")
+	public static FeedItem createFromEntity(Entity entity) {
     	FeedItem feedItem = new FeedItem(
     			entity.getKey().getName(),
 				(Date)entity.getProperty("publishedDate"),

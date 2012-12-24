@@ -53,6 +53,7 @@ public class LomoImporterServlet extends HttpServlet {
 		this.feedRepository = feedRepository;
     }
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String type = null;
@@ -168,6 +169,7 @@ public class LomoImporterServlet extends HttpServlet {
 	}
 
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected List categories(String type) {
 		List categories = new ArrayList();
 		categories.add("lomo");

@@ -1,9 +1,7 @@
 package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,10 +39,8 @@ public class DeleteBlobstore extends HttpServlet {
 		Iterator<BlobInfo> iterator = new BlobInfoFactory().queryBlobInfos();
 		int i = 0;
 		
-		Queue delqueue = QueueFactory.getQueue("deleteItem-queue");
 		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		
-		Set<BlobKey> keys = new HashSet<BlobKey>();
 		while (i < MAX_DEL && iterator.hasNext()) {
 			/*TaskOptions params = TaskOptions.Builder.withUrl("/p8admin/deleteBlobstore");
 			params.param("blob", iterator.next().getBlobKey().getKeyString());

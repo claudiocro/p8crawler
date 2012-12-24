@@ -50,6 +50,7 @@ public class GPlusPersonsActivitiesImporterServlet extends HttpServlet {
     }
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		logger.info("Request import of gplus activities cursor: " + req.getParameter("cursor"));

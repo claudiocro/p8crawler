@@ -2,12 +2,11 @@ package ch.plus8.hikr.gappserver;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Logger;
 
 import com.google.appengine.api.utils.SystemProperty;
 
 public class Util {
-	private static final Logger logger = Logger.getLogger(Util.class.getName());
+	//private static final Logger logger = Logger.getLogger(Util.class.getName());
 
 	public static final Long ZERO = 0L;
 
@@ -42,6 +41,7 @@ public class Util {
 
 	
 	public static boolean isProductionServer() {
+		
 		return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
 	}
 

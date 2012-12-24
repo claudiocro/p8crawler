@@ -1,6 +1,8 @@
 package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,11 +19,14 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 
 @SuppressWarnings("serial")
 public class ListFeedItems extends HttpServlet {  
@@ -36,11 +41,16 @@ public class ListFeedItems extends HttpServlet {
     	String source = req.getParameter("source");
     	ImagesService imagesService = ImagesServiceFactory.getImagesService();
     	
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();  
-        Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-        query.addFilter("source", FilterOperator.EQUAL, source);
-		query.addFilter("img1A", FilterOperator.EQUAL, 1);
-		query.addFilter("img2A", FilterOperator.EQUAL, 1);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        
+        
+        List<Filter> filters = new ArrayList<Filter>();
+		Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
+		filters.add(new Query.FilterPredicate("source", FilterOperator.EQUAL, source));
+		filters.add(new Query.FilterPredicate("img1A", FilterOperator.EQUAL, 1));
+		filters.add(new Query.FilterPredicate("img2A", FilterOperator.EQUAL, 1));
+		
+		query.setFilter(CompositeFilterOperator.and(filters));
 		
 		query.addSort("publishedDate", SortDirection.DESCENDING);
         PreparedQuery pq = datastore.prepare(query);  
@@ -59,7 +69,7 @@ public class ListFeedItems extends HttpServlet {
   
         QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);  
         for (Entity entity : results) {  
-            resp.getWriter().println("<li>" + entity.getProperty("imageLink")+" / " + imagesService.getServingUrl((BlobKey)entity.getProperty("img2")) + " / <img height=40 width=40 src=\""+ imagesService.getServingUrl((BlobKey)entity.getProperty("img2")) + "\" />");  
+            resp.getWriter().println("<li>" + entity.getProperty("imageLink")+" / " + imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey((BlobKey)entity.getProperty("img2"))) + " / <img height=40 width=40 src=\""+ imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey((BlobKey)entity.getProperty("img2"))) + "\" />");
         }  
         
         resp.getWriter().println("</li>  </entity></ul>  ");  

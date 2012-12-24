@@ -206,17 +206,17 @@ public class Scheduler
     }
   }
   
-  public static void cleanCache(String param, String paramV)
+  @SuppressWarnings("rawtypes")
+public static void cleanCache(String param, String paramV)
   {
     MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService("feedItems");
     logger.info("Clean memcache: feedItems:" + param + ":" + paramV);
     memcacheService.put("feedItems:" + param + ":" + paramV, new HashMap());
   }
 
-  public static void scheduleFeedCacher(boolean forceCache) {
+  @SuppressWarnings("rawtypes")
+public static void scheduleFeedCacher(boolean forceCache) {
     MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService("feedItems");
-
-    Queue queue = QueueFactory.getQueue("feedCacher-queue");
 
     if (forceCache) {
       logger.info("scheduleFeedCacher with force cache remove");

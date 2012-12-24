@@ -1,6 +1,8 @@
 package ch.plus8.hikr.gappserver.admin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +23,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -39,11 +43,15 @@ public class CleanImg1Servlet extends HttpServlet {
 		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+		
+		List<Filter> filters = new ArrayList<Filter>();
 		Query query = new Query(GAEFeedRepository.FEED_ITEM_KIND);
-		query.addFilter("img1A", FilterOperator.EQUAL, 1);
-		query.addFilter("img2A", FilterOperator.EQUAL, 1);
+		filters.add(new Query.FilterPredicate("img1A", FilterOperator.EQUAL, 1));
+		filters.add(new Query.FilterPredicate("img2A", FilterOperator.EQUAL, 1));
+		
+		query.setFilter(CompositeFilterOperator.and(filters));
 		query.addSort("publishedDate", SortDirection.ASCENDING);
-
+		
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(20);
 		if (req.getParameter("cursor") != null) {
 			try {

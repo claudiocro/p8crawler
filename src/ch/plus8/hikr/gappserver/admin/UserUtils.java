@@ -1,7 +1,5 @@
 package ch.plus8.hikr.gappserver.admin;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -45,15 +43,11 @@ public class UserUtils {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Key key = KeyFactory.createKey("user", userService.getCurrentUser().getEmail());
 		try {
-				Entity entity = ds.get(key);
+				ds.get(key);
 			} catch (EntityNotFoundException e) {
 			Entity entity = new Entity(key);
-			try {
-				MessageDigest md = MessageDigest.getInstance("MD5");
-				entity.setProperty("id", Util.md5Checksum(UUID.randomUUID().toString()));
-			} catch (NoSuchAlgorithmException e1) {
-				throw new IllegalArgumentException(e1);
-			}
+			entity.setProperty("id", Util.md5Checksum(UUID.randomUUID().toString()));
+			
 			entity.setProperty("email", userService.getCurrentUser().getEmail());
 			entity.setUnindexedProperty("nickname", userService.getCurrentUser().getNickname());
 			ds.put(entity);

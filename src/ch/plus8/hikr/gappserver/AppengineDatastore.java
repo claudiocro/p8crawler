@@ -12,6 +12,7 @@ import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 
 public class AppengineDatastore extends Datastore {
 
@@ -48,7 +49,7 @@ public class AppengineDatastore extends Datastore {
 			if (resizedBlobKey != null) {
 				entity.setProperty("img2A", Util.DATASTORE_APPENGINE);
 				entity.setUnindexedProperty("img2", resizedBlobKey);
-				entity.setUnindexedProperty("img2Link", imagesService.getServingUrl(resizedBlobKey));
+				entity.setUnindexedProperty("img2Link", ServingUrlOptions.Builder.withBlobKey(resizedBlobKey));
 				return true;
 			} else {
 				return false;

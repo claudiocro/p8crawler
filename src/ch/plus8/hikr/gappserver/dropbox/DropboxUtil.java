@@ -141,6 +141,7 @@ public class DropboxUtil {
 		return createDropboxApi(KeyFactory.createKey(userKey, DropboxSyncher.DROPBOXUSER_KIND, dropboxUid));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static String getDropboxUidFromCategories(Object categories) {
 		List<String> cats; 
 		if(categories instanceof String) {

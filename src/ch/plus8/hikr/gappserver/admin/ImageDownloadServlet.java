@@ -35,7 +35,6 @@ public class ImageDownloadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger logger = Logger.getLogger(ImageDownloadServlet.class.getName());
-	private static final int MAX_COUNT = 5;
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		
