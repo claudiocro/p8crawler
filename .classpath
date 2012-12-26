@@ -71,11 +71,7 @@
 			<attribute name="javadoc_location" value="file:/home/claudiocro/mytools/development/eclipse-juno-sr1-java/plugins/com.google.appengine.eclipse.sdkbundle_1.7.4/appengine-java-sdk-1.7.4/docs/javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/claudiocro/mytools/development/eclipse-juno-sr1-java/plugins/com.google.appengine.eclipse.sdkbundle_1.7.4/appengine-java-sdk-1.7.4/lib/appengine-tools-api.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/claudiocro/mytools/development/eclipse-juno-sr1-java/plugins/com.google.appengine.eclipse.sdkbundle_1.7.4/appengine-java-sdk-1.7.4/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-tools-api.jar"/>
 	<classpathentry kind="lib" path="/home/claudiocro/mytools/development/eclipse-juno-sr1-java/plugins/com.google.appengine.eclipse.sdkbundle_1.7.4/appengine-java-sdk-1.7.4/lib/opt/user/appengine-api-labs/v1/appengine-api-labs.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/home/claudiocro/mytools/development/eclipse-juno-sr1-java/plugins/com.google.appengine.eclipse.sdkbundle_1.7.4/appengine-java-sdk-1.7.4/docs/javadoc/"/>
