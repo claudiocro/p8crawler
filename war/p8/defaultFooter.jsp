@@ -136,7 +136,7 @@
           <tr><td colspan="2"><label>Content: </label></td></tr>
           <tr><td colspan="2">{{view App.TextArea classNames="contentField" valueBinding="view.content.editCopy.content"}}</td></tr>
           <tr><td colspan="2">&nbsp;</td></tr>
-          <tr><td colspan="2">{{#view App.SaveModelButton modelBinding="App.simpleContentEditorController" target="view.content" action="updateCurrent" elementStyle="{'background-color':'black'}"}}Store content{{/view}}</td></tr>
+          <tr><td colspan="2">{{#view App.SaveModelButton modelBinding="App.simpleContentEditorController" target="App.simpleContentEditorController" action="updateCurrent" elementStyle="{'background-color':'black'}"}}<a href="#" {{action "updateCurrent"}}>Store content</a>{{/view}}</td></tr>
         </tbody>
       </table>
       {{/view}}

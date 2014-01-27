@@ -367,6 +367,7 @@ App.contentGroupsController = Ember.ArrayProxy.create({
 	editCopy: null,
 	
 	load: function() {
+		debugger;
 		var self = this;
 		var jp = {t:"list"};
 		self.clear();			
@@ -383,6 +384,7 @@ App.contentGroupsController = Ember.ArrayProxy.create({
 		this.set("editCopy", App.SimpleContentDto.create({ }));
 	},
 	edit: function(contentGroup) {
+		debugger;
 		this.set("current", contentGroup);
 		this.set("editCopy", Ember.copy(contentGroup));
 	},
@@ -702,6 +704,9 @@ App.Button = Ember.View.extend({
 
 App.SaveModelButton = App.Button.extend({
     //disabledBinding: Ember.Binding.isNull('model.editCopy')
+	updateCurrent: function() {
+		App.simpleContentEditorController.updateCurrent();
+	}
 });
 
 
