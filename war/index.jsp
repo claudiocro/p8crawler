@@ -30,9 +30,10 @@
   <script type="text/javascript" language="javascript" src="res/jquery.mousewheel.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.jscrollpane.js"></script>
   
-  <script type="text/javascript" language="javascript" src="res/p8js.js"></script>
+
+  <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8js/p8js-jquery-0.4.6.js"></script>
   <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8gallery/p8gallery-0.9.1.js"></script>
- 
+  
   <script type="text/javascript" language="javascript">
   	$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
   	
