@@ -33,12 +33,12 @@
   <script type="text/javascript" language="javascript" src="p8/res/handlebars-1.0.0.beta.6.js"></script>
   <script type="text/javascript" language="javascript" src="p8/res/ember-1.0.pre.js"></script>
   
+
+  <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8js/p8js-jquery-0.4.6.min.js"></script>
+  <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8js/p8js-jqueryui-0.4.6.min.js"></script>
   
-  <script type="text/javascript" language="javascript" src="res/p8js.js"></script>
+  <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8gallery/p8gallery-0.9.1.min.js"></script>
   
-  <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8gallery/p8gallery-0.9.1.js"></script>
-  
-  <script type="text/javascript" language="javascript" src="res/p8ui.js"></script>
   <script type="text/javascript" language="javascript" src="/p8/res/p8ember-ui.js"></script>
   <script type="text/javascript" language="javascript" src="/p8/res/admin.js"></script>
   
