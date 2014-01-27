@@ -49,7 +49,7 @@ public class AppengineDatastore extends Datastore {
 			if (resizedBlobKey != null) {
 				entity.setProperty("img2A", Util.DATASTORE_APPENGINE);
 				entity.setUnindexedProperty("img2", resizedBlobKey);
-				entity.setUnindexedProperty("img2Link", ServingUrlOptions.Builder.withBlobKey(resizedBlobKey));
+				entity.setUnindexedProperty("img2Link", imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey(resizedBlobKey)));
 				return true;
 			} else {
 				return false;

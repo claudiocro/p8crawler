@@ -14,25 +14,24 @@
   <title>p8 photography stream</title>
 
   <link href='http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold&subset=latin' rel='stylesheet' type='text/css'	>
-  <link href="res/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <link href="res/jquery-ui/jquery-ui.css" rel="stylesheet" type="text/css"/>
   <link href="res/style.css" rel="stylesheet" type="text/css"/>
   <link href="res/content1.css" rel="stylesheet" type="text/css"/>
-  <link href="res/colorbox.css" rel="stylesheet" type="text/css"/>
-  <!-- link href="res/jScrollPane.css" rel="stylesheet" type="text/css"/ -->
+  <link href="res/jquery-colorbox/colorbox.css" rel="stylesheet" type="text/css"/>
+  
   <link href="res/jquery.jscrollpane.css" rel="stylesheet" type="text/css"/>
 	
-  <script type="text/javascript" language="javascript" src="res/jquery-1.7.1.js"></script>
-  <script type="text/javascript" language="javascript" src="res/jquery-ui.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery/jquery.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery-ui/jquery-ui.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.easing.1.3.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.busy.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.jtruncate.js"></script>
-  <script type="text/javascript" language="javascript" src="res/jquery.colorbox-min.js"></script>
+  <script type="text/javascript" language="javascript" src="res/jquery-colorbox/jquery.colorbox-min.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.mousewheel.js"></script>
   <script type="text/javascript" language="javascript" src="res/jquery.jscrollpane.js"></script>
   
   <script type="text/javascript" language="javascript" src="res/p8js.js"></script>
-  <script type="text/javascript" language="javascript" src="res/p8photosurfer.js"></script>
-  
+  <script type="text/javascript" language="javascript" src="http://cdn.plus8.ch/p8gallery/p8gallery-0.9.1.js"></script>
  
   <script type="text/javascript" language="javascript">
   	$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
